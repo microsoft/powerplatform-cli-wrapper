@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 import { expect } from 'chai';
-import { PacRunner } from '../lib'
+import { PacRunner } from '../src'
 import path = require('path');
 import fs = require('fs-extra');
 import { TestLog } from './testLog';

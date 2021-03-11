@@ -34,13 +34,15 @@ export class ExeRunner {
             const parentDir = path.dirname(dirname);
             // /dist/actions/<action-name>/index.js:
             // /out/actions/<action-name>/index.js:
-            if (path.basename(parentDir) === 'actions') {
-                this._outDirRoot = path.resolve(path.dirname(parentDir));
-            } else if (path.basename(parentDir) === 'src' || path.basename(parentDir) === 'out') {
-                this._outDirRoot = path.resolve(parentDir, '..', 'out');
-            } else {
-                throw Error(`ExeRunner: cannot resolve outDirRoot running from this location: ${dirname}`);
-            }
+            // if (path.basename(parentDir) === 'actions') {
+            //     this._outDirRoot = path.resolve(path.dirname(parentDir));
+            // } else if (path.basename(parentDir) === 'src' || path.basename(parentDir) === 'out') {
+            //     this._outDirRoot = path.resolve(parentDir, '..', 'out');
+            // } else {
+            //     throw Error(`ExeRunner: cannot resolve outDirRoot running from this location: ${dirname}`);
+            // }
+
+            this._outDirRoot = path.resolve(parentDir, 'out');
         }
         return this._outDirRoot;
     }
@@ -50,7 +52,7 @@ export class ExeRunner {
             const stdout = new Array<string>();
             const stderr = new Array<string>();
 
-            this.logger.info(`exe: ${this._exePath}, first arg of ${args.length}: ${args.length ? args[0]: '<none>'}`);
+            this.logger.info(`exe: ${this._exePath}, first arg of ${args.length}: ${args.length ? args[0] : '<none>'}`);
             const pac = spawn(this._exePath, args, { cwd: this.workingDir });
 
             pac.stdout.on('data', (data) => stdout.push(...data.toString().split(os.EOL)));
@@ -70,7 +72,7 @@ export class ExeRunner {
     }
 
     public runSync(args: string[]): string[] {
-        this.logger.info(`exe: ${this._exePath}, first arg of ${args.length}: ${args.length ? args[0]: '<none>'}`);
+        this.logger.info(`exe: ${this._exePath}, first arg of ${args.length}: ${args.length ? args[0] : '<none>'}`);
         const proc = spawnSync(this._exePath, args, { cwd: this.workingDir });
         if (proc.status === 0) {
             const output = proc.output

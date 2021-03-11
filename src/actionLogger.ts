@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 import * as core from '@actions/core';
-import { Logger } from '../lib';
+import { Logger } from '../src';
 
 export class ActionLogger implements Logger {
     info(...args: string[]): void {
