@@ -1,7 +1,7 @@
 {
     "name": "powerplatform-cli-wrapper",
     "version": "0.1.0",
-    "description": "Github Action for Power Platform",
+    "description": "JavaScript wrapper for Power Platform CLI (pac)",
     "main": "index.js",
     "scripts": {
       "clean": "scorch",
