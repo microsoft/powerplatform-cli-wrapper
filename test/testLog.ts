@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-import { Logger } from "../lib";
+import { Logger } from "../src";
 import { createLogger, format, transports } from 'winston';
 import path = require("path");
 
