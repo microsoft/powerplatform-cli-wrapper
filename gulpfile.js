@@ -10,6 +10,7 @@ const mocha = require('gulp-mocha');
 const ncc = require('@vercel/ncc');
 const sourcemaps = require('gulp-sourcemaps');
 const ts = require('gulp-typescript');
+var merge = require('merge-stream');
 
 const fetch = require('node-fetch');
 const fs = require('fs-extra');
@@ -37,11 +38,10 @@ async function clean() {
 
 function compile() {
     const tsProj = ts.createProject(tsConfigFile);
-    return gulp
-        .src('src/**/*.ts')
+    var tsResult = gulp.src(['src/**/*.ts'])
         .pipe(sourcemaps.init())
-        .pipe(tsProj())
-        // https://www.npmjs.com/package/gulp-typescript#source-maps
+        .pipe(tsProj());
+    return merge(tsResult, tsResult.js)
         .pipe(sourcemaps.write('./', { sourceRoot: './', includeContent: false }))
         .pipe(gulp.dest(outdir));
 }
@@ -111,9 +111,9 @@ function lint() {
     return gulp
         .src('src/**/*.ts')
         .pipe(eslint({
-                formatter: 'verbose',
-                configuration: '.eslintrc.js'
-            }))
+            formatter: 'verbose',
+            configuration: '.eslintrc.js'
+        }))
         .pipe(eslint.format());
 }
 
@@ -121,9 +121,9 @@ function test() {
     return gulp
         .src('src/test/**/*.ts', { read: false })
         .pipe(mocha({
-                require: [ "ts-node/register" ],
-                ui: 'bdd'
-            }))
+            require: ["ts-node/register"],
+            ui: 'bdd'
+        }))
         .pipe(eslint.format());
 }
 
