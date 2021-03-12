@@ -1,7 +1,7 @@
 import { Logger } from "./Logger";
 
 export default class WrappedLogger implements Logger {
-  internalLogger: Logger;
+  internalLogger: Logger | undefined;
 
   constructor(internalLogger?: Logger) {
     this.internalLogger = internalLogger;

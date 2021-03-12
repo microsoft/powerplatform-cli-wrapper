@@ -58,7 +58,7 @@ export class ExeRunner {
             pac.stdout.on('data', (data) => stdout.push(...data.toString().split(os.EOL)));
             pac.stderr.on('data', (data) => stderr.push(...data.toString().split(os.EOL)));
 
-            pac.on('close', (code) => {
+            pac.on('close', (code : number) => {
                 if (code === 0) {
                     this.logger.info(`success: ${stdout.join(os.EOL)}`);
                     resolve(stdout);

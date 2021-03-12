@@ -140,22 +140,6 @@ async function createDist() {
     fs.emptyDirSync(distdir);
     binplace('SoPa', path.join('sopa', 'content', 'bin', 'coretools'));
     binplace('pac CLI', path.join('pac', 'tools'));
-
-    glob.sync('**/action.yml', {
-            cwd: __dirname
-        })
-        .map(actionYaml => path.basename(path.dirname(actionYaml)))
-        .forEach((actionName, idx) => {
-            const actionDir = path.resolve(distdir, 'actions', actionName)
-            log.info(`package action ${idx} "${actionName}" into ./dist folder (${actionDir})...`);
-            ncc(path.resolve(outdir, 'actions', actionName), {
-                minify: false,
-            })
-            .then(({code, map, assets}) => {
-                fs.emptyDirSync(actionDir);
-                fs.writeFileSync(path.resolve(actionDir, 'index.js'), code);
-            });
-        });
 }
 
 const recompile = gulp.series(

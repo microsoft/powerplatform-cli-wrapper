@@ -5,11 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type":"pwa-node",
+            "type": "pwa-node",
             "name": "Current TS File",
             "request": "launch",
-            "args": ["${relativeFile}"],
-            "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+            "args": [
+                "${relativeFile}"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
             "sourceMaps": true,
             "cwd": "${workspaceRoot}"
         },
@@ -58,6 +64,6 @@
                 "${workspaceFolder}/**",
                 "!**/node_modules/**"
             ]
-        }    
+        }
     ]
 }
