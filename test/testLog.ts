@@ -9,7 +9,7 @@ export class TestLog implements Logger {
     private _logger;
 
     public constructor(logFile: string) {
-        logFile = path.resolve(__dirname, '..', '..', 'out', 'logs', logFile);
+        logFile = path.resolve(__dirname, '..', 'out', 'logs', logFile);
 
         this._logger = createLogger({
             level: 'info',

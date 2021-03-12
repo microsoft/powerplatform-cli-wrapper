@@ -8,7 +8,7 @@ import { TestLog } from './testLog';
 
 
 describe('git', () => {
-    const workDir = path.resolve(__dirname, '..', '..', 'out', 'test');
+    const workDir = path.resolve(__dirname, '..', 'out', 'test');
     const git = new GitRunner(workDir, new TestLog('git-tests.log'));
 
     it('can launch git log', async() => {

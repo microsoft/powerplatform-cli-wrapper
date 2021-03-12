@@ -7,7 +7,7 @@ import { ActionInputsEmulator } from './actionInputsEmulator';
 import { AuthKind, AuthHandler } from '../src';
 
 describe('authHandler#input validations', () => {
-    const workDir = path.resolve(__dirname, '..', '..', 'out', 'test');
+    const workDir = path.resolve(__dirname, '..', 'out', 'test');
     const mockFactory: MockedRunners = new MockedRunners(workDir);
     const pac = mockFactory.getRunner('pac', process.cwd());
 
