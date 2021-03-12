@@ -3,7 +3,7 @@
 // Licensed under the MIT License.
 import path = require('path');
 import { expect } from 'chai';
-import { GitRunner } from '../lib';
+import { GitRunner } from '../src';
 import { TestLog } from './testLog';
 
 
