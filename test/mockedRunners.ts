@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { Runner, RunnerFactory } from '../lib';
+import { Runner, RunnerFactory } from '../src';
 
 export interface LoggedCommands {
     RunnerName: string;

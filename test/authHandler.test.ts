@@ -4,7 +4,7 @@ import path = require('path');
 import { expect } from 'chai';
 import { MockedRunners } from './mockedRunners';
 import { ActionInputsEmulator } from './actionInputsEmulator';
-import { AuthKind, AuthHandler } from '../lib';
+import { AuthKind, AuthHandler } from '../src';
 
 describe('authHandler#input validations', () => {
     const workDir = path.resolve(__dirname, '..', '..', 'out', 'test');
