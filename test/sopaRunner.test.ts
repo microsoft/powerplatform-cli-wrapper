@@ -1,12 +1,12 @@
 import path = require("path");
 import fs = require("fs-extra");
 import { expect } from "chai";
-import { SopaRunner } from "../src";
+import { createSopaRunner } from "../src";
 import { TestLog } from "./testLog";
 
 describe("SoPa", () => {
   const workDir = path.resolve(__dirname, "..", "out", "test");
-  const sopa = new SopaRunner(workDir, new TestLog("sopa-tests.log"));
+  const sopa = createSopaRunner(workDir, new TestLog("sopa-tests.log"));
 
   before(() => {
     fs.emptyDirSync(workDir);

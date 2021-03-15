@@ -1,8 +1,6 @@
-import { ExeRunner } from "./exeRunner";
+import { CommandRunner, createCommandRunner } from "./CommandRunner";
 import { Logger } from "./logger";
 
-export class GitRunner extends ExeRunner {
-  public constructor(workingDir: string, logger: Logger) {
-    super(workingDir, "git", logger);
-  }
+export function createGitRunner(workingDir: string, logger: Logger): CommandRunner {
+  return createCommandRunner(workingDir, "git", logger);
 }

@@ -1,11 +1,11 @@
 import path = require("path");
 import { expect } from "chai";
-import { GitRunner } from "../src";
+import { createGitRunner } from "../src";
 import { TestLog } from "./testLog";
 
 describe("git", () => {
   const workDir = path.resolve(__dirname, "..", "out", "test");
-  const git = new GitRunner(workDir, new TestLog("git-tests.log"));
+  const git = createGitRunner(workDir, new TestLog("git-tests.log"));
 
   it("can launch git log", async () => {
     const logs = await git.run(["log"]);

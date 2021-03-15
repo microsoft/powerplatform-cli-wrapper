@@ -1,9 +1,14 @@
 import { resolve } from "path";
-import { ExeRunner } from "./exeRunner";
+import { CommandRunner, createCommandRunner } from "./CommandRunner";
 import { Logger } from "./logger";
 
-export class PacRunner extends ExeRunner {
-  public constructor(workingDir: string, logger: Logger) {
-    super(workingDir, resolve("pac", "tools", "pac.exe"), logger);
-  }
+export function createPacRunner(
+  workingDir: string,
+  logger: Logger
+): CommandRunner {
+  return createCommandRunner(
+    workingDir,
+    resolve("pac", "tools", "pac.exe"),
+    logger
+  );
 }

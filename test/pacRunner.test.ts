@@ -1,12 +1,12 @@
 import { expect } from "chai";
-import { PacRunner } from "../src";
+import { createPacRunner } from "../src";
 import path = require("path");
 import fs = require("fs-extra");
 import { TestLog } from "./testLog";
 
 describe("PacAccess", () => {
   const workDir = path.resolve(__dirname, "..", "out", "test");
-  const pac = new PacRunner(workDir, new TestLog("pac-tests.log"));
+  const pac = createPacRunner(workDir, new TestLog("pac-tests.log"));
 
   before(() => {
     fs.emptyDirSync(workDir);
