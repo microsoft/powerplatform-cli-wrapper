@@ -5,7 +5,6 @@ import { Logger } from './logger';
 
 
 export class PacRunner extends ExeRunner {
-
     public constructor(workingDir: string, logger: Logger) {
         super(workingDir, logger, 'pac.exe', ['pac', 'tools']);
     }
