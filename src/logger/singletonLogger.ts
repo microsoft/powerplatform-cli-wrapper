@@ -4,7 +4,7 @@ import WrappedLogger from "./WrappedLogger";
 const wrappedLogger = new WrappedLogger();
 const singletonLogger: Logger = wrappedLogger;
 
-export function register(logger: Logger) {
+export function register(logger: Logger): void {
   wrappedLogger.internalLogger = logger;
 }
 

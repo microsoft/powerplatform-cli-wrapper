@@ -4,7 +4,7 @@ export default class WrappedLogger implements Logger {
   internalLogger: Logger;
 
   constructor(internalLogger?: Logger) {
-    this.internalLogger = internalLogger;
+    this.internalLogger = internalLogger ?? console;
   }
 
   info(...args: string[]): void {
