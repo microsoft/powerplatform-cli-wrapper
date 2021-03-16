@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../src/GitRunner.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,MAAM,EAAE,MAAM,UAAU,CAAC;AAElC,wBAAgB,eAAe,CAAC,UAAU,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,GAAG,SAAS,CAK7E;AAED,UAAU,SAAS;IACjB,GAAG,IAAI,OAAO,CAAC,MAAM,EAAE,CAAC,CAAC;CAC1B","file":"GitRunner.d.ts","sourceRoot":"./"}
