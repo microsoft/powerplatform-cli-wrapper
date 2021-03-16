@@ -1,9 +1,9 @@
 import { Logger } from "../src";
 import { createLogger, format, transports } from "winston";
-import path = require("path");
+import { resolve } from "path";
 
 export function createTestLog(logFileName: string): Logger {
-  const logFilePath = path.resolve(__dirname, "..", "out", "logs", logFileName);
+  const logFilePath = resolve(__dirname, "..", "bin", "logs", logFileName);
 
   const winstonLogger = createLogger({
     level: "info",

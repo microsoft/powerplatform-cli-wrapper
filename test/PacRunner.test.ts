@@ -26,6 +26,11 @@ describe("PacAccess", () => {
     expect(res).to.be.not.empty;
   }).timeout(10 * 1000);
 
+  it("can run org who am i", async () => {
+    const response = await pac.org.who();
+    expect(response).to.be.not.empty;
+  }).timeout(5000);
+
   it("can list auth profiles", async () => {
     const res = await pac.auth.list();
     expect(res).to.be.not.empty;

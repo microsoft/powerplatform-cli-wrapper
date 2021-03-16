@@ -1,8 +1,7 @@
 const gulp = require("gulp");
 const path = require("path");
 const nugetInstall = require("./lib/nugetInstall");
-
-const binDir = path.resolve(__dirname, "..", "bin");
+const binDir = require("./lib/binDir");
 
 module.exports = gulp.series(
   async () =>

@@ -8,8 +8,8 @@ export function createPacRunner(
 ): PacRunner {
   const runCommand = createCommandRunner(workingDir, exePath, logger);
   return {
-    whoAmI: () => {
-      throw new Error("Not implemented");
+    org: {
+      who: () => runCommand("org", "who"),
     },
     help: () => runCommand(),
     auth: {
@@ -19,7 +19,9 @@ export function createPacRunner(
 }
 
 interface PacRunner {
-  whoAmI: () => Promise<string>;
+  org: {
+    who: () => Promise<string[]>;
+  };
   auth: {
     list: () => Promise<string[]>;
   };

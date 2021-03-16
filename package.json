@@ -5,7 +5,7 @@
     "node": ">=10.0.0"
   },
   "description": "JavaScript wrapper for Power Platform CLI (pac)",
-  "main": "index.js",
+  "main": "out/index.js",
   "scripts": {
     "clean": "scorch",
     "build": "node node_modules/gulp/bin/gulp.js",
