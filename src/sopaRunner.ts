@@ -1,14 +1,26 @@
-import { resolve } from "path";
-import { CommandRunner, createCommandRunner } from "./CommandRunner";
+import { createCommandRunner } from "./CommandRunner";
 import { Logger } from "./logger";
 
 export function createSopaRunner(
   workingDir: string,
+  sopaExePath: string,
   logger: Logger
-): CommandRunner {
-  return createCommandRunner(
-    workingDir,
-    resolve("sopa", "content", "bin", "coretools", "SolutionPackager.exe"),
-    logger
-  );
+): SopaRunner {
+  const commandRunner = createCommandRunner(workingDir, sopaExePath, logger);
+
+  return {
+    help: () => commandRunner.run(),
+    pack: (folder: string, zipFile: string) =>
+      commandRunner.run(
+        "/nologo",
+        "/action:pack",
+        `/folder:${folder}`,
+        `/zipFile:${zipFile}`
+      ),
+  };
+}
+
+interface SopaRunner {
+  help: () => Promise<string[]>;
+  pack: (folder: string, zipFile: string) => Promise<string[]>;
 }

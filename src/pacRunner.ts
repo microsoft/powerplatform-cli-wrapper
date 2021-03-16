@@ -1,14 +1,27 @@
-import { resolve } from "path";
-import { CommandRunner, createCommandRunner } from "./CommandRunner";
+import { createCommandRunner } from "./CommandRunner";
 import { Logger } from "./logger";
 
 export function createPacRunner(
   workingDir: string,
+  exePath: string,
   logger: Logger
-): CommandRunner {
-  return createCommandRunner(
-    workingDir,
-    resolve("pac", "tools", "pac.exe"),
-    logger
-  );
+): PacRunner {
+  const commandRunner = createCommandRunner(workingDir, exePath, logger);
+  return {
+    whoAmI: () => {
+      throw new Error("Not implemented");
+    },
+    help: () => commandRunner.run(),
+    auth: {
+      list: () => commandRunner.run("auth", "list"),
+    },
+  };
+}
+
+interface PacRunner {
+  whoAmI: () => Promise<string>;
+  auth: {
+    list: () => Promise<string[]>;
+  };
+  help: () => Promise<string[]>;
 }

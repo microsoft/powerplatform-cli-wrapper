@@ -10,16 +10,13 @@ export function createCommandRunner(
 ): CommandRunner {
   restrictPlatformToWindows();
 
-  async function run(args: string[]): Promise<string[]> {
+  async function run(...args: string[]): Promise<string[]> {
     return new Promise((resolve, reject) => {
-      const stdout = new Array<string>();
-      const stderr = new Array<string>();
+      logInitialization(...args);
 
-      logger.info(
-        `exe: ${commandPath}, first arg of ${args.length}: ${
-          args.length ? args[0] : "<none>"
-        }`
-      );
+      const stdout: string[] = [];
+      const stderr: string[] = [];
+
       const process = spawn(commandPath, args, { cwd: workingDir });
 
       process.stdout.on("data", (data) =>
@@ -31,7 +28,7 @@ export function createCommandRunner(
 
       process.on("close", (code: number) => {
         if (code === 0) {
-          logger.info(`success: ${stdout.join(os.EOL)}`);
+          logSuccess(stdout);
           resolve(stdout);
         } else {
           const allOutput = stderr.concat(stdout);
@@ -42,19 +39,13 @@ export function createCommandRunner(
     });
   }
 
-  function runSync(args: string[]): string[] {
-    logger.info(
-      `exe: ${commandPath}, first arg of ${args.length}: ${
-        args.length ? args[0] : "<none>"
-      }`
-    );
+  function runSync(...args: string[]): string[] {
+    logInitialization(...args);
+
     const process = spawnSync(commandPath, args, { cwd: workingDir });
     if (process.status === 0) {
-      const output = process.output
-        .filter((line) => !!line) // can have null entries
-        .map((line) => line.toString());
-      logger.info(`success: ${output.join(os.EOL)}`);
-      return output;
+      logSuccess(process.output);
+      return process.output;
     } else {
       const allOutput = process.stderr
         .toString()
@@ -64,15 +55,27 @@ export function createCommandRunner(
     }
   }
 
+  function logInitialization(...args: string[]): void {
+    logger.info(
+      `exe: ${commandPath}, first arg of ${args.length}: ${
+        args.length ? args[0] : "<none>"
+      }`
+    );
+  }
+
+  function logSuccess(output: string[]): void {
+    logger.info(`success: ${output.join(os.EOL)}`);
+  }
+
   return {
     run: run,
     runSync: runSync,
   };
 }
 
-export interface CommandRunner {
-  run: (args: string[]) => Promise<string[]>;
-  runSync: (args: string[]) => string[];
+interface CommandRunner {
+  run: (...args: string[]) => Promise<string[]>;
+  runSync: (...args: string[]) => string[];
 }
 
 export class RunnerError extends Error {
