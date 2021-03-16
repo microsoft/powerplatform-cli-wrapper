@@ -3,7 +3,7 @@ const eslint = require("gulp-eslint");
 
 module.exports = function lint() {
   return gulp
-    .src("src/**/*.ts")
+    .src(["src/**/*.ts", "test/**/*.ts"])
     .pipe(
       eslint({
         formatter: "verbose",

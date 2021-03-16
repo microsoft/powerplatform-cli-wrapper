@@ -9,7 +9,7 @@ describe("SoPa", () => {
   const sopaExePath = path.resolve(
     __dirname,
     "..",
-    "out",
+    "bin",
     "sopa",
     "content",
     "bin",

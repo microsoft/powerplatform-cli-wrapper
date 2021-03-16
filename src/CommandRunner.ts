@@ -1,4 +1,5 @@
 import { spawn, spawnSync } from "child_process";
+import { env } from "process";
 import { EOL } from "os";
 import { Logger } from "./Logger";
 import restrictPlatformToWindows from "./restrictPlatformToWindows";
@@ -17,7 +18,10 @@ export function createCommandRunner(
       const stdout: string[] = [];
       const stderr: string[] = [];
 
-      const process = spawn(commandPath, args, { cwd: workingDir });
+      const process = spawn(commandPath, args, {
+        cwd: workingDir,
+        env: { PATH: env.PATH },
+      });
 
       process.stdout.on("data", (data) =>
         stdout.push(...data.toString().split(EOL))
@@ -42,14 +46,20 @@ export function createCommandRunner(
   function runSync(...args: string[]): string[] {
     logInitialization(...args);
 
-    const process = spawnSync(commandPath, args, { cwd: workingDir });
+    const process = spawnSync(commandPath, args, {
+      cwd: workingDir,
+      env: {
+        PATH: env.PATH,
+        NODE_ENV: env.NODE_ENV,
+      },
+    });
     if (process.status === 0) {
       logSuccess(process.output);
       return process.output;
     } else {
       const allOutput = process.stderr
-        .toString()
-        .concat(process.stdout.toString());
+        ?.toString()
+        ?.concat(process.stdout?.toString());
       logger.error(`error: ${process.status}: ${allOutput}`);
       throw new RunnerError(process.status ?? 99999, allOutput);
     }
@@ -57,7 +67,7 @@ export function createCommandRunner(
 
   function logInitialization(...args: string[]): void {
     logger.info(
-      `exe: ${commandPath}, first arg of ${args.length}: ${
+      `command: ${commandPath}, first arg of ${args.length}: ${
         args.length ? args[0] : "<none>"
       }`
     );

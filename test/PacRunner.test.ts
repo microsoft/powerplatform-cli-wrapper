@@ -9,7 +9,7 @@ describe("PacAccess", () => {
   const pacPath = path.resolve(
     __dirname,
     "..",
-    "out",
+    "bin",
     "pac",
     "tools",
     "pac.exe"
