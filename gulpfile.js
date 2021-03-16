@@ -7,9 +7,9 @@ const lint = require("./gulp/lint");
 const test = require("./gulp/test");
 const restore = require("./gulp/restore");
 
-exports.clean = clean
-exports.compile = compile
-exports.recompile = recompile
+exports.clean = clean;
+exports.compile = compile;
+exports.recompile = recompile;
 exports.restore = restore;
 exports.lint = lint;
 exports.test = test;
