@@ -6,14 +6,14 @@ export function createPacRunner(
   exePath: string,
   logger: Logger
 ): PacRunner {
-  const commandRunner = createCommandRunner(workingDir, exePath, logger);
+  const runCommand = createCommandRunner(workingDir, exePath, logger);
   return {
     whoAmI: () => {
       throw new Error("Not implemented");
     },
-    help: () => commandRunner.run(),
+    help: () => runCommand(),
     auth: {
-      list: () => commandRunner.run("auth", "list"),
+      list: () => runCommand("auth", "list"),
     },
   };
 }

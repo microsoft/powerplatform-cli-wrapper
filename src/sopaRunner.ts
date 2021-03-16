@@ -6,12 +6,12 @@ export function createSopaRunner(
   sopaExePath: string,
   logger: Logger
 ): SopaRunner {
-  const commandRunner = createCommandRunner(workingDir, sopaExePath, logger);
+  const runCommand = createCommandRunner(workingDir, sopaExePath, logger);
 
   return {
-    help: () => commandRunner.run(),
+    help: () => runCommand(),
     pack: (folder: string, zipFile: string) =>
-      commandRunner.run(
+      runCommand(
         "/nologo",
         "/action:pack",
         `/folder:${folder}`,

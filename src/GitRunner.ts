@@ -2,9 +2,9 @@ import { createCommandRunner } from "./CommandRunner";
 import { Logger } from "./Logger";
 
 export function createGitRunner(workingDir: string, logger: Logger): GitRunner {
-  const commandRunner = createCommandRunner(workingDir, "git", logger);
+  const runCommand = createCommandRunner(workingDir, "git", logger);
   return {
-    log: async () => commandRunner.run("log"),
+    log: async () => runCommand("log"),
   };
 }
 

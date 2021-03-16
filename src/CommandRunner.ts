@@ -11,7 +11,7 @@ export function createCommandRunner(
 ): CommandRunner {
   restrictPlatformToWindows();
 
-  async function run(...args: string[]): Promise<string[]> {
+  return async function run(...args: string[]): Promise<string[]> {
     return new Promise((resolve, reject) => {
       logInitialization(...args);
 
@@ -41,29 +41,7 @@ export function createCommandRunner(
         }
       });
     });
-  }
-
-  function runSync(...args: string[]): string[] {
-    logInitialization(...args);
-
-    const process = spawnSync(commandPath, args, {
-      cwd: workingDir,
-      env: {
-        PATH: env.PATH,
-        NODE_ENV: env.NODE_ENV,
-      },
-    });
-    if (process.status === 0) {
-      logSuccess(process.output);
-      return process.output;
-    } else {
-      const allOutput = process.stderr
-        ?.toString()
-        ?.concat(process.stdout?.toString());
-      logger.error(`error: ${process.status}: ${allOutput}`);
-      throw new RunnerError(process.status ?? 99999, allOutput);
-    }
-  }
+  };
 
   function logInitialization(...args: string[]): void {
     logger.info(
@@ -76,17 +54,9 @@ export function createCommandRunner(
   function logSuccess(output: string[]): void {
     logger.info(`success: ${output.join(EOL)}`);
   }
-
-  return {
-    run: run,
-    runSync: runSync,
-  };
 }
 
-interface CommandRunner {
-  run: (...args: string[]) => Promise<string[]>;
-  runSync: (...args: string[]) => string[];
-}
+type CommandRunner = (...args: string[]) => Promise<string[]>;
 
 export class RunnerError extends Error {
   public constructor(public exitCode: number, message: string) {
