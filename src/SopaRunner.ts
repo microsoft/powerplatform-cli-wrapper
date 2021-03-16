@@ -10,17 +10,22 @@ export function createSopaRunner(
 
   return {
     help: () => runCommand(),
-    pack: (folder: string, zipFile: string) =>
+    pack: (parameters: PackParameters) =>
       runCommand(
         "/nologo",
         "/action:pack",
-        `/folder:${folder}`,
-        `/zipFile:${zipFile}`
+        `/folder:${parameters.folder}`,
+        `/zipFile:${parameters.zipFile}`
       ),
   };
 }
 
 interface SopaRunner {
   help: () => Promise<string[]>;
-  pack: (folder: string, zipFile: string) => Promise<string[]>;
+  pack: (parameters: PackParameters) => Promise<string[]>;
+}
+
+interface PackParameters {
+  folder: string;
+  zipFile: string;
 }
