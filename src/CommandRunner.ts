@@ -1,4 +1,4 @@
-import { spawn, spawnSync } from "child_process";
+import { spawn } from "child_process";
 import { env } from "process";
 import { EOL } from "os";
 import { Logger } from "./Logger";
