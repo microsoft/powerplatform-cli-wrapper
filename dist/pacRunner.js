@@ -1,19 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPacRunner = void 0;
-const CommandRunner_1 = require("./CommandRunner");
-function createPacRunner(workingDir, exePath, logger) {
-    const runCommand = CommandRunner_1.createCommandRunner(workingDir, exePath, logger);
-    return {
-        org: {
-            who: () => runCommand("org", "who"),
-        },
-        help: () => runCommand(),
-        auth: {
-            list: () => runCommand("auth", "list"),
-        },
-    };
-}
-exports.createPacRunner = createPacRunner;
-
-//# sourceMappingURL=pacRunner.js.map
+version https://git-lfs.github.com/spec/v1
+oid sha256:1671f5418b7177d4813a1e234a85f97651389786dd8118ed7666a2bb2d1660cf
+size 600

@@ -1,1 +1,3 @@
-{"version":3,"sources":["../src/Logger.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,MAAM;IACrB,IAAI,CAAC,GAAG,IAAI,EAAE,MAAM,EAAE,GAAG,IAAI,CAAC;IAC9B,IAAI,CAAC,GAAG,IAAI,EAAE,MAAM,EAAE,GAAG,IAAI,CAAC;IAC9B,KAAK,CAAC,GAAG,IAAI,EAAE,MAAM,EAAE,GAAG,IAAI,CAAC;CAChC","file":"Logger.d.ts","sourceRoot":"./"}
+version https://git-lfs.github.com/spec/v1
+oid sha256:f26c5b56d0e07be4f634a8611e61360e7171c4bfe1c69187a4813101dccd8191
+size 301

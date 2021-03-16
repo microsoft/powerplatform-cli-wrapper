@@ -1,14 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSopaRunner = void 0;
-const CommandRunner_1 = require("./CommandRunner");
-function createSopaRunner(workingDir, sopaExePath, logger) {
-    const runCommand = CommandRunner_1.createCommandRunner(workingDir, sopaExePath, logger);
-    return {
-        help: () => runCommand(),
-        pack: (parameters) => runCommand("/nologo", "/action:pack", `/folder:${parameters.folder}`, `/zipFile:${parameters.zipFile}`),
-    };
-}
-exports.createSopaRunner = createSopaRunner;
-
-//# sourceMappingURL=sopaRunner.js.map
+version https://git-lfs.github.com/spec/v1
+oid sha256:d757b33557f5ea8b79c2694226329dfc7d6899496b297bba404caf90df3da26b
+size 594

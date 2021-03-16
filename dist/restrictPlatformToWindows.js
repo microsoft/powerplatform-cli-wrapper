@@ -1,12 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const os_1 = require("os");
-function restrictPlatformToWindows() {
-    const currentPlatform = os_1.platform();
-    if (currentPlatform !== "win32") {
-        throw Error(`Unsupported Action runner os: '${os_1.platform}'; for the time being, only Windows runners are supported (cross-platform support work is in progress)`);
-    }
-}
-exports.default = restrictPlatformToWindows;
-
-//# sourceMappingURL=restrictPlatformToWindows.js.map
+version https://git-lfs.github.com/spec/v1
+oid sha256:a76732ef372a8129b65d8cd0db42ef9df7d14b0396cb1615a6dca6fa87b55edf
+size 510

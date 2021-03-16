@@ -1,22 +1,3 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createGitRunner = void 0;
-const CommandRunner_1 = require("./CommandRunner");
-function createGitRunner(workingDir, logger) {
-    const runCommand = CommandRunner_1.createCommandRunner(workingDir, "git", logger);
-    return {
-        log: () => __awaiter(this, void 0, void 0, function* () { return runCommand("log"); }),
-    };
-}
-exports.createGitRunner = createGitRunner;
-
-//# sourceMappingURL=GitRunner.js.map
+version https://git-lfs.github.com/spec/v1
+oid sha256:453084212e75df5c99c7648fa61ca6e90cc6846add041d048aa06daabfee72d3
+size 1178
