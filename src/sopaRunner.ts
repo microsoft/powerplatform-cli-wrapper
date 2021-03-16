@@ -1,5 +1,5 @@
 import { createCommandRunner } from "./CommandRunner";
-import { Logger } from "./logger";
+import { Logger } from "./Logger";
 
 export function createSopaRunner(
   workingDir: string,

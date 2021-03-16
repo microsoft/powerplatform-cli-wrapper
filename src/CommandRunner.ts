@@ -1,6 +1,6 @@
 import { spawn, spawnSync } from "child_process";
-import os = require("os");
-import { Logger } from "./logger";
+import { EOL } from "os";
+import { Logger } from "./Logger";
 import restrictPlatformToWindows from "./restrictPlatformToWindows";
 
 export function createCommandRunner(
@@ -20,10 +20,10 @@ export function createCommandRunner(
       const process = spawn(commandPath, args, { cwd: workingDir });
 
       process.stdout.on("data", (data) =>
-        stdout.push(...data.toString().split(os.EOL))
+        stdout.push(...data.toString().split(EOL))
       );
       process.stderr.on("data", (data) =>
-        stderr.push(...data.toString().split(os.EOL))
+        stderr.push(...data.toString().split(EOL))
       );
 
       process.on("close", (code: number) => {
@@ -32,7 +32,7 @@ export function createCommandRunner(
           resolve(stdout);
         } else {
           const allOutput = stderr.concat(stdout);
-          logger.error(`error: ${code}: ${allOutput.join(os.EOL)}`);
+          logger.error(`error: ${code}: ${allOutput.join(EOL)}`);
           reject(new RunnerError(code, allOutput.join()));
         }
       });
@@ -64,7 +64,7 @@ export function createCommandRunner(
   }
 
   function logSuccess(output: string[]): void {
-    logger.info(`success: ${output.join(os.EOL)}`);
+    logger.info(`success: ${output.join(EOL)}`);
   }
 
   return {

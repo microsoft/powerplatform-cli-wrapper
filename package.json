@@ -25,7 +25,7 @@
     "@types/expect": "^24.3.0",
     "@types/fs-extra": "^9.0.1",
     "@types/mocha": "^8.2.1",
-    "@types/node": "^14.10.1",
+    "@types/node": "^14.14.35",
     "@types/uuid": "^8.3.0",
     "@types/yargs": "^15.0.5",
     "@typescript-eslint/eslint-plugin": "^4.1.0",
