@@ -3,7 +3,7 @@ const log = require("fancy-log");
 const process = require("process");
 const fs = require("fs-extra");
 
-const outDir = require("./lib/outDir");
+const distDir = require("./lib/distDir");
 const binDir = require("./lib/binDir");
 
 module.exports = async function clean() {
@@ -13,5 +13,5 @@ module.exports = async function clean() {
       log.info(`Terminating: ${info.name} - ${info.pid}...`);
       process.kill(info.pid);
     });
-  return Promise.all([fs.emptyDir(outDir), fs.emptyDir(binDir)]);
+  return Promise.all([fs.emptyDir(distDir), fs.emptyDir(binDir)]);
 };

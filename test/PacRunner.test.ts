@@ -5,7 +5,7 @@ import fs = require("fs-extra");
 import { createTestLog } from "./createTestLogger";
 
 describe("PacAccess", () => {
-  const workDir = path.resolve(__dirname, "..", "out", "test");
+  const workDir = path.resolve(__dirname, "..", "bin", "test");
   const pacPath = path.resolve(
     __dirname,
     "..",
