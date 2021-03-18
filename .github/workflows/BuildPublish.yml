@@ -1,0 +1,33 @@
+name: Publish Npm Package
+
+on: push
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest ]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        lfs: false
+
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14.x
+
+    - name: Build
+      run: |
+        npm i
+        npm run dist
+      env:
+        AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
+
+    - name: Publish
+      run: |
+        npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
