@@ -1,5 +1,5 @@
 {
-  "name": "powerplatform-cli-wrapper",
+  "name": "@microsoft/powerplatform-cli-wrapper",
   "version": "0.1.0",
   "engines": {
     "node": ">=10.0.0"

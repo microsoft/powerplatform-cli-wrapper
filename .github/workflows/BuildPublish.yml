@@ -19,7 +19,6 @@ jobs:
       with:
         node-version: 14.x
         registry-url: 'https://npm.pkg.github.com'
-        scope: '@microsoft'
 
     - name: Build
       run: |
@@ -30,7 +29,6 @@ jobs:
 
     - name: Publish
       run: |
-        echo "registry=https://npm.pkg.github.com/@microsoft" >> .npmrc
         npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
