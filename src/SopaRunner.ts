@@ -11,20 +11,18 @@ export function createSopaRunner(
 
   return {
     help: () => runCommand(),
-    pack: (parameters: SopaParameters) =>
+    pack: (parameters: PackParameters) =>
       runCommand(
         ...buildCommandLineArguments({ action: "Pack", ...parameters })
       ),
-    extract: (parameters: SopaParameters) =>
+    extract: (parameters: ExtractParameters) =>
       runCommand(
         ...buildCommandLineArguments({ action: "Extract", ...parameters })
       ),
   };
 }
 
-function buildCommandLineArguments(
-  parameters: InternalSopaParameters
-): string[] {
+function buildCommandLineArguments(parameters: SopaParameters): string[] {
   const args: string[] = [];
 
   addArgument("action", "action");
@@ -35,7 +33,7 @@ function buildCommandLineArguments(
   addArgument("allowDelete", "allowDelete");
   addSwitchArgument("clobber", "clobber");
   addArgument("map", "map");
-  addSwitchArgument("nologo", "noLogo", true);
+  addSwitchArgument("nologo", "noLogo");
   addArgument("log", "log");
   addArgument("@", "@");
   addArgument("sourceLoc", "sourceLocale");
@@ -63,11 +61,8 @@ function buildCommandLineArguments(
       }[keyof typeof parameters],
       undefined
     >
-  >(argumentName: string, parameterName: Key, isDefault = false) {
-    if (
-      parameters[parameterName] ||
-      (isDefault && parameters[parameterName] === undefined)
-    ) {
+  >(argumentName: string, parameterName: Key) {
+    if (parameters[parameterName]) {
       args.push(`/${argumentName}`);
     }
   }
@@ -75,11 +70,12 @@ function buildCommandLineArguments(
 
 export interface SopaRunner {
   help: () => Promise<string[]>;
-  pack: (parameters: SopaParameters) => Promise<string[]>;
-  extract: (parameters: SopaParameters) => Promise<string[]>;
+  pack: (parameters: PackParameters) => Promise<string[]>;
+  extract: (parameters: ExtractParameters) => Promise<string[]>;
 }
 
-export interface SopaParameters {
+interface SopaParameters {
+  action: Action;
   noLogo?: boolean;
   folder: string;
   zipFile: string;
@@ -95,9 +91,16 @@ export interface SopaParameters {
   localize?: boolean;
 }
 
-interface InternalSopaParameters extends SopaParameters {
-  action: Action;
-}
+export type PackParameters = Omit<
+  SopaParameters,
+  | "action"
+  | "allowWrite"
+  | "allowDelete"
+  | "clobber"
+  | "sourceLocale"
+  | "localize"
+>;
+export type ExtractParameters = Omit<SopaParameters, "action">;
 
 export type Action = "Pack" | "Extract";
 
