@@ -3,33 +3,17 @@ const fetch = require("node-fetch");
 const unzip = require("unzip-stream");
 
 module.exports = async function nugetInstall(
-  nugetSource,
+  feedUrl,
+  authenticated,
   packageName,
   version,
   targetDir
 ) {
-  // https://docs.microsoft.com/en-us/nuget/api/package-base-address-resource
-  const feeds = {
-    "nuget.org": {
-      authenticated: false,
-      baseUrl: "https://api.nuget.org/v3-flatcontainer/",
-    },
-    CAP_ISVExp_Tools_Daily: {
-      authenticated: true,
-      // https://dev.azure.com/msazure/One/_packaging?_a=feed&feed=CAP_ISVExp_Tools_Daily
-      baseUrl:
-        "https://pkgs.dev.azure.com/msazure/_packaging/d3fb5788-d047-47f9-9aba-76890f5cecf0/nuget/v3/flat2/",
-    },
-  };
-
-  const selectedFeed = feeds[nugetSource];
-  const baseUrl = selectedFeed.baseUrl;
-
-  packageName = packageName.toLowerCase();
+  const lowerCasePackageName = packageName.toLowerCase();
   version = version.toLowerCase();
-  const packagePath = `${packageName}/${version}/${packageName}.${version}.nupkg`;
+  const packagePath = `${lowerCasePackageName}/${version}/${lowerCasePackageName}.${version}.nupkg`;
 
-  const nupkgUrl = new URL(packagePath, baseUrl);
+  const nupkgUrl = new URL(packagePath, feedUrl);
   const reqInit = {
     headers: {
       "User-Agent": "gulpfile-DAP-team/0.1",
@@ -37,7 +21,7 @@ module.exports = async function nugetInstall(
     },
     redirect: "manual",
   };
-  if (selectedFeed.authenticated) {
+  if (authenticated) {
     const readPAT = process.env["AZ_DevOps_Read_PAT"];
     if (!readPAT) {
       throw new Error(
