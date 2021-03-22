@@ -1,19 +1,15 @@
 const log = require("fancy-log");
 const fetch = require("node-fetch");
+const { resolve } = require("path");
 const unzip = require("unzip-stream");
+const binDir = require("./binDir");
 
-module.exports = async function nugetInstall(
-  feedUrl,
-  authenticated,
-  packageName,
-  version,
-  targetDir
-) {
-  const lowerCasePackageName = packageName.toLowerCase();
-  version = version.toLowerCase();
-  const packagePath = `${lowerCasePackageName}/${version}/${lowerCasePackageName}.${version}.nupkg`;
+module.exports = async function nugetInstall(feed, package) {
+  const packageName = package.name.toLowerCase();
+  const version = package.version.toLowerCase();
+  const packagePath = `${packageName}/${version}/${packageName}.${version}.nupkg`;
 
-  const nupkgUrl = new URL(packagePath, feedUrl);
+  const nupkgUrl = new URL(packagePath, feed.url);
   const reqInit = {
     headers: {
       "User-Agent": "gulpfile-DAP-team/0.1",
@@ -21,11 +17,11 @@ module.exports = async function nugetInstall(
     },
     redirect: "manual",
   };
-  if (authenticated) {
-    const readPAT = process.env["AZ_DevOps_Read_PAT"];
+  if (feed.authenticated) {
+    const readPAT = process.env[feed.patEnvironmentVariable];
     if (!readPAT) {
       throw new Error(
-        `nuget feed ${nugetSource} requires authN but env var 'AZ_DevOps_Read_PAT' was not defined!`
+        `nuget feed ${feed.name} requires authN but env var '${feed.patEnvironmentVariable}' was not defined!`
       );
     }
     reqInit.headers["Authorization"] = `Basic ${Buffer.from(
@@ -51,6 +47,7 @@ module.exports = async function nugetInstall(
     );
   }
 
+  const targetDir = resolve(binDir, package.internalName);
   log.info(`Extracting into folder: ${targetDir}`);
   return new Promise((resolve, reject) => {
     res.body

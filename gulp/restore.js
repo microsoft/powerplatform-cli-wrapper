@@ -1,7 +1,5 @@
 const gulp = require("gulp");
-const path = require("path");
 const nugetInstall = require("./lib/nugetInstall");
-const binDir = require("./lib/binDir");
 
 const nugetFeeds = require("../nuget.json").feeds;
 
@@ -11,32 +9,7 @@ const nugetFeeds = require("../nuget.json").feeds;
 module.exports = gulp.series(
   ...nugetFeeds
     .map((feed) =>
-      feed.packages.map((package) => async () =>
-        nugetInstall(
-          feed.url,
-          feed.authenticated,
-          package.name,
-          package.version,
-          path.resolve(binDir, package.binFolder)
-        )
-      )
+      feed.packages.map((package) => async () => nugetInstall(feed, package))
     )
     .flat()
 );
-/*
-  async () =>
-    nugetInstall(
-      "nuget.org",
-      "Microsoft.CrmSdk.CoreTools",
-      "9.1.0.49",
-      path.resolve(binDir, "sopa")
-    ),
-  async () =>
-    nugetInstall(
-      "CAP_ISVExp_Tools_Daily",
-      "Microsoft.PowerApps.CLI",
-      "1.5.3-daily-21021001",
-      path.resolve(binDir, "pac")
-    )
-);
-*/
