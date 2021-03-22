@@ -63,7 +63,7 @@ module.exports = async function nugetInstall(
     throw new Error(
       `Cannot download ${res.url}, status: ${res.statusText} (${
         res.status
-      }), body: ${res.body.read().toString("ascii")}`
+      }), body: ${res.body.read()?.toString("ascii")}`
     );
   }
 
