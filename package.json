@@ -1,11 +1,12 @@
 {
-  "name": "powerplatform-cli-wrapper",
-  "version": "0.1.0",
+  "name": "@microsoft/powerplatform-cli-wrapper",
+  "version": "0.1.2",
   "engines": {
     "node": ">=10.0.0"
   },
   "description": "JavaScript wrapper for Power Platform CLI (pac)",
   "main": "dist/index.js",
+  "files": ["dist"],
   "scripts": {
     "build": "node node_modules/gulp/bin/gulp.js",
     "test": "node node_modules/gulp/bin/gulp.js test",
@@ -16,7 +17,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/microsoft/powerplatform-cli-wrapper"
+    "url": "https://github.com/microsoft/powerplatform-cli-wrapper.git"
   },
   "devDependencies": {
     "@types/chai": "^4.2.12",
