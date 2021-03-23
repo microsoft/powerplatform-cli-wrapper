@@ -44,4 +44,15 @@ describe("SoPa", () => {
     const res = await sopa.pack({ folder: stagedDir, zipFile: solutionPath });
     expect(res).to.contain("Unmanaged Pack complete.");
   }).timeout(30 * 1000);
+
+  it("can unpack solution", async () => {
+    const solutionPath = path.resolve(__dirname, "data", "emptySolution.zip");
+    const stagedDir = path.resolve(workDir, "emptySolution");
+
+    const response = await sopa.extract({
+      folder: stagedDir,
+      zipFile: solutionPath,
+    });
+    expect(response).to.contain("Unmanaged Extract complete.");
+  }).timeout(30 * 1000);
 });
