@@ -10,8 +10,8 @@ describe("git", () => {
   const git = createGitRunner(workDir, createTestLog("git-tests.log"));
 
   it("can launch git log", async () => {
-    const logs = await git.log();
-    const firstCommit = logs.pop()?.trimStart();
-    expect(firstCommit).to.match(/commit\s+[0-9a-z]{7,}/);
+    const logs = await git.log(1);
+    const line = logs.find(item => item && item.startsWith('commit'));
+    expect(line).to.match(/commit\s+[0-9a-z]{7,}/);
   });
 });

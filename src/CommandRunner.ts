@@ -2,15 +2,12 @@ import { spawn } from "child_process";
 import { env } from "process";
 import { EOL } from "os";
 import { Logger } from "./Logger";
-import restrictPlatformToWindows from "./restrictPlatformToWindows";
 
 export function createCommandRunner(
   workingDir: string,
   commandPath: string,
   logger: Logger
 ): CommandRunner {
-  restrictPlatformToWindows();
-
   return async function run(...args: string[]): Promise<string[]> {
     return new Promise((resolve, reject) => {
       logInitialization(...args);
@@ -30,7 +27,7 @@ export function createCommandRunner(
         stderr.push(...data.toString().split(EOL))
       );
 
-      process.on("close", (code: number) => {
+      process.on("exit", (code: number) => {
         if (code === 0) {
           logSuccess(stdout);
           resolve(stdout);
@@ -39,6 +36,11 @@ export function createCommandRunner(
           logger.error(`error: ${code}: ${allOutput.join(EOL)}`);
           reject(new RunnerError(code, allOutput.join()));
         }
+
+        /* Close out handles to the output streams so that we don't wait on
+            grandchild processes like pacTelemetryUpload */
+        process.stdout.destroy();
+        process.stderr.destroy();
       });
     });
   };

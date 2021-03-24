@@ -1,35 +1,16 @@
 const log = require("fancy-log");
+const { chmod } = require("fs-extra");
 const fetch = require("node-fetch");
+const path = require("path");
 const unzip = require("unzip-stream");
+const binDir = require("./binDir");
 
-module.exports = async function nugetInstall(
-  nugetSource,
-  packageName,
-  version,
-  targetDir
-) {
-  // https://docs.microsoft.com/en-us/nuget/api/package-base-address-resource
-  const feeds = {
-    "nuget.org": {
-      authenticated: false,
-      baseUrl: "https://api.nuget.org/v3-flatcontainer/",
-    },
-    CAP_ISVExp_Tools_Daily: {
-      authenticated: true,
-      // https://dev.azure.com/msazure/One/_packaging?_a=feed&feed=CAP_ISVExp_Tools_Daily
-      baseUrl:
-        "https://pkgs.dev.azure.com/msazure/_packaging/d3fb5788-d047-47f9-9aba-76890f5cecf0/nuget/v3/flat2/",
-    },
-  };
-
-  const selectedFeed = feeds[nugetSource];
-  const baseUrl = selectedFeed.baseUrl;
-
-  packageName = packageName.toLowerCase();
-  version = version.toLowerCase();
+module.exports = async function nugetInstall(feed, package) {
+  const packageName = package.name.toLowerCase();
+  const version = package.version.toLowerCase();
   const packagePath = `${packageName}/${version}/${packageName}.${version}.nupkg`;
 
-  const nupkgUrl = new URL(packagePath, baseUrl);
+  const nupkgUrl = new URL(packagePath, feed.url);
   const reqInit = {
     headers: {
       "User-Agent": "gulpfile-DAP-team/0.1",
@@ -37,11 +18,11 @@ module.exports = async function nugetInstall(
     },
     redirect: "manual",
   };
-  if (selectedFeed.authenticated) {
-    const readPAT = process.env["AZ_DevOps_Read_PAT"];
+  if (feed.authenticated) {
+    const readPAT = process.env[feed.patEnvironmentVariable];
     if (!readPAT) {
       throw new Error(
-        `nuget feed ${nugetSource} requires authN but env var 'AZ_DevOps_Read_PAT' was not defined!`
+        `nuget feed ${feed.name} requires authN but env var '${feed.patEnvironmentVariable}' was not defined!`
       );
     }
     reqInit.headers["Authorization"] = `Basic ${Buffer.from(
@@ -67,11 +48,19 @@ module.exports = async function nugetInstall(
     );
   }
 
+  const targetDir = path.resolve(binDir, package.internalName);
   log.info(`Extracting into folder: ${targetDir}`);
   return new Promise((resolve, reject) => {
     res.body
       .pipe(unzip.Extract({ path: targetDir }))
       .on("close", () => {
+        if (package.chmod) {
+          const exePath = path.resolve(
+            targetDir,
+            ...package.chmod.split(/[\\/]/g)
+          );
+          chmod(exePath, 0o711);
+        }
         resolve();
       })
       .on("error", (err) => {
