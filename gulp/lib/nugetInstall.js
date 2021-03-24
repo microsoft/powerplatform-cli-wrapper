@@ -1,6 +1,7 @@
 const log = require("fancy-log");
+const { chmod } = require("fs-extra");
 const fetch = require("node-fetch");
-const { resolve } = require("path");
+const path = require("path");
 const unzip = require("unzip-stream");
 const binDir = require("./binDir");
 
@@ -47,12 +48,19 @@ module.exports = async function nugetInstall(feed, package) {
     );
   }
 
-  const targetDir = resolve(binDir, package.internalName);
+  const targetDir = path.resolve(binDir, package.internalName);
   log.info(`Extracting into folder: ${targetDir}`);
   return new Promise((resolve, reject) => {
     res.body
       .pipe(unzip.Extract({ path: targetDir }))
       .on("close", () => {
+        if (package.chmod) {
+          const exePath = path.resolve(
+            targetDir,
+            ...package.chmod.split(/[\\/]/g)
+          );
+          chmod(exePath, 0o711);
+        }
         resolve();
       })
       .on("error", (err) => {

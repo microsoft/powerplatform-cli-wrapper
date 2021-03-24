@@ -26,7 +26,8 @@
         {
           "name": "Microsoft.PowerApps.CLI.Core.linux-x64",
           "version": "1.5.6-daily-21031515",
-          "internalName": "pac_linux"
+          "internalName": "pac_linux",
+          "chmod": "tools/pac"
         }
       ]
     }
