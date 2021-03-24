@@ -1,12 +1,15 @@
 import { createCommandRunner } from "./CommandRunner";
 import { IsoCode, LcidCode } from "./languageCodes";
 import { Logger } from "./Logger";
+import restrictPlatformToWindows from "./restrictPlatformToWindows";
 
 export function createSopaRunner(
   workingDir: string,
   sopaExePath: string,
   logger: Logger
 ): SopaRunner {
+  restrictPlatformToWindows();
+
   const runCommand = createCommandRunner(workingDir, sopaExePath, logger);
 
   return {

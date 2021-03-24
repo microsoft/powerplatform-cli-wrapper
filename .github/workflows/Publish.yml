@@ -2,13 +2,12 @@ name: Publish Npm Package
 
 on:
   push:
-    branches:
-      - main
     tags:
       - "v*"
 
 jobs:
   build_publish:
+    if: github.event.base_ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:

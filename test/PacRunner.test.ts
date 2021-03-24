@@ -3,16 +3,16 @@ import { createPacRunner } from "../src";
 import path = require("path");
 import fs = require("fs-extra");
 import { createTestLog } from "./createTestLogger";
+import { platform } from "os";
 
 describe("PacAccess", () => {
   const workDir = path.resolve(__dirname, "..", "bin", "test");
+  const binDir = path.resolve(__dirname, "..", "bin");
   const pacPath = path.resolve(
-    __dirname,
-    "..",
-    "bin",
-    "pac",
-    "tools",
-    "pac.exe"
+    binDir,
+    ...(platform() === "win32"
+      ? ["pac", "tools", "pac.exe"]
+      : ["pac_linux", "tools", "pac"])
   );
   const pac = createPacRunner(workDir, pacPath, createTestLog("pac-tests.log"));
 

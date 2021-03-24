@@ -3,8 +3,13 @@ import fs = require("fs-extra");
 import { expect } from "chai";
 import { createSopaRunner } from "../src";
 import { createTestLog } from "./createTestLogger";
+import { platform } from "os";
 
 describe("SoPa", () => {
+  if (platform() !== "win32") {
+    return;
+  }
+
   const workDir = path.resolve(__dirname, "..", "bin", "test");
   const sopaExePath = path.resolve(
     __dirname,
