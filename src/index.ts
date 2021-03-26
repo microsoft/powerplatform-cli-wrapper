@@ -11,3 +11,4 @@ export {
   UsernamePassword,
 } from "./PacRunner";
 export { createSopaRunner, SopaRunner } from "./SopaRunner";
+export { createCommandRunner, CommandRunner } from "./CommandRunner";

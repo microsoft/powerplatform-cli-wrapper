@@ -58,7 +58,7 @@ export function createCommandRunner(
   }
 }
 
-type CommandRunner = (...args: string[]) => Promise<string[]>;
+export type CommandRunner = (...args: string[]) => Promise<string[]>;
 
 export class RunnerError extends Error {
   public constructor(public exitCode: number, message: string) {
