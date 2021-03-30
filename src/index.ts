@@ -1,7 +1,18 @@
-export * from "./Logger";
-export * as UsernamePassword from "./UsernamePassword";
-export * as CdsEnvironment from "./CdsEnvironment";
-export * as ClientCredentials from "./ClientCredentials";
-export * as AuthenticationType from "./AuthenticationType";
-export * as DevOpsOptions from "./devops/DevOpsOptions";
-export * as whoAmI from "./devops/whoAmI";
+import AuthenticationType from "./AuthenticationType";
+import CdsEnvironment from "./CdsEnvironment";
+import ClientCredentials from "./ClientCredentials";
+import DevOpsOptions from "./devops/DevOpsOptions";
+import Logger from "./Logger";
+import UsernamePassword from "./UsernamePassword";
+
+import whoAmI from "./devops/whoAmI";
+
+export {
+  AuthenticationType,
+  CdsEnvironment,
+  ClientCredentials,
+  DevOpsOptions,
+  Logger,
+  UsernamePassword,
+  whoAmI,
+};
