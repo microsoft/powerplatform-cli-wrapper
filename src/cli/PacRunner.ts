@@ -1,5 +1,8 @@
 import { createCommandRunner } from "./CommandRunner";
-import { Logger } from "../Logger";
+import Logger from "../Logger";
+import CdsEnvironment from "../CdsEnvironment";
+import ClientCredentials from "../ClientCredentials";
+import UsernamePassword from "../UsernamePassword";
 
 export function createPacRunner(
   workingDir: string,
@@ -89,19 +92,4 @@ export interface PacRunner {
   authenticateAdminWithUsernamePassword: (
     parameters: UsernamePassword
   ) => Promise<string[]>;
-}
-
-export interface ClientCredentials {
-  appId: string;
-  clientSecret: string;
-  tenantId: string;
-}
-
-export interface CdsEnvironment {
-  envUrl: string;
-}
-
-export interface UsernamePassword {
-  username: string;
-  password: string;
 }

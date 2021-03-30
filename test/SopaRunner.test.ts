@@ -1,7 +1,7 @@
 import path = require("path");
 import fs = require("fs-extra");
 import { expect } from "chai";
-import { createSopaRunner } from "../src";
+import { createSopaRunner } from "../src/cli/SopaRunner";
 import { createTestLog } from "./createTestLogger";
 import { platform } from "os";
 

@@ -1,4 +1,4 @@
-import { Logger } from "../src";
+import Logger from "../src/Logger";
 import { createLogger, format, transports } from "winston";
 import { resolve } from "path";
 
