@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { createPacRunner } from "../src";
+import { createPacRunner } from "../src/cli/PacRunner";
 import path = require("path");
 import fs = require("fs-extra");
 import { createTestLog } from "./createTestLogger";

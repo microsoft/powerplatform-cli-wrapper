@@ -1,14 +1,7 @@
-export { Logger } from "./Logger";
-export { RunnerError } from "./cli/CommandRunner";
-
-// TODO: delete exports once all actions are converted:
-export { createGitRunner, GitRunner } from "./cli/GitRunner";
-export {
-  createPacRunner,
-  PacRunner,
-  CdsEnvironment,
-  ClientCredentials,
-  UsernamePassword,
-} from "./cli/PacRunner";
-export { createSopaRunner, SopaRunner } from "./cli/SopaRunner";
-export { createCommandRunner, CommandRunner } from "./cli/CommandRunner";
+export * from "./Logger";
+export * as UsernamePassword from "./UsernamePassword";
+export * as CdsEnvironment from "./CdsEnvironment";
+export * as ClientCredentials from "./ClientCredentials";
+export * as AuthenticationType from "./AuthenticationType";
+export * as DevOpsOptions from "./devops/DevOpsOptions";
+export * as whoAmI from "./devops/whoAmI";
