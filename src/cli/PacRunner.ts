@@ -1,5 +1,5 @@
 import { createCommandRunner } from "./CommandRunner";
-import { Logger } from "./Logger";
+import { Logger } from "../Logger";
 
 export function createPacRunner(
   workingDir: string,
