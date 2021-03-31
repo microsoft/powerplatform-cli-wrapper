@@ -7,12 +7,14 @@ import LoggerParameters from "./devops/LoggerParameters";
 import RunnerParameters from "./devops/runners/RunnerParameters";
 import UsernamePassword from "./UsernamePassword";
 import whoAmI from "./devops/actions/whoAmI";
+import { createCommandRunner } from "./cli/CommandRunner";
 
 export {
   AuthenticationParameters,
   AuthenticationType,
   Environment,
   ClientCredentials,
+  createCommandRunner,
   Logger,
   LoggerParameters,
   RunnerParameters,
