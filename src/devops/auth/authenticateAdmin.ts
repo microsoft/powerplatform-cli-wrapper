@@ -1,21 +1,21 @@
-import AuthenticationType from "../AuthenticationType";
-import { PacRunner } from "../cli/PacRunner";
-import DevOpsOptions from "./DevOpsOptions";
+import { PacRunner } from "../../cli/PacRunner";
+import AuthenticationParameters from "./AuthenticationParameters";
+import AuthenticationType from "./AuthenticationType";
 
 export default async function authenticateAdmin(
   pac: PacRunner,
-  options: DevOpsOptions
+  parameters: AuthenticationParameters
 ): Promise<void> {
-  const authenticationType = options.getAuthenticationType();
+  const authenticationType = parameters.getAuthenticationType();
   switch (authenticationType) {
     case AuthenticationType.ClientCredentials:
       await pac.authenticateAdminWithClientCredentials(
-        options.getClientCredentials()
+        parameters.getClientCredentials()
       );
       break;
     case AuthenticationType.UsernamePassword:
       await pac.authenticateAdminWithUsernamePassword(
-        options.getUsernamePassword()
+        parameters.getUsernamePassword()
       );
       break;
     default:
