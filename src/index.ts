@@ -1,5 +1,5 @@
 import AuthenticationType from "./AuthenticationType";
-import CdsEnvironment from "./CdsEnvironment";
+import Environment from "./Environment";
 import ClientCredentials from "./ClientCredentials";
 import DevOpsOptions from "./devops/DevOpsOptions";
 import Logger from "./Logger";
@@ -9,7 +9,7 @@ import whoAmI from "./devops/whoAmI";
 
 export {
   AuthenticationType,
-  CdsEnvironment,
+  Environment as CdsEnvironment,
   ClientCredentials,
   DevOpsOptions,
   Logger,

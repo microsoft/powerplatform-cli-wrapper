@@ -1,3 +1,5 @@
+import { platform } from "os";
+import { resolve } from "path";
 import { createPacRunner, PacRunner } from "../cli/PacRunner";
 import DevOpsOptions from "./DevOpsOptions";
 
@@ -6,7 +8,9 @@ export default function createDevOpsPacRunner(
 ): PacRunner {
   return createPacRunner(
     options.getWorkingDir(),
-    options.getPacCliPath(),
+    platform() === "win32"
+      ? resolve(options.getRunnersDir(), "pac", "tools", "pac.exe")
+      : resolve(options.getRunnersDir(), "pac_linux", "tools", "pac"),
     options.logger
   );
 }

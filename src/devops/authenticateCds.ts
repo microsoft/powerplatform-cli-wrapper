@@ -10,13 +10,13 @@ export default async function authenticateCds(
   switch (authenticationType) {
     case AuthenticationType.ClientCredentials:
       await pac.authenticateCdsWithClientCredentials({
-        ...options.getCdsEnvironment(),
+        ...options.getEnvironment(),
         ...options.getClientCredentials(),
       });
       break;
     case AuthenticationType.UsernamePassword:
       await pac.authenticateCdsWithUsernamePassword({
-        ...options.getCdsEnvironment(),
+        ...options.getEnvironment(),
         ...options.getUsernamePassword(),
       });
       break;
