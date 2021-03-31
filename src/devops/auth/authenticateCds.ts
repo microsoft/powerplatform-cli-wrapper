@@ -1,23 +1,23 @@
-import AuthenticationType from "../AuthenticationType";
-import { PacRunner } from "../cli/PacRunner";
-import DevOpsOptions from "./DevOpsOptions";
+import AuthenticationType from "./AuthenticationType";
+import { PacRunner } from "../../cli/PacRunner";
+import AuthenticationParameters from "./AuthenticationParameters";
 
 export default async function authenticateCds(
   pac: PacRunner,
-  options: DevOpsOptions
+  parameters: AuthenticationParameters
 ): Promise<void> {
-  const authenticationType = options.getAuthenticationType();
+  const authenticationType = parameters.getAuthenticationType();
   switch (authenticationType) {
     case AuthenticationType.ClientCredentials:
       await pac.authenticateCdsWithClientCredentials({
-        ...options.getEnvironment(),
-        ...options.getClientCredentials(),
+        ...parameters.getEnvironment(),
+        ...parameters.getClientCredentials(),
       });
       break;
     case AuthenticationType.UsernamePassword:
       await pac.authenticateCdsWithUsernamePassword({
-        ...options.getEnvironment(),
-        ...options.getUsernamePassword(),
+        ...parameters.getEnvironment(),
+        ...parameters.getUsernamePassword(),
       });
       break;
     default:

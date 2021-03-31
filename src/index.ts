@@ -1,18 +1,21 @@
-import AuthenticationType from "./AuthenticationType";
-import Environment from "./Environment";
+import AuthenticationParameters from "./devops/auth/AuthenticationParameters";
+import AuthenticationType from "./devops/auth/AuthenticationType";
 import ClientCredentials from "./ClientCredentials";
-import DevOpsOptions from "./devops/DevOpsOptions";
+import Environment from "./Environment";
 import Logger from "./Logger";
+import LoggerParameters from "./devops/LoggerParameters";
+import RunnerParameters from "./devops/runners/RunnerParameters";
 import UsernamePassword from "./UsernamePassword";
-
-import whoAmI from "./devops/whoAmI";
+import whoAmI from "./devops/actions/whoAmI";
 
 export {
+  AuthenticationParameters,
   AuthenticationType,
-  Environment as CdsEnvironment,
+  Environment,
   ClientCredentials,
-  DevOpsOptions,
   Logger,
+  LoggerParameters,
+  RunnerParameters,
   UsernamePassword,
   whoAmI,
 };
