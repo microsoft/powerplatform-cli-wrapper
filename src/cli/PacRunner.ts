@@ -1,6 +1,6 @@
 import { createCommandRunner } from "./CommandRunner";
 import Logger from "../Logger";
-import CdsEnvironment from "../CdsEnvironment";
+import Environment from "../Environment";
 import ClientCredentials from "../ClientCredentials";
 import UsernamePassword from "../UsernamePassword";
 
@@ -17,7 +17,7 @@ export function createPacRunner(
     getAuthenticationProfiles: () => runCommand("auth", "list"),
     clearAuthenticationProfiles: () => runCommand("auth", "clear"),
     authenticateCdsWithClientCredentials: (
-      parameters: CdsEnvironment & ClientCredentials
+      parameters: Environment & ClientCredentials
     ) =>
       runCommand(
         "auth",
@@ -33,7 +33,7 @@ export function createPacRunner(
         ...addClientCredentials(parameters)
       ),
     authenticateCdsWithUsernamePassword: (
-      parameters: CdsEnvironment & UsernamePassword
+      parameters: Environment & UsernamePassword
     ) =>
       runCommand(
         "auth",
@@ -50,8 +50,8 @@ export function createPacRunner(
       ),
   };
 
-  function addUrl(parameters: CdsEnvironment) {
-    return ["--url", parameters.envUrl];
+  function addUrl(parameters: Environment) {
+    return ["--url", parameters.url];
   }
 
   function addClientCredentials(parameters: ClientCredentials) {
@@ -81,13 +81,13 @@ export interface PacRunner {
   getAuthenticationProfiles: () => Promise<string[]>;
   clearAuthenticationProfiles: () => Promise<string[]>;
   authenticateCdsWithClientCredentials: (
-    parameters: CdsEnvironment & ClientCredentials
+    parameters: Environment & ClientCredentials
   ) => Promise<string[]>;
   authenticateAdminWithClientCredentials: (
     parameters: ClientCredentials
   ) => Promise<string[]>;
   authenticateCdsWithUsernamePassword: (
-    parameters: CdsEnvironment & UsernamePassword
+    parameters: Environment & UsernamePassword
   ) => Promise<string[]>;
   authenticateAdminWithUsernamePassword: (
     parameters: UsernamePassword

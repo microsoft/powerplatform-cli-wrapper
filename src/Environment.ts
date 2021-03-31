@@ -1,3 +1,3 @@
-export default interface CdsEnvironment {
-  envUrl: string;
+export default interface Environment {
+  url: string;
 }
