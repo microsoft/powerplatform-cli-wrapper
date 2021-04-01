@@ -16,7 +16,7 @@ export function createPacRunner(
     whoAmI: () => runCommand("org", "who"),
     getAuthenticationProfiles: () => runCommand("auth", "list"),
     clearAuthenticationProfiles: () => runCommand("auth", "clear"),
-    authenticateCdsWithClientCredentials: (
+    authenticateEnvironmentWithClientCredentials: (
       parameters: Environment & ClientCredentials
     ) =>
       runCommand(
@@ -32,7 +32,7 @@ export function createPacRunner(
         ...admin,
         ...addClientCredentials(parameters)
       ),
-    authenticateCdsWithUsernamePassword: (
+    authenticateEnvironmentWithUsernamePassword: (
       parameters: Environment & UsernamePassword
     ) =>
       runCommand(
@@ -80,13 +80,13 @@ export interface PacRunner {
   whoAmI: () => Promise<string[]>;
   getAuthenticationProfiles: () => Promise<string[]>;
   clearAuthenticationProfiles: () => Promise<string[]>;
-  authenticateCdsWithClientCredentials: (
+  authenticateEnvironmentWithClientCredentials: (
     parameters: Environment & ClientCredentials
   ) => Promise<string[]>;
   authenticateAdminWithClientCredentials: (
     parameters: ClientCredentials
   ) => Promise<string[]>;
-  authenticateCdsWithUsernamePassword: (
+  authenticateEnvironmentWithUsernamePassword: (
     parameters: Environment & UsernamePassword
   ) => Promise<string[]>;
   authenticateAdminWithUsernamePassword: (
