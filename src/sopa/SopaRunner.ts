@@ -1,4 +1,4 @@
-import { createCommandRunner } from "./CommandRunner";
+import { createCommandRunner } from "../CommandRunner";
 import { IsoCode, LcidCode } from "./languageCodes";
 import Logger from "../Logger";
 import restrictPlatformToWindows from "./restrictPlatformToWindows";
