@@ -1,18 +1,16 @@
-import AuthenticationParameters from "./devops/auth/AuthenticationParameters";
-import AuthenticationType from "./devops/auth/AuthenticationType";
-import ClientCredentials from "./ClientCredentials";
-import Environment from "./Environment";
+import AuthenticationParameters from "./pac/auth/CredentialsParameters";
+import ClientCredentials from "./pac/auth/ClientCredentials";
+import EnvironmentUrlParameters from "./pac/auth/EnvironmentUrlParameters";
 import Logger from "./Logger";
-import LoggerParameters from "./devops/LoggerParameters";
-import RunnerParameters from "./devops/runners/RunnerParameters";
-import UsernamePassword from "./UsernamePassword";
-import whoAmI from "./devops/actions/whoAmI";
-import { createCommandRunner } from "./cli/CommandRunner";
+import LoggerParameters from "./LoggerParameters";
+import RunnerParameters from "./RunnerParameters";
+import UsernamePassword from "./pac/auth/UsernamePassword";
+import whoAmI from "./actions/whoAmI";
+import { createCommandRunner } from "./CommandRunner";
 
 export {
   AuthenticationParameters,
-  AuthenticationType,
-  Environment,
+  EnvironmentUrlParameters,
   ClientCredentials,
   createCommandRunner,
   Logger,
