@@ -3,7 +3,7 @@ import { resolve } from "path";
 import { CommandRunner, createCommandRunner } from "../CommandRunner";
 import RunnerParameters from "../RunnerParameters";
 
-export default function createDevOpsPacRunner({
+export default function createPacRunner({
   workingDir,
   runnersDir,
   logger,
