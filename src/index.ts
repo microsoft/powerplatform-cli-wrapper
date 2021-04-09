@@ -7,6 +7,7 @@ import RunnerParameters from "./RunnerParameters";
 import UsernamePassword from "./pac/auth/UsernamePassword";
 import whoAmI from "./actions/whoAmI";
 import { createCommandRunner } from "./CommandRunner";
+import { exportSolution } from "./pac/exportSolution";
 
 export {
   AuthenticationParameters,
@@ -18,4 +19,5 @@ export {
   RunnerParameters,
   UsernamePassword,
   whoAmI,
+  exportSolution
 };
