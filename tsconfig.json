@@ -10,9 +10,12 @@
     "strictPropertyInitialization": true,
     "noImplicitAny": true,
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@sinonjs/fake-timers": ["node_modules/@types/sinonjs__fake-timers"]
+    }
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
