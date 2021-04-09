@@ -1,7 +1,7 @@
 import { spawn } from "child_process";
 import { env } from "process";
 import { EOL } from "os";
-import { Logger } from "./Logger";
+import Logger from "./Logger";
 
 export function createCommandRunner(
   workingDir: string,
