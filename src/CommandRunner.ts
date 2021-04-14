@@ -1,4 +1,4 @@
-import { spawn } from "child_process";
+import { spawn, SpawnOptionsWithoutStdio } from "child_process";
 import { env } from "process";
 import { EOL } from "os";
 import Logger from "./Logger";
@@ -6,7 +6,8 @@ import Logger from "./Logger";
 export function createCommandRunner(
   workingDir: string,
   commandPath: string,
-  logger: Logger
+  logger: Logger,
+  options?: SpawnOptionsWithoutStdio
 ): CommandRunner {
   return async function run(...args: string[]): Promise<string[]> {
     return new Promise((resolve, reject) => {
@@ -18,6 +19,7 @@ export function createCommandRunner(
       const process = spawn(commandPath, args, {
         cwd: workingDir,
         env: { PATH: env.PATH },
+        ...options,
       });
 
       process.stdout.on("data", (data) =>
