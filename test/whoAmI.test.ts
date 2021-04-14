@@ -5,9 +5,9 @@ import { should, use } from "chai";
 import { fake, restore, stub } from "sinon";
 import { Logger } from "../src";
 
-import { ExportSolutionParameters } from "../src/pac/exportSolution";
 import { CommandRunner } from "../src/CommandRunner";
-import whoAmI, { WhoAmIParameters } from "../src/pac/whoAmI";
+import { WhoAmIParameters } from "../src/pac/whoAmI";
+import { stubInterface } from "ts-sinon";
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -21,14 +21,12 @@ describe("pac", () => {
     afterEach(() => restore());
 
     it("uses correct export parameters for simple export", async () => {
-      const name = "Contoso";
-      const path = "C:\\Test\\ContosoSolution.zip";
-      const log = "";
+      const logger = stubInterface<Logger>();
 
       const parameters: WhoAmIParameters = {
         runnersDir: "C:\\Test\\",
         workingDir: "C:\\Test\\",
-        logger: (log as unknown) as Logger,
+        logger: logger,
         credentials: {
           appId: "APP_ID",
           clientSecret: "CLIENT_SECRET",
