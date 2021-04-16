@@ -13,8 +13,7 @@ export function createCommandRunner(
     return new Promise((resolve, reject) => {
       logInitialization(...args);
 
-      const stdout: string[] = [];
-      const stderr: string[] = [];
+      const allOutput: string[] = [];
 
       const process = spawn(commandPath, args, {
         cwd: workingDir,
@@ -22,21 +21,24 @@ export function createCommandRunner(
         ...options,
       });
 
-      process.stdout.on("data", (data) =>
-        stdout.push(...data.toString().split(EOL))
-      );
-      process.stderr.on("data", (data) =>
-        stderr.push(...data.toString().split(EOL))
-      );
+      process.stdout.on("data", logData(logger.log));
+      process.stderr.on("data", logData(logger.error));
+
+      function logData(logFunction: (...args: string[]) => void) {
+        return (data: any) => {
+          `${data}`.split(EOL).forEach((line) => {
+            allOutput.push(line);
+            logFunction(line);
+          });
+        };
+      }
 
       process.on("exit", (code: number) => {
         if (code === 0) {
-          logSuccess(stdout);
-          resolve(stdout);
+          resolve(allOutput);
         } else {
-          const allOutput = stderr.concat(stdout);
-          logger.error(`error: ${code}: ${allOutput.join(EOL)}`);
-          reject(new RunnerError(code, allOutput.join()));
+          logger.error(`error: ${code}`);
+          reject(new RunnerError(code, allOutput.join(EOL)));
         }
 
         /* Close out handles to the output streams so that we don't wait on
@@ -48,15 +50,11 @@ export function createCommandRunner(
   };
 
   function logInitialization(...args: string[]): void {
-    logger.info(
+    logger.debug(
       `command: ${commandPath}, first arg of ${args.length}: ${
         args.length ? args[0] : "<none>"
       }`
     );
-  }
-
-  function logSuccess(output: string[]): void {
-    logger.info(`success: ${output.join(EOL)}`);
   }
 }
 
