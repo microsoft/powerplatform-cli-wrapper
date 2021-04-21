@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/actions/whoAmI.ts"],"names":[],"mappings":";;;;;;;;;;;AAAA,2DAAmE;AACnE,4DAAqD;AACrD,0CAAyD;AAEzD,mBAA+B,UAA4B;;QACzD,MAAM,GAAG,GAAG,yBAAe,CAAC,UAAU,CAAC,CAAC;QACxC,MAAM,sCAAuB,CAAC,GAAG,EAAE,UAAU,CAAC,CAAC;QAC/C,MAAM,gBAAM,CAAC,GAAG,CAAC,CAAC;IACpB,CAAC;CAAA;AAJD,4BAIC","file":"whoAmI.js","sourceRoot":"../"}
