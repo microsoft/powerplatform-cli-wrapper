@@ -7,7 +7,8 @@ export function createCommandRunner(
   workingDir: string,
   commandPath: string,
   logger: Logger,
-  options?: SpawnOptionsWithoutStdio
+  options?: SpawnOptionsWithoutStdio,
+  agent?: string
 ): CommandRunner {
   return async function run(...args: string[]): Promise<string[]> {
     return new Promise((resolve, reject) => {
@@ -17,7 +18,9 @@ export function createCommandRunner(
 
       const process = spawn(commandPath, args, {
         cwd: workingDir,
-        env: { PATH: env.PATH },
+        env: { PATH: env.PATH,
+          "PP_TOOLS_AUTOMATION_AGENT": agent
+        },
         ...options,
       });
 
