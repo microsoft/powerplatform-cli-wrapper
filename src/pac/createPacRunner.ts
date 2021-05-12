@@ -7,12 +7,15 @@ export default function createPacRunner({
   workingDir,
   runnersDir,
   logger,
+  agent,
 }: RunnerParameters): CommandRunner {
   return createCommandRunner(
     workingDir,
     platform() === "win32"
       ? resolve(runnersDir, "pac", "tools", "pac.exe")
       : resolve(runnersDir, "pac_linux", "tools", "pac"),
-    logger
+    logger,
+    undefined,
+    agent,
   );
 }
