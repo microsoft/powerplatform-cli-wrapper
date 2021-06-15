@@ -28,7 +28,7 @@ export function createCommandRunner(
       process.stderr.on("data", logData(logger.error));
 
       function logData(logFunction: (...args: string[]) => void) {
-        return (data: any) => {
+        return (data: unknown) => {
           `${data}`.split(EOL).forEach((line) => {
             allOutput.push(line);
             logFunction(line);
