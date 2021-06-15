@@ -2,6 +2,7 @@ import { spawn, SpawnOptionsWithoutStdio } from "child_process";
 import { env } from "process";
 import { EOL } from "os";
 import Logger from "./Logger";
+import process = require("process");
 
 export function createCommandRunner(
   workingDir: string,
@@ -16,16 +17,16 @@ export function createCommandRunner(
 
       const allOutput: string[] = [];
 
-      const process = spawn(commandPath, args, {
+      const cp = spawn(commandPath, args, {
         cwd: workingDir,
-        env: { PATH: env.PATH,
+        env: Object.assign({ PATH: env.PATH,
           "PP_TOOLS_AUTOMATION_AGENT": agent
-        },
+        }, process.env),
         ...options,
       });
 
-      process.stdout.on("data", logData(logger.log));
-      process.stderr.on("data", logData(logger.error));
+      cp.stdout.on("data", logData(logger.log));
+      cp.stderr.on("data", logData(logger.error));
 
       function logData(logFunction: (...args: string[]) => void) {
         return (data: unknown) => {
@@ -36,7 +37,7 @@ export function createCommandRunner(
         };
       }
 
-      process.on("exit", (code: number) => {
+      cp.on("exit", (code: number) => {
         if (code === 0) {
           resolve(allOutput);
         } else {
@@ -46,8 +47,8 @@ export function createCommandRunner(
 
         /* Close out handles to the output streams so that we don't wait on
             grandchild processes like pacTelemetryUpload */
-        process.stdout.destroy();
-        process.stderr.destroy();
+        cp.stdout.destroy();
+        cp.stderr.destroy();
       });
     });
   };
