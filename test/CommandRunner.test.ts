@@ -4,7 +4,7 @@ import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { stub } from "sinon";
 import { stubInterface } from "ts-sinon";
-import { ChildProcessWithoutNullStreams } from "node:child_process";
+import { ChildProcessWithoutNullStreams } from "child_process";
 import { Logger } from "src";
 import { Readable } from "stream";
 should();
