@@ -1,5 +1,5 @@
 import { createCommandRunner } from "./CommandRunner";
-import Logger from "./Logger";
+import { Logger } from "./Parameters";
 
 export function createGitRunner(workingDir: string, logger: Logger): GitRunner {
   const runCommand = createCommandRunner(workingDir, "git", logger);

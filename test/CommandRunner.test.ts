@@ -5,7 +5,7 @@ import { should, use } from "chai";
 import { stub } from "sinon";
 import { stubInterface } from "ts-sinon";
 import { ChildProcessWithoutNullStreams } from "node:child_process";
-import { Logger } from "src";
+import { Logger } from "src/Parameters";
 import { Readable } from "stream";
 should();
 use(sinonChai);

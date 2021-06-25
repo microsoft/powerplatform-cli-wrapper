@@ -1,7 +1,7 @@
 import { spawn, SpawnOptionsWithoutStdio } from "child_process";
 import { env } from "process";
 import { EOL } from "os";
-import Logger from "./Logger";
+import { Logger } from "./Parameters";
 
 export function createCommandRunner(
   workingDir: string,
@@ -28,7 +28,7 @@ export function createCommandRunner(
       process.stderr.on("data", logData(logger.error));
 
       function logData(logFunction: (...args: string[]) => void) {
-        return (data: any) => {
+        return (data: string) => {
           `${data}`.split(EOL).forEach((line) => {
             allOutput.push(line);
             logFunction(line);
