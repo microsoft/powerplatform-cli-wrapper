@@ -10,7 +10,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("pac", () => {
-  describe("solution", () => {
+  describe("solution export", () => {
     let pac: CommandRunner;
     beforeEach(() => {
       pac = stub();
@@ -31,7 +31,7 @@ describe("pac", () => {
           logger: (log as unknown) as parameters.Logger,
           credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
           environmentUrl: "https://contoso.crm.dynamics.com/",
-          actionParameters: {name: name, path: path},
+          actionParameters: {name: name, path: path}
         };
 
         await rewiremock.around(
@@ -84,7 +84,7 @@ describe("pac", () => {
         pac.should.have.been.calledOnceWith( "solution", "export", "--name", name, "--path", path);
       });
     
-    it("uses correct export parameters for simple pac solution export with async flag turned off", 
+    it("uses correct export parameters for pac solution export with async flag turned off", 
       async () => 
       {
         const name = "Contoso";
@@ -118,7 +118,7 @@ describe("pac", () => {
         pac.should.have.been.calledOnceWith( "solution", "export", "--name", name, "--path", path);
       });    
       
-    it("uses correct export parameters for simple pac solution export with async flag turned on", 
+    it("uses correct export parameters for pac solution export with async flag turned on", 
       async () => 
       {
         const name = "Contoso";
@@ -152,7 +152,7 @@ describe("pac", () => {
         pac.should.have.been.calledOnceWith( "solution", "export", "--name", name, "--path", path, "--async");
       });
 
-    it("uses correct export parameters for simple pac solution export with few optional parameters set", 
+    it("uses correct export parameters for pac solution export with few optional parameters set", 
       async () => 
       {
         const name = "Contoso";
@@ -167,7 +167,7 @@ describe("pac", () => {
           credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
           environmentUrl: "https://contoso.crm.dynamics.com/",
           actionParameters: {name: name, path: path},
-          optionalParameters: {async: true, maxAsyncWaitTimeInMin: 60, managed: false}
+          optionalParameters: {async: true, maxAsyncWaitTimeInMin: 60, managed: false, targetVersion: undefined}
         };
 
         await rewiremock.around(
@@ -186,38 +186,38 @@ describe("pac", () => {
         pac.should.have.been.calledOnceWith( "solution", "export", "--name", name, "--path", path, "--async", "--max-async-wait-time", "60");
       });
 
-      it("uses correct export parameters for simple pac solution export with all optional parameters set", 
-      async () => 
-      {
-        const name = "Contoso";
-        const path = "C:\\Test\\ContosoSolution.zip";
-        const log = "";
-
-        const exportSolutionParameters: actions.ExportSolutionParameters = 
+      it("uses correct export parameters for pac solution export with all optional parameters set", 
+        async () => 
         {
-          runnersDir: "C:\\Test\\",
-          workingDir: "C:\\Test\\",
-          logger: (log as unknown) as parameters.Logger,
-          credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
-          environmentUrl: "https://contoso.crm.dynamics.com/",
-          actionParameters: {name: name, path: path},
-          optionalParameters: {async: true, maxAsyncWaitTimeInMin: 60, managed: true, targetVersion: "0.0.0"}
-        };
+          const name = "Contoso";
+          const path = "C:\\Test\\ContosoSolution.zip";
+          const log = "";
 
-        await rewiremock.around(
-          async () => 
+          const exportSolutionParameters: actions.ExportSolutionParameters = 
           {
-            const exportSolution = (await import("../src/actions/exportSolution")).exportSolution;
-            exportSolution(exportSolutionParameters);
-          },
-          (mock) => 
-          {
-            mock(() => import("../src/pac/createPacRunner")).withDefault(() => pac);
-            mock(() => import("../src/pac/auth/authenticate")).with({authenticateEnvironment: fake()});
-          }
-        );
+            runnersDir: "C:\\Test\\",
+            workingDir: "C:\\Test\\",
+            logger: (log as unknown) as parameters.Logger,
+            credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
+            environmentUrl: "https://contoso.crm.dynamics.com/",
+            actionParameters: {name: name, path: path},
+            optionalParameters: {async: true, maxAsyncWaitTimeInMin: 60, managed: true, targetVersion: "0.0.0"}
+          };
 
-        pac.should.have.been.calledOnceWith( "solution", "export", "--name", name, "--path", path, "--managed", "--targetversion", "0.0.0", "--async", "--max-async-wait-time", "60");
+          await rewiremock.around(
+            async () => 
+            {
+              const exportSolution = (await import("../src/actions/exportSolution")).exportSolution;
+              exportSolution(exportSolutionParameters);
+            },
+            (mock) => 
+            {
+              mock(() => import("../src/pac/createPacRunner")).withDefault(() => pac);
+              mock(() => import("../src/pac/auth/authenticate")).with({authenticateEnvironment: fake()});
+            }
+          );
+
+          pac.should.have.been.calledOnceWith( "solution", "export", "--name", name, "--path", path, "--managed", "--targetversion", "0.0.0", "--async", "--max-async-wait-time", "60");
       });
   });
 });
