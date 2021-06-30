@@ -1,12 +1,12 @@
 import { createCommandRunner } from "./CommandRunner";
 import * as actions from "./actions";
-import * as parameters from "./Parameters";
-import * as authParameters from "./pac/auth/authParameters";
+export * from "./Parameters";
+export * from "./pac/auth/authParameters";
+import { Logger } from "./Logger";
 
 export 
 {
   actions,
-  parameters,
-  authParameters,
   createCommandRunner,
+  Logger
 };

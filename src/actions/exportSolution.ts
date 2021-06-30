@@ -1,23 +1,17 @@
 import { authenticateEnvironment } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
-import { RunnerParameters } from "../Parameters";
-import { EnvironmentUrlParameters, CredentialsParameters } from "../pac/auth/authParameters";
+import { ExportSolutionParameters, RunnerParameters } from "../Parameters";
 
-export interface ExportSolutionParameters extends CredentialsParameters, RunnerParameters, EnvironmentUrlParameters
+export async function exportSolution(parameters: ExportSolutionParameters, runnerParameters: RunnerParameters): Promise<void> 
 {
-  actionParameters: {name: string; path: string;};
-  optionalParameters?: {managed?: boolean; targetVersion?: string; async?: boolean; maxAsyncWaitTimeInMin?: number;};
-}
-
-export async function exportSolution(parameters: ExportSolutionParameters): Promise<void> 
-{
-  const pac = createPacRunner(parameters);
+  const pac = createPacRunner(runnerParameters);
   await authenticateEnvironment(pac, parameters);
-  const {name, path} = parameters.actionParameters;
-  const exportArgs = ["solution", "export", "--name", name, "--path", path];
-  if(parameters.optionalParameters && parameters.optionalParameters.managed) { exportArgs.push("--managed"); }
-  if(parameters.optionalParameters && parameters.optionalParameters.targetVersion) { exportArgs.push("--targetversion", parameters.optionalParameters.targetVersion); }
-  if(parameters.optionalParameters && parameters.optionalParameters.async) { exportArgs.push("--async"); }
-  if(parameters.optionalParameters && parameters.optionalParameters.maxAsyncWaitTimeInMin) { exportArgs.push('--max-async-wait-time', parameters.optionalParameters.maxAsyncWaitTimeInMin.toString()); }
+  const exportArgs = ["solution", "export", "--name", parameters.name, "--path", parameters.path];
+
+  if(parameters.managed) { exportArgs.push("--managed"); }
+  if(parameters.targetVersion) { exportArgs.push("--targetversion", parameters.targetVersion); }
+  if(parameters.async) { exportArgs.push("--async"); }
+  if(parameters.maxAsyncWaitTimeInMin) { exportArgs.push('--max-async-wait-time', parameters.maxAsyncWaitTimeInMin.toString()); }
+  
   await pac(...exportArgs);
 }

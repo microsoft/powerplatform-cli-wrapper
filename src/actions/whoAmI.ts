@@ -1,14 +1,10 @@
 import { authenticateEnvironment } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
-import { RunnerParameters } from "../Parameters";
-import { EnvironmentUrlParameters, CredentialsParameters } from "../pac/auth/authParameters";
+import { WhoAmIParameters, RunnerParameters } from "../Parameters";
 
-export interface WhoAmIParameters extends RunnerParameters, EnvironmentUrlParameters, CredentialsParameters
-{}
-
-export async function whoAmI(parameters: WhoAmIParameters): Promise<void>
+export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: RunnerParameters): Promise<void>
 {
-  const pac = createPacRunner(parameters);
+  const pac = createPacRunner(runnerParameters);
   await authenticateEnvironment(pac, parameters);
   await pac("org", "who");
 }

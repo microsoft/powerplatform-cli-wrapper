@@ -1,7 +1,7 @@
 import { spawn, SpawnOptionsWithoutStdio } from "child_process";
 import { env } from "process";
 import { EOL } from "os";
-import { Logger } from "./Parameters";
+import { Logger } from "./Logger";
 import process = require("process");
 
 export function createCommandRunner(

@@ -3,16 +3,15 @@ import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { fake, restore, stub } from "sinon";
-import { Logger } from "../src/Parameters";
 import { CommandRunner } from "../src/CommandRunner";
-import { WhoAmIParameters } from "../src/actions/whoAmI";
+import { WhoAmIParameters , RunnerParameters, Logger } from "../src";
 import { stubInterface } from "ts-sinon";
 should();
 use(sinonChai);
 use(chaiAsPromised);
 
 describe("pac", () => {
-  describe("org", () => {
+  describe("org pacStub", () => {
     let pac: CommandRunner;
     beforeEach(() => {
       pac = stub();
@@ -23,20 +22,26 @@ describe("pac", () => {
       async () => 
       {
         const logger = stubInterface<Logger>();
+
         const parameters: WhoAmIParameters = 
+        {
+          credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
+          environmentUrl: "https://contoso.crm.dynamics.com/",
+        };
+
+        const runnerParameters: RunnerParameters = 
         {
           runnersDir: "C:\\Test\\",
           workingDir: "C:\\Test\\",
           logger: logger,
-          credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
-          environmentUrl: "https://contoso.crm.dynamics.com/",
-        };
+        }
+
 
         await rewiremock.around(
           async () => 
           {
             const whoAmI = (await import("../src/actions/whoAmI")).whoAmI;
-            whoAmI(parameters);
+            whoAmI(parameters, runnerParameters);
           },
           (mock) => 
           {

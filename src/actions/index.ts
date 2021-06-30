@@ -1,2 +1,3 @@
-export { exportSolution, ExportSolutionParameters } from "./exportSolution";
-export { importSolution, ImportSolutionParameters } from "./importSolution";
+export * from "./exportSolution";
+export * from "./importSolution";
+export * from "./whoAmI";

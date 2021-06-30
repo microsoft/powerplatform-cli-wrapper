@@ -1,10 +1,5 @@
-export interface Logger
-{
-  log(...args: string[]): void;
-  debug(...args: string[]): void;
-  warn(...args: string[]): void;
-  error(...args: string[]): void;
-}
+import { Logger } from "./Logger";
+import { EnvironmentUrlParameters, CredentialsParameters } from "./pac/auth/authParameters";
 
 export interface LoggerParameters
 {
@@ -20,4 +15,30 @@ export interface RunnerParameters extends LoggerParameters, TelemetryParameters
 {
   workingDir: string;
   runnersDir: string;
+}
+
+export interface WhoAmIParameters extends CredentialsParameters, EnvironmentUrlParameters
+{}
+
+export interface ImportSolutionParameters extends CredentialsParameters, EnvironmentUrlParameters
+{
+  path: string;
+  activatePlugins?: boolean;
+  forceOverwrite?: boolean;
+  skipDependencyCheck?: boolean; 
+  importAsHolding?: boolean;
+  publishChanges?: boolean;
+  convertToManaged?: boolean;
+  async?: boolean;
+  maxAsyncWaitTimeInMin?: number;
+}
+
+export interface ExportSolutionParameters extends CredentialsParameters, EnvironmentUrlParameters
+{
+  name: string; 
+  path: string;
+  managed?: boolean;
+  targetVersion?: string;
+  async?: boolean;
+  maxAsyncWaitTimeInMin?: number;
 }

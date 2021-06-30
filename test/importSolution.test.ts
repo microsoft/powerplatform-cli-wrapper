@@ -3,14 +3,14 @@ import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { fake, restore, stub } from "sinon";
-import { actions, parameters } from "../src";
+import { ImportSolutionParameters, RunnerParameters, Logger } from "../src";
 import { CommandRunner } from "../src/CommandRunner";
 should();
 use(sinonChai);
 use(chaiAsPromised);
 
 describe("pac", () => {
-  describe("solution import", () => {
+  describe("solution pacStub", () => {
     let pac: CommandRunner;
     beforeEach(() => {
       pac = stub();
@@ -23,21 +23,25 @@ describe("pac", () => {
         const path = "C:\\Test\\ContosoSolution.zip";
         const log = "";
 
-        const importSolutionParameters: actions.ImportSolutionParameters = 
+        const importSolutionParameters: ImportSolutionParameters = 
+        {
+          credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
+          environmentUrl: "https://contoso.crm.dynamics.com/",
+          path: path
+        };
+
+        const runnerParameters: RunnerParameters = 
         {
           runnersDir: "C:\\Test\\",
           workingDir: "C:\\Test\\",
-          logger: (log as unknown) as parameters.Logger,
-          credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
-          environmentUrl: "https://contoso.crm.dynamics.com/",
-          actionParameters: {path: path}
-        };
+          logger: (log as unknown) as Logger,
+        }
 
         await rewiremock.around(
           async () => 
           {
             const importSolution = (await import("../src/actions/importSolution")).importSolution;
-            importSolution(importSolutionParameters);
+            importSolution(importSolutionParameters, runnerParameters);
           },
           (mock) => 
           {
@@ -48,39 +52,6 @@ describe("pac", () => {
 
         pac.should.have.been.calledOnceWith( "solution", "import", "--path", path);
       });
-
-      it("uses correct import parameters for simple pac solution import with empty optional parameters", 
-        async () => 
-        {
-          const path = "C:\\Test\\ContosoSolution.zip";
-          const log = "";
-
-          const importSolutionParameters: actions.ImportSolutionParameters = 
-          {
-            runnersDir: "C:\\Test\\",
-            workingDir: "C:\\Test\\",
-            logger: (log as unknown) as parameters.Logger,
-            credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
-            environmentUrl: "https://contoso.crm.dynamics.com/",
-            actionParameters: {path: path},
-            optionalParameters: {}
-          };
-
-          await rewiremock.around(
-            async () => 
-            {
-              const importSolution = (await import("../src/actions/importSolution")).importSolution;
-              importSolution(importSolutionParameters);
-            },
-            (mock) => 
-            {
-              mock(() => import("../src/pac/createPacRunner")).withDefault(() => pac);
-              mock(() => import("../src/pac/auth/authenticate")).with({authenticateEnvironment: fake()});
-            }
-          );
-
-          pac.should.have.been.calledOnceWith( "solution", "import", "--path", path);
-      });
       
       it("uses correct import parameters for pac solution import with activate-plugins turned off", 
         async () => 
@@ -88,22 +59,26 @@ describe("pac", () => {
           const path = "C:\\Test\\ContosoSolution.zip";
           const log = "";
 
-          const importSolutionParameters: actions.ImportSolutionParameters = 
+          const importSolutionParameters: ImportSolutionParameters = 
+          {
+            credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
+            environmentUrl: "https://contoso.crm.dynamics.com/",
+            path: path,
+            activatePlugins: false
+          };
+
+          const runnerParameters: RunnerParameters = 
           {
             runnersDir: "C:\\Test\\",
             workingDir: "C:\\Test\\",
-            logger: (log as unknown) as parameters.Logger,
-            credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
-            environmentUrl: "https://contoso.crm.dynamics.com/",
-            actionParameters: {path: path},
-            optionalParameters: {activatePlugins: false}
-          };
+            logger: (log as unknown) as Logger,
+          }
 
           await rewiremock.around(
             async () => 
             {
               const importSolution = (await import("../src/actions/importSolution")).importSolution;
-              importSolution(importSolutionParameters);
+              importSolution(importSolutionParameters, runnerParameters);
             },
             (mock) => 
             {
@@ -121,22 +96,26 @@ describe("pac", () => {
           const path = "C:\\Test\\ContosoSolution.zip";
           const log = "";
 
-          const importSolutionParameters: actions.ImportSolutionParameters = 
+          const importSolutionParameters: ImportSolutionParameters = 
+          {
+            credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
+            environmentUrl: "https://contoso.crm.dynamics.com/",
+            path: path,
+            activatePlugins: true
+          };
+
+          const runnerParameters: RunnerParameters = 
           {
             runnersDir: "C:\\Test\\",
             workingDir: "C:\\Test\\",
-            logger: (log as unknown) as parameters.Logger,
-            credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
-            environmentUrl: "https://contoso.crm.dynamics.com/",
-            actionParameters: {path: path},
-            optionalParameters: {activatePlugins: true}
-          };
+            logger: (log as unknown) as Logger,
+          }
 
           await rewiremock.around(
             async () => 
             {
               const importSolution = (await import("../src/actions/importSolution")).importSolution;
-              importSolution(importSolutionParameters);
+              importSolution(importSolutionParameters, runnerParameters);
             },
             (mock) => 
             {
@@ -154,22 +133,29 @@ describe("pac", () => {
           const path = "C:\\Test\\ContosoSolution.zip";
           const log = "";
 
-          const importSolutionParameters: actions.ImportSolutionParameters = 
+          const importSolutionParameters: ImportSolutionParameters = 
+          {
+            credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
+            environmentUrl: "https://contoso.crm.dynamics.com/",
+            path: path,
+            activatePlugins: true,
+            publishChanges: undefined,
+            skipDependencyCheck: false,
+            forceOverwrite: true
+          };
+
+          const runnerParameters: RunnerParameters = 
           {
             runnersDir: "C:\\Test\\",
             workingDir: "C:\\Test\\",
-            logger: (log as unknown) as parameters.Logger,
-            credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
-            environmentUrl: "https://contoso.crm.dynamics.com/",
-            actionParameters: {path: path},
-            optionalParameters: {activatePlugins: true, publishChanges: undefined, skipDependencyCheck: false, forceOverwrite: true}
-          };
+            logger: (log as unknown) as Logger,
+          }
 
           await rewiremock.around(
             async () => 
             {
               const importSolution = (await import("../src/actions/importSolution")).importSolution;
-              importSolution(importSolutionParameters);
+              importSolution(importSolutionParameters, runnerParameters);
             },
             (mock) => 
             {
@@ -187,23 +173,33 @@ describe("pac", () => {
           const path = "C:\\Test\\ContosoSolution.zip";
           const log = "";
 
-          const importSolutionParameters: actions.ImportSolutionParameters = 
+          const importSolutionParameters: ImportSolutionParameters = 
+          {
+            credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
+            environmentUrl: "https://contoso.crm.dynamics.com/",
+            path: path,
+            activatePlugins: true,
+            publishChanges: true,
+            skipDependencyCheck: true,
+            forceOverwrite: true,
+            async: true,
+            convertToManaged: true,
+            importAsHolding: true,
+            maxAsyncWaitTimeInMin: 60
+          };
+
+          const runnerParameters: RunnerParameters = 
           {
             runnersDir: "C:\\Test\\",
             workingDir: "C:\\Test\\",
-            logger: (log as unknown) as parameters.Logger,
-            credentials: {appId: "APP_ID", clientSecret: "CLIENT_SECRET", tenantId: "TENANT_ID"},
-            environmentUrl: "https://contoso.crm.dynamics.com/",
-            actionParameters: {path: path},
-            optionalParameters: {activatePlugins: true, publishChanges: true, skipDependencyCheck: true, 
-              forceOverwrite: true, async: true, convertToManaged: true, importAsHolding: true, maxAsyncWaitTimeInMin: 60}
-          };
+            logger: (log as unknown) as Logger,
+          }
 
           await rewiremock.around(
             async () => 
             {
               const importSolution = (await import("../src/actions/importSolution")).importSolution;
-              importSolution(importSolutionParameters);
+              importSolution(importSolutionParameters, runnerParameters);
             },
             (mock) => 
             {

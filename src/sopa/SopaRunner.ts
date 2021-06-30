@@ -1,6 +1,6 @@
 import { createCommandRunner } from "../CommandRunner";
 import { IsoCode, LcidCode } from "./languageCodes";
-import { Logger } from "../Parameters";
+import { Logger } from "../Logger";
 import restrictPlatformToWindows from "./restrictPlatformToWindows";
 
 export function createSopaRunner(
