@@ -1,15 +1,12 @@
 import { authenticateEnvironment } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
+import { ExportSolutionParameters, RunnerParameters } from "../Parameters";
 
-import {
-  exportSolution,
-  ExportSolutionParameters,
-} from "../pac/exportSolution";
-
-export default async function (
-  parameters: ExportSolutionParameters
-): Promise<void> {
-  const pac = createPacRunner(parameters);
-  await authenticateEnvironment(pac, parameters);
-  await exportSolution(pac, parameters);
+export async function exportSolution(parameters: ExportSolutionParameters, runnerParameters: RunnerParameters): Promise<void> 
+{
+  const pac = createPacRunner(runnerParameters);
+  await authenticateEnvironment(pac, {credentials: parameters.credentials, environmentUrl: parameters.environmentUrl});
+  const exportArgs = ["solution", "export", "--name", parameters.name, "--path", parameters.path];
+  
+  await pac(...exportArgs);
 }
