@@ -1,5 +1,5 @@
 import { Logger } from "./Logger";
-import { EnvironmentUrlParameters, CredentialsParameters } from "./pac/auth/authParameters";
+import { AuthCredentials } from "./pac/auth/authParameters";
 
 export interface LoggerParameters
 {
@@ -17,11 +17,16 @@ export interface RunnerParameters extends LoggerParameters, TelemetryParameters
   runnersDir: string;
 }
 
-export interface WhoAmIParameters extends CredentialsParameters, EnvironmentUrlParameters
-{}
+export interface WhoAmIParameters
+{
+  credentials: AuthCredentials;
+  environmentUrl: string;  
+}
 
-export interface ExportSolutionParameters extends CredentialsParameters, EnvironmentUrlParameters
+export interface ExportSolutionParameters
 {
   name: string; 
   path: string;
+  credentials: AuthCredentials;
+  environmentUrl: string;  
 }

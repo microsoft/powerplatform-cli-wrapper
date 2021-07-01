@@ -18,13 +18,13 @@ describe("pac", () => {
       afterEach(() => restore());
 
       it("uses SPN authentication when provided client credentials", () => {
-        authenticateAdmin(pac, {
-          credentials: {
+        authenticateAdmin(pac,
+          {
             appId: "APP_ID",
             clientSecret: "CLIENT_SECRET",
             tenantId: "TENANT_ID",
-          },
-        });
+          }
+        );
         pac.should.have.been.calledOnceWith(
           "auth",
           "create",
@@ -40,12 +40,12 @@ describe("pac", () => {
       });
 
       it("uses basic authentication when provided username / password", () => {
-        authenticateAdmin(pac, {
-          credentials: {
+        authenticateAdmin(pac,
+          {
             username: "USERNAME",
             password: "PASSWORD",
-          },
-        });
+          }
+        );
         pac.should.have.been.calledOnceWith(
           "auth",
           "create",

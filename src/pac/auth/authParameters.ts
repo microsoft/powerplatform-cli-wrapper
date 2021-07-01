@@ -11,13 +11,5 @@ export interface UsernamePassword
   password: string;
 }
 
-export interface CredentialsParameters
-{
-  credentials: UsernamePassword | ClientCredentials;
-}
-
-export interface EnvironmentUrlParameters
-{
-  environmentUrl: string;
-}
+export type AuthCredentials = UsernamePassword | ClientCredentials;
 

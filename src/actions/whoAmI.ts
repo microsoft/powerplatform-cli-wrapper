@@ -5,6 +5,6 @@ import { WhoAmIParameters, RunnerParameters } from "../Parameters";
 export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: RunnerParameters): Promise<void>
 {
   const pac = createPacRunner(runnerParameters);
-  await authenticateEnvironment(pac, {credentials: parameters.credentials, environmentUrl: parameters.environmentUrl});
+  await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
   await pac("org", "who");
 }
