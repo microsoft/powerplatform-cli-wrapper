@@ -1,6 +1,13 @@
 import { authenticateEnvironment } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
-import { WhoAmIParameters, RunnerParameters } from "../Parameters";
+import { RunnerParameters } from "../Parameters";
+import { AuthCredentials } from "../pac/auth/authParameters";
+
+export interface WhoAmIParameters
+{
+  credentials: AuthCredentials;
+  environmentUrl: string;
+}
 
 export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: RunnerParameters): Promise<void>
 {
