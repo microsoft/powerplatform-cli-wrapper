@@ -1,9 +1,17 @@
 import { authenticateEnvironment } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
-import whoAmI, { WhoAmIParameters } from "../pac/whoAmI";
+import { RunnerParameters } from "../Parameters";
+import { AuthCredentials } from "../pac/auth/authParameters";
 
-export default async function (parameters: WhoAmIParameters): Promise<void> {
-  const pac = createPacRunner(parameters);
-  await authenticateEnvironment(pac, parameters);
-  await whoAmI(pac);
+export interface WhoAmIParameters
+{
+  credentials: AuthCredentials;
+  environmentUrl: string;
+}
+
+export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: RunnerParameters): Promise<void>
+{
+  const pac = createPacRunner(runnerParameters);
+  await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+  await pac("org", "who");
 }

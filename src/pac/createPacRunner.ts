@@ -1,14 +1,10 @@
 import { platform } from "os";
 import { resolve } from "path";
 import { CommandRunner, createCommandRunner } from "../CommandRunner";
-import RunnerParameters from "../RunnerParameters";
+import { RunnerParameters } from "../Parameters";
 
-export default function createPacRunner({
-  workingDir,
-  runnersDir,
-  logger,
-  agent,
-}: RunnerParameters): CommandRunner {
+export default function createPacRunner({workingDir, runnersDir, logger, agent}: RunnerParameters): CommandRunner 
+{
   return createCommandRunner(
     workingDir,
     platform() === "win32"
@@ -16,6 +12,6 @@ export default function createPacRunner({
       : resolve(runnersDir, "pac_linux", "tools", "pac"),
     logger,
     undefined,
-    agent,
+    agent
   );
 }
