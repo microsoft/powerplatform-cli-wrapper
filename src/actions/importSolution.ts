@@ -5,6 +5,7 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface ImportSolutionParameters
 {
+  // Path to the solution zip file; relative to the working directory (configured in the runner parameters).
   path: string;
   credentials: AuthCredentials;
   environmentUrl: string;
