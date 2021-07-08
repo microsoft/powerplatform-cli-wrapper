@@ -27,7 +27,7 @@ describe("action: exportSolution", () => {
   });
   afterEach(() => restore());
 
-  function rewireMock(exportSolutionParameters: ExportSolutionParameters) : Promise<Promise<void>>
+  function runActionWithMocks(exportSolutionParameters: ExportSolutionParameters) : Promise<Promise<void>>
   {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
 
@@ -58,7 +58,7 @@ describe("action: exportSolution", () => {
   it("with minimal inputs, calls pac runner with correct arguments", 
       async () => 
       {
-        await rewireMock(exportSolutionParameters);
+        await runActionWithMocks(exportSolutionParameters);
 
         authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
         pacStub.should.have.been.calledOnceWith( "solution", "export", "--name", "Contoso", "--path", "C:\\Test\\ContosoSolution.zip");

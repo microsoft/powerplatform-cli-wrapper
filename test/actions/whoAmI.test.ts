@@ -25,7 +25,7 @@ describe("action: whoAmI", () => {
   });
   afterEach(() => restore());
 
-  function rewireMock(whoAmIParameters: WhoAmIParameters) : Promise<Promise<void>>
+  function runActionWithMocks(whoAmIParameters: WhoAmIParameters) : Promise<Promise<void>>
   {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
 
@@ -52,7 +52,7 @@ describe("action: whoAmI", () => {
           environmentUrl: environmentUrl
         };
 
-        await rewireMock(whoAmIParameters);
+        await runActionWithMocks(whoAmIParameters);
 
         authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
         pacStub.should.have.been.calledOnceWith("org", "who");
