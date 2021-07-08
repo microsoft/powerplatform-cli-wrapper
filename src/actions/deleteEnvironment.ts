@@ -15,12 +15,12 @@ export async function deleteEnvironment(parameters: DeleteEnvironmentParameters,
 {
   const pac = createPacRunner(runnerParameters);
   await authenticateAdmin(pac, parameters.credentials);
-  const deleteEnvArgs = ["admin", "delete"];
+  const pacArgs = ["admin", "delete"];
 
-  if(parameters.environmentUrl) { deleteEnvArgs.push("--url", parameters.environmentUrl);}
-  else if(parameters.environmentId) { deleteEnvArgs.push("--id", parameters.environmentId); }
+  if(parameters.environmentUrl) { pacArgs.push("--url", parameters.environmentUrl);}
+  else if(parameters.environmentId) { pacArgs.push("--id", parameters.environmentId); }
   else { throw new Error("Please provide either environment id or environment url");}
-  if(parameters.async) { deleteEnvArgs.push("--async"); }
+  if(parameters.async) { pacArgs.push("--async"); }
 
-  await pac(...deleteEnvArgs);
+  await pac(...pacArgs);
 }
