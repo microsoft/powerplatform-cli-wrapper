@@ -18,7 +18,7 @@ export async function deleteEnvironment(parameters: DeleteEnvironmentParameters,
   const pacArgs = ["admin", "delete"];
 
   if(parameters.environmentUrl) { pacArgs.push("--url", parameters.environmentUrl);}
-  else if(parameters.environmentId) { pacArgs.push("--id", parameters.environmentId); }
+  else if(parameters.environmentId) { pacArgs.push("--environment-id", parameters.environmentId); }
   else { throw new Error("Please provide either environment id or environment url");}
   if(parameters.async) { pacArgs.push("--async"); }
 
