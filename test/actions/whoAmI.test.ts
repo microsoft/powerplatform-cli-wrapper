@@ -16,8 +16,8 @@ describe("action: whoAmI", () => {
   let pacStub: CommandRunner;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
-  const mockClientCredentials : ClientCredentials = createMockClientCredentials();
-  const environmentUrl : string = testEnvironmentUrl;
+  const mockClientCredentials: ClientCredentials = createMockClientCredentials();
+  const environmentUrl: string = testEnvironmentUrl;
 
   beforeEach(() => {
     pacStub = stub();
@@ -25,37 +25,27 @@ describe("action: whoAmI", () => {
   });
   afterEach(() => restore());
 
-  function runActionWithMocks(whoAmIParameters: WhoAmIParameters) : Promise<Promise<void>>
-  {
+  async function runActionWithMocks(whoAmIParameters: WhoAmIParameters): Promise<void> {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
 
-    return rewiremock.around(
-      async () => 
-      {
-        const whoAmI = (await import("../../src/actions/whoAmI")).whoAmI;
-        whoAmI(whoAmIParameters, runnerParameters);
-      },
-      (mock) => 
-      {
+    const mockedActionModule = await rewiremock.around(() => import("../../src/actions/whoAmI"),
+      (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
-        mock(() => import("../../src/pac/auth/authenticate")).with({authenticateEnvironment: authenticateEnvironmentStub});
-      }
-    );
+        mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateEnvironment: authenticateEnvironmentStub });
+      });
+
+    await mockedActionModule.whoAmI(whoAmIParameters, runnerParameters);
   }
 
-  it("calls pac runner with correct arguments", 
-      async () => 
-      {
-        const whoAmIParameters: WhoAmIParameters = 
-        {
-          credentials: mockClientCredentials,
-          environmentUrl: environmentUrl
-        };
+  it("calls pac runner with correct arguments", async () => {
+    const whoAmIParameters: WhoAmIParameters = {
+      credentials: mockClientCredentials,
+      environmentUrl: environmentUrl
+    };
 
-        await runActionWithMocks(whoAmIParameters);
+    await runActionWithMocks(whoAmIParameters);
 
-        authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-        pacStub.should.have.been.calledOnceWith("org", "who");
-      }
-    );
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
+    pacStub.should.have.been.calledOnceWith("org", "who");
+  });
 });

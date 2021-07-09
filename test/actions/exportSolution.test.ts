@@ -16,8 +16,8 @@ describe("action: exportSolution", () => {
   let pacStub: CommandRunner;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
-  const mockClientCredentials : ClientCredentials = createMockClientCredentials();
-  const environmentUrl : string = testEnvironmentUrl;
+  const mockClientCredentials: ClientCredentials = createMockClientCredentials();
+  const environmentUrl: string = testEnvironmentUrl;
   let exportSolutionParameters: ExportSolutionParameters;
 
   beforeEach(() => {
@@ -27,26 +27,19 @@ describe("action: exportSolution", () => {
   });
   afterEach(() => restore());
 
-  function runActionWithMocks(exportSolutionParameters: ExportSolutionParameters) : Promise<Promise<void>>
-  {
+  async function runActionWithMocks(exportSolutionParameters: ExportSolutionParameters): Promise<void> {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
 
-    return rewiremock.around(
-      async () => 
-      {
-        const exportSolution = (await import("../../src/actions/exportSolution")).exportSolution;
-        exportSolution(exportSolutionParameters, runnerParameters);
-      },
-      (mock) => 
-      {
+    const mockedActionModule = await rewiremock.around(() => import("../../src/actions/exportSolution"),
+      (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
-        mock(() => import("../../src/pac/auth/authenticate")).with({authenticateEnvironment: authenticateEnvironmentStub});
-      }
-    );
+        mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateEnvironment: authenticateEnvironmentStub });
+      });
+
+    await mockedActionModule.exportSolution(exportSolutionParameters, runnerParameters);
   }
 
-  function createMinMockExportSolutionParameters() : ExportSolutionParameters
-  {
+  const createMinMockExportSolutionParameters = (): ExportSolutionParameters => {
     return {
       credentials: mockClientCredentials,
       environmentUrl: environmentUrl,
@@ -55,13 +48,10 @@ describe("action: exportSolution", () => {
     };
   }
 
-  it("with minimal inputs, calls pac runner with correct arguments", 
-      async () => 
-      {
-        await runActionWithMocks(exportSolutionParameters);
+  it("with minimal inputs, calls pac runner with correct arguments", async () => {
+    await runActionWithMocks(exportSolutionParameters);
 
-        authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-        pacStub.should.have.been.calledOnceWith( "solution", "export", "--name", "Contoso", "--path", "C:\\Test\\ContosoSolution.zip");
-      }
-    );
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
+    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", "Contoso", "--path", "C:\\Test\\ContosoSolution.zip");
+  });
 });
