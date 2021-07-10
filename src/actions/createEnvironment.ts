@@ -11,7 +11,7 @@ export interface CreateEnvironmentParameters {
   currency?: string;
   language?: string;
   templates?: string[];
-  domainName?: string;
+  subDomainName?: string;
   async?: boolean;
 }
 
@@ -24,7 +24,7 @@ export async function createEnvironment(parameters: CreateEnvironmentParameters,
   if (parameters.currency) { pacArgs.push("--currency", parameters.currency); }
   if (parameters.language) { pacArgs.push("--language", parameters.language); }
   if (parameters.templates && parameters.templates.length > 0) { pacArgs.push("--templates", parameters.templates.join(', ')); }
-  if (parameters.domainName) { pacArgs.push("--domain", parameters.domainName); }
+  if (parameters.subDomainName) { pacArgs.push("--domain", parameters.subDomainName); }
   if (parameters.async) { pacArgs.push("--async"); }
 
   await pac(...pacArgs);
