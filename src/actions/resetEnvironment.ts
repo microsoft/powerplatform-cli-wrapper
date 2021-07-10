@@ -19,11 +19,11 @@ export interface ResetEnvironmentParameters {
 export async function resetEnvironment(parameters: ResetEnvironmentParameters, runnerParameters: RunnerParameters): Promise<void> {
   const pac = createPacRunner(runnerParameters);
   await authenticateAdmin(pac, parameters.credentials);
-  const pacArgs = ["admin", "reset"];
 
+  const pacArgs = ["admin", "reset"];
   if (parameters.currency) { pacArgs.push("--currency", parameters.currency); }
   if (parameters.subDomainName) { pacArgs.push("--domain", parameters.subDomainName); }
-  // PAC will validate if both environment id and url are passed, wrapper will only pass the arguments to PAC
+  /** Caller needs to validate at the client level if both environment id and url are passed. */
   if (parameters.environmentId) { pacArgs.push("--environment-id", parameters.environmentId); }
   if (parameters.environmentUrl) { pacArgs.push("--url", parameters.environmentUrl); }
   if (parameters.environmentName) { pacArgs.push("--name", parameters.environmentName); }
