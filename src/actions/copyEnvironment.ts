@@ -17,16 +17,13 @@ export interface CopyEnvironmentParameters {
 export async function copyEnvironment(parameters: CopyEnvironmentParameters, runnerParameters: RunnerParameters): Promise<void> {
   const pac = createPacRunner(runnerParameters);
   await authenticateAdmin(pac, parameters.credentials);
+
   const pacArgs = ["admin", "copy"];
-
+  /** Caller needs to validate at the client level if both environment id and url are passed. */
   if (parameters.sourceEnvironmentUrl) { pacArgs.push("--source-url", parameters.sourceEnvironmentUrl); }
-  else if (parameters.sourceEnvironmentId) { pacArgs.push("--source-id", parameters.sourceEnvironmentId); }
-  else { throw new Error("Please provide either source environment id or source environment url"); }
-
+  if (parameters.sourceEnvironmentId) { pacArgs.push("--source-id", parameters.sourceEnvironmentId); }
   if (parameters.targetEnvironmentUrl) { pacArgs.push("--target-url", parameters.targetEnvironmentUrl); }
-  else if (parameters.targetEnvironmentId) { pacArgs.push("--target-id", parameters.targetEnvironmentId); }
-  else { throw new Error("Please provide either target environment id or target environment url"); }
-
+  if (parameters.targetEnvironmentId) { pacArgs.push("--target-id", parameters.targetEnvironmentId); }
   if (parameters.targetEnvironmentName) { pacArgs.push("--name", parameters.targetEnvironmentName); }
   if (parameters.copyType) { pacArgs.push("--type", parameters.copyType); }
   if (parameters.async) { pacArgs.push("--async"); }
