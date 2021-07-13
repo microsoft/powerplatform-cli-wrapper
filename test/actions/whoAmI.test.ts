@@ -5,7 +5,7 @@ import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { CommandRunner } from "../../src/CommandRunner";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, testEnvironmentUrl } from "./mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mockData";
 import { WhoAmIParameters } from "../../src/actions";
 import Sinon = require("sinon");
 should();
@@ -17,7 +17,7 @@ describe("action: whoAmI", () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
-  const environmentUrl: string = testEnvironmentUrl;
+  const environmentUrl: string = mockEnvironmentUrl;
 
   beforeEach(() => {
     pacStub = stub();

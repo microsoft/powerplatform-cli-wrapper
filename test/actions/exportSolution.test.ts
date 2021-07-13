@@ -6,7 +6,7 @@ import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { ExportSolutionParameters } from "../../src/actions";
 import { CommandRunner } from "../../src/CommandRunner";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, testEnvironmentUrl } from "./mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mockData";
 import Sinon = require("sinon");
 should();
 use(sinonChai);
@@ -17,7 +17,7 @@ describe("action: exportSolution", () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
-  const environmentUrl: string = testEnvironmentUrl;
+  const environmentUrl: string = mockEnvironmentUrl;
   let exportSolutionParameters: ExportSolutionParameters;
 
   beforeEach(() => {

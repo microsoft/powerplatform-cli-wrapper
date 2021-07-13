@@ -7,7 +7,7 @@ export const createMockClientCredentials = (): ClientCredentials => ({
   tenantId: "TENANT_ID"
 });
 
-export const testEnvironmentUrl = "https://contoso.crm.dynamics.com/";
+export const mockEnvironmentUrl = "https://contoso.crm.dynamics.com/";
 
 export const createDefaultMockRunnerParameters = (): RunnerParameters => ({
   runnersDir: "C:\\Test\\runners\\",
