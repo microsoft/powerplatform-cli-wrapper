@@ -6,7 +6,7 @@ import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { ExportSolutionParameters } from "../../src/actions";
 import { CommandRunner } from "../../src/CommandRunner";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, testEnvironmentUrl } from "./sharedTestUtilities";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, testEnvironmentUrl } from "./mockData";
 import Sinon = require("sinon");
 should();
 use(sinonChai);
@@ -39,14 +39,12 @@ describe("action: exportSolution", () => {
     await mockedActionModule.exportSolution(exportSolutionParameters, runnerParameters);
   }
 
-  const createMinMockExportSolutionParameters = (): ExportSolutionParameters => {
-    return {
-      credentials: mockClientCredentials,
-      environmentUrl: environmentUrl,
-      name: "Contoso",
-      path: "C:\\Test\\ContosoSolution.zip"
-    };
-  }
+  const createMinMockExportSolutionParameters = (): ExportSolutionParameters => ({
+    credentials: mockClientCredentials,
+    environmentUrl: environmentUrl,
+    name: "Contoso",
+    path: "C:\\Test\\ContosoSolution.zip"
+  });
 
   it("with minimal inputs, calls pac runner with correct arguments", async () => {
     await runActionWithMocks(exportSolutionParameters);
