@@ -52,4 +52,18 @@ describe("action: exportSolution", () => {
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "export", "--name", "Contoso", "--path", "C:\\Test\\ContosoSolution.zip");
   });
+
+  it("with optional inputs, calls pac runner with correct arguments", async () => {
+    exportSolutionParameters.async = true;
+    exportSolutionParameters.managed = false;
+    exportSolutionParameters.maxAsyncWaitTimeInMin = 60;
+    exportSolutionParameters.targetVersion = "0.0.0";
+    exportSolutionParameters.include = ["autonumbering", "calendar"];
+
+    await runActionWithMocks(exportSolutionParameters);
+
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
+    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", "Contoso", "--path", "C:\\Test\\ContosoSolution.zip",
+      "--targetversion", "0.0.0", "--async", "--max-async-wait-time", "60", "--include", "autonumbering,calendar");
+  });
 });
