@@ -15,7 +15,7 @@ export async function deleteEnvironment(parameters: DeleteEnvironmentParameters,
   await authenticateAdmin(pac, parameters.credentials);
 
   const pacArgs = ["admin", "delete"];
-  /** Caller needs to validate at the client level if both environment id and url are passed. */
+  // Caller needs to validate at the client level if both environment id and url are passed.
   if (parameters.environmentUrl) { pacArgs.push("--url", parameters.environmentUrl); }
   if (parameters.environmentId) { pacArgs.push("--environment-id", parameters.environmentId); }
   if (parameters.async) { pacArgs.push("--async"); }
