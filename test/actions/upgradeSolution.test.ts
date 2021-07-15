@@ -12,8 +12,9 @@ should();
 use(sinonChai);
 use(chaiAsPromised);
 
-describe("action: upgrade", () => {
+describe("action: upgrade solution", () => {
   let pacStub: CommandRunner;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateEnvStub: Sinon.SinonStub<any[],any>;
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const envUrl: string = mockEnvironmentUrl;
