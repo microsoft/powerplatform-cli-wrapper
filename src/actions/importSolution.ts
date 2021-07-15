@@ -30,7 +30,7 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
   if (parameters.publishChanges) { pacArgs.push("--publish-changes"); }
   if (parameters.convertToManaged) { pacArgs.push("--convert-to-managed"); }
   if (parameters.async) { pacArgs.push("--async"); }
-  if (parameters.maxAsyncWaitTimeInMin) { pacArgs.push('--max-async-wait-time', parameters.maxAsyncWaitTimeInMin.toString()); }
+  if (typeof parameters.maxAsyncWaitTimeInMin == 'number') { pacArgs.push('--max-async-wait-time', parameters.maxAsyncWaitTimeInMin.toString()); }
   
   await pac(...pacArgs);
 }
