@@ -40,13 +40,13 @@ describe("action: upgrade solution", () => {
   const createUpgradeSolutionParameters = (): UpgradeSolutionParameters => ({
     credentials: mockClientCredentials,
     environmentUrl: envUrl,
-    name: "pizzapizza",
+    name: "mock-solution-name",
   });
 
   it("with required params, calls pac runner with correct args", async () => {
     await runActionWithMocks(upgradeSolutionParameters);
 
     authenticateEnvStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "upgrade", "--solution-name", "pizzapizza");
+    pacStub.should.have.been.calledOnceWith("solution", "upgrade", "--solution-name", "mock-solution-name");
   });
 });

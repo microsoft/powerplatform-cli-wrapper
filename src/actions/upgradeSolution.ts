@@ -6,10 +6,10 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 export interface UpgradeSolutionParameters 
 {
   name: string;
-  async?: boolean;
-  maxAsyncWaitTimeInMin?: number;
   credentials: AuthCredentials;
   environmentUrl: string;
+  async?: boolean;
+  maxAsyncWaitTimeInMin?: number;
 }
 
 export async function upgradeSolution(parameters: UpgradeSolutionParameters, runnerParameters: RunnerParameters): Promise<void> 
