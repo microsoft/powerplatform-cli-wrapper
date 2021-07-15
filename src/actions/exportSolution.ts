@@ -24,7 +24,7 @@ export async function exportSolution(parameters: ExportSolutionParameters, runne
   if (parameters.managed) { pacArgs.push("--managed"); }
   if (parameters.targetVersion) { pacArgs.push("--targetversion", parameters.targetVersion); }
   if (parameters.async) { pacArgs.push("--async"); }
-  if (parameters.maxAsyncWaitTimeInMin) { pacArgs.push("--max-async-wait-time", parameters.maxAsyncWaitTimeInMin.toString()); }
+  if (typeof parameters.maxAsyncWaitTimeInMin == 'number') { pacArgs.push("--max-async-wait-time", parameters.maxAsyncWaitTimeInMin.toString()); }
   if (parameters.include && parameters.include.length > 0) { pacArgs.push("--include", parameters.include.join(',')); }
 
   await pac(...pacArgs);
