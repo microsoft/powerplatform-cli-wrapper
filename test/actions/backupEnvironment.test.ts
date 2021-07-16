@@ -41,16 +41,25 @@ describe("action: backupEnvironment", () => {
   }
 
   const createMinMockBackupEnvironmentParameters = (): BackupEnvironmentParameters => ({
-    credentials: mockClientCredentials,
+    adminCredentials: mockClientCredentials,
     environmentUrl: environmentUrl,
     backupLabel: backupLabel
   });
 
-  it("calls pac runner with correct arguments", async () => {
-    backupEnvironmentParameters.notes = "mock notes";
+  it("with minimal inputs, calls pac runner with correct arguments", async () => {
     await runActionWithMocks(backupEnvironmentParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("admin", "backup", "--url", environmentUrl, "--label", backupLabel, "--notes", "mock notes");
+    pacStub.should.have.been.calledOnceWith("admin", "backup", "--url", environmentUrl, "--label", backupLabel);
+  });
+
+  it("with all optional inputs, calls pac runner with correct arguments", async () => {
+    backupEnvironmentParameters.notes = "mock notes";
+
+    await runActionWithMocks(backupEnvironmentParameters);
+
+    authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
+    pacStub.should.have.been.calledOnceWith("admin", "backup", "--url", environmentUrl, "--label", backupLabel,
+      "--notes", "mock notes");
   });
 });
