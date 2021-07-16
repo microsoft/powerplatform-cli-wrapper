@@ -40,15 +40,24 @@ describe("action: deleteEnvironment", () => {
   }
 
   const createMockdeleteEnvironmentParameters = (): DeleteEnvironmentParameters => ({
-    credentials: mockClientCredentials,
+    adminCredentials: mockClientCredentials,
     environmentUrl: environmentUrl,
   });
 
-  it("calls pac runner with correct arguments", async () => {
-    deleteEnvironmentParameters.async = true;
+  it("with minimal inputs, calls pac runner with correct arguments", async () => {
     await runActionWithMocks(deleteEnvironmentParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("admin", "delete", "--url", environmentUrl, "--async");
+    pacStub.should.have.been.calledOnceWith("admin", "delete", "--url", environmentUrl);
+  });
+
+  it("with all optional inputs, calls pac runner with correct arguments", async () => {
+    deleteEnvironmentParameters.async = true;
+    
+    await runActionWithMocks(deleteEnvironmentParameters);
+
+    authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
+    pacStub.should.have.been.calledOnceWith("admin", "delete", "--url", environmentUrl,
+      "--async");
   });
 });
