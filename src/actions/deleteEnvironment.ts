@@ -4,20 +4,17 @@ import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface DeleteEnvironmentParameters {
-  credentials: AuthCredentials;
-  environmentUrl?: string;
-  environmentId?: string;
+  adminCredentials: AuthCredentials;
+  environmentUrl: string;
   async?: boolean;
 }
 
 export async function deleteEnvironment(parameters: DeleteEnvironmentParameters, runnerParameters: RunnerParameters): Promise<void> {
   const pac = createPacRunner(runnerParameters);
-  await authenticateAdmin(pac, parameters.credentials);
+  await authenticateAdmin(pac, parameters.adminCredentials);
 
-  const pacArgs = ["admin", "delete"];
-  // Caller needs to validate at the client level if both environment id and url are passed.
-  if (parameters.environmentUrl) { pacArgs.push("--url", parameters.environmentUrl); }
-  if (parameters.environmentId) { pacArgs.push("--environment-id", parameters.environmentId); }
+  // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
+  const pacArgs = ["admin", "delete", "--url", parameters.environmentUrl];
   if (parameters.async) { pacArgs.push("--async"); }
 
   await pac(...pacArgs);
