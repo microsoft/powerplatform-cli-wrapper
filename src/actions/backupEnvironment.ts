@@ -4,19 +4,18 @@ import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface BackupEnvironmentParameters {
-  credentials: AuthCredentials;
+  adminCredentials: AuthCredentials;
   environmentUrl: string;
   backupLabel: string;
-  environmentId?: string;
   notes?: string;
 }
 
 export async function backupEnvironment(parameters: BackupEnvironmentParameters, runnerParameters: RunnerParameters): Promise<void> {
   const pac = createPacRunner(runnerParameters);
-  await authenticateAdmin(pac, parameters.credentials);
+  await authenticateAdmin(pac, parameters.adminCredentials);
 
+  // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
   const pacArgs = ["admin", "backup", "--url", parameters.environmentUrl, "--label", parameters.backupLabel];
-  if (parameters.environmentId) { pacArgs.push("--environment-id", parameters.environmentId); }
   if (parameters.notes) { pacArgs.push("--notes", parameters.notes); }
 
   await pac(...pacArgs);
