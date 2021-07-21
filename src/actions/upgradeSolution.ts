@@ -16,10 +16,10 @@ export async function upgradeSolution(parameters: UpgradeSolutionParameters, run
 {
   const pac = createPacRunner(runnerParameters);
   await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-  const upgradeArgs = ["solution", "upgrade", "--solution-name", parameters.name]
+  const pacArgs = ["solution", "upgrade", "--solution-name", parameters.name]
 
-  if (parameters.async) { upgradeArgs.push("--async"); }
-  if (parameters.maxAsyncWaitTimeInMin) { upgradeArgs.push("--max-async-wait-time", parameters.maxAsyncWaitTimeInMin.toString()); }
+  if (parameters.async) { pacArgs.push("--async"); }
+  if (typeof parameters.maxAsyncWaitTimeInMin == 'number') { pacArgs.push("--max-async-wait-time", parameters.maxAsyncWaitTimeInMin.toString()); }
   
-  await pac(...upgradeArgs);
+  await pac(...pacArgs);
 }

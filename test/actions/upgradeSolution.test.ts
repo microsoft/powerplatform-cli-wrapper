@@ -49,4 +49,24 @@ describe("action: upgrade solution", () => {
     authenticateEnvStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
     pacStub.should.have.been.calledOnceWith("solution", "upgrade", "--solution-name", "mock-solution-name");
   });
+
+  it("with required and not required params, calls pac runner with correct args", async () => {
+    upgradeSolutionParameters.async = true;
+    upgradeSolutionParameters.maxAsyncWaitTimeInMin = 60;
+
+    await runActionWithMocks(upgradeSolutionParameters);
+
+    authenticateEnvStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
+    pacStub.should.have.been.calledOnceWith("solution", "upgrade", "--solution-name", "mock-solution-name", "--async", 
+    "--max-async-wait-time", "60");
+  });
+
+  it("falsey number for async wait time is also successfully passed", async () => {
+    upgradeSolutionParameters.maxAsyncWaitTimeInMin = 0;
+
+    await runActionWithMocks(upgradeSolutionParameters);
+
+    authenticateEnvStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
+    pacStub.should.have.been.calledOnceWith("solution", "upgrade", "--solution-name", "mock-solution-name", "--max-async-wait-time", "0");
+  });
 });
