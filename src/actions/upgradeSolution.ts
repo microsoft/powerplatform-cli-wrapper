@@ -3,8 +3,7 @@ import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface UpgradeSolutionParameters 
-{
+export interface UpgradeSolutionParameters {
   name: string;
   credentials: AuthCredentials;
   environmentUrl: string;
@@ -12,14 +11,13 @@ export interface UpgradeSolutionParameters
   maxAsyncWaitTimeInMin?: number;
 }
 
-export async function upgradeSolution(parameters: UpgradeSolutionParameters, runnerParameters: RunnerParameters): Promise<void> 
-{
+export async function upgradeSolution(parameters: UpgradeSolutionParameters, runnerParameters: RunnerParameters): Promise<void> {
   const pac = createPacRunner(runnerParameters);
   await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
   const pacArgs = ["solution", "upgrade", "--solution-name", parameters.name]
 
-  if (parameters.async) { pacArgs.push("--async"); }
+  if (parameters.async !== undefined) { pacArgs.push("--async", parameters.async.toString()); }
   if (typeof parameters.maxAsyncWaitTimeInMin == 'number') { pacArgs.push("--max-async-wait-time", parameters.maxAsyncWaitTimeInMin.toString()); }
-  
+
   await pac(...pacArgs);
 }

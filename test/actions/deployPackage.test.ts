@@ -15,24 +15,24 @@ use(chaiAsPromised);
 describe("action: deploy package", () => {
   let pacStub: CommandRunner;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let authenticateEnvStub: Sinon.SinonStub<any[],any>;
+  let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const envUrl: string = mockEnvironmentUrl;
   let deployPackageParameters: DeployPackageParameters;
 
   beforeEach(() => {
     pacStub = stub();
-    authenticateEnvStub = stub();
+    authenticateEnvironmentStub = stub();
     deployPackageParameters = createDeployPackageParameters();
   })
   afterEach(() => restore())
 
-  async function runActionWithMocks(deployPackageParameters:DeployPackageParameters) {
+  async function runActionWithMocks(deployPackageParameters: DeployPackageParameters) {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/deployPackage"),
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
-        mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateEnvironment: authenticateEnvStub });
+        mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateEnvironment: authenticateEnvironmentStub });
       });
     await mockedActionModule.deployPackage(deployPackageParameters, runnerParameters);
   }
@@ -40,23 +40,22 @@ describe("action: deploy package", () => {
   const createDeployPackageParameters = (): DeployPackageParameters => ({
     credentials: mockClientCredentials,
     environmentUrl: envUrl,
-    package: "c:\\samplelogpackage",
+    packagePath: "c:\\samplelogpackage",
   });
 
   it("with required params, calls pac runner with correct args", async () => {
     await runActionWithMocks(deployPackageParameters);
 
-    authenticateEnvStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
     pacStub.should.have.been.calledOnceWith("package", "deploy", "--package", "c:\\samplelogpackage");
   });
 
-  it("with required and not required params, calls pac runner with correct args", async () => {
+  it("with minimal inputs and with all optional inputs, calls pac runner with correct args", async () => {
     deployPackageParameters.logConsole = true;
     deployPackageParameters.logFile = "c:\\samplelogdata";
 
     await runActionWithMocks(deployPackageParameters);
 
-    authenticateEnvStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
-    pacStub.should.have.been.calledOnceWith("package", "deploy", "--package", "c:\\samplelogpackage", "--logConsole", "--logFile", "c:\\samplelogdata");
+    pacStub.should.have.been.calledOnceWith("package", "deploy", "--package", "c:\\samplelogpackage", "--logConsole", "true", "--logFile", "c:\\samplelogdata");
   });
 });
