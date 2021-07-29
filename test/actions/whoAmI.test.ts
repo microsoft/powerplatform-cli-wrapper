@@ -37,7 +37,7 @@ describe("action: whoAmI", () => {
     await mockedActionModule.whoAmI(whoAmIParameters, runnerParameters);
   }
 
-  it("calls pac runner with correct arguments", async () => {
+  it("calls pac runner stub with correct arguments", async () => {
     const whoAmIParameters: WhoAmIParameters = {
       credentials: mockClientCredentials,
       environmentUrl: environmentUrl

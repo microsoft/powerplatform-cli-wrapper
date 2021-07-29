@@ -42,48 +42,42 @@ describe("action: importSolution", () => {
   const createMinMockImportSolutionParameters = (): ImportSolutionParameters => ({
     credentials: mockClientCredentials,
     environmentUrl: environmentUrl,
-    path: "C:\\Test\\ContosoSolution.zip"
+    path: "C:\\Test\\ContosoSolution.zip",
+    deploymentSettingsFilePath: undefined,
+    async: false,
+    maxAsyncWaitTimeInMin: 60,
+    importAsHolding: false,
+    forceOverwrite: false,
+    publishChanges: false,
+    skipDependencyCheck: false,
+    convertToManaged: false
   });
 
-  it("with minimal inputs, calls pac runner with correct arguments", async () => {
-    await runActionWithMocks(importSolutionParameters);
-
-    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", "C:\\Test\\ContosoSolution.zip");
-  });
-
-  it("with few optional inputs, calls pac runner with correct arguments", async () => {
-    importSolutionParameters.activatePlugins = true;
-    importSolutionParameters.async = undefined;
-    importSolutionParameters.convertToManaged = true;
-    importSolutionParameters.forceOverwrite = undefined;
-    importSolutionParameters.importAsHolding = false;
-    importSolutionParameters.maxAsyncWaitTimeInMin = 60;
-    importSolutionParameters.publishChanges = true;
-    importSolutionParameters.skipDependencyCheck = false;
-
+  it("with minimal inputs, calls pac runner stub with correct arguments", async () => {
     await runActionWithMocks(importSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "import", "--path", "C:\\Test\\ContosoSolution.zip",
-      "--activate-plugins", "--publish-changes", "--convert-to-managed", "--max-async-wait-time", "60");
+      "--async", "false", "--import-as-holding", "false", "--force-overwrite", "false", "--publish-changes", "false",
+      "--skip-dependency-check", "false", "--convert-to-managed", "false", "--max-async-wait-time", "60");
   });
 
-  it("with all optional inputs, calls pac runner with correct arguments", async () => {
-    importSolutionParameters.activatePlugins = true;
+  it("with all optional inputs, calls pac runner stub with correct arguments", async () => {
     importSolutionParameters.async = true;
+    importSolutionParameters.maxAsyncWaitTimeInMin = 120;
     importSolutionParameters.convertToManaged = true;
     importSolutionParameters.forceOverwrite = true;
     importSolutionParameters.importAsHolding = true;
-    importSolutionParameters.maxAsyncWaitTimeInMin = 60;
     importSolutionParameters.publishChanges = true;
     importSolutionParameters.skipDependencyCheck = true;
+    importSolutionParameters.deploymentSettingsFilePath = "C:\\Test\\ContosoDeploymentSettings.zip",
 
-    await runActionWithMocks(importSolutionParameters);
+      await runActionWithMocks(importSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "import", "--path", "C:\\Test\\ContosoSolution.zip",
-      "--activate-plugins", "--force-overwrite", "--skip-dependency-check", "--import-as-holding", "--publish-changes",
-      "--convert-to-managed", "--async", "--max-async-wait-time", "60");
+      "--async", "true", "--import-as-holding", "true", "--force-overwrite", "true", "--publish-changes", "true",
+      "--skip-dependency-check", "true", "--convert-to-managed", "true", "--max-async-wait-time", "120",
+      "--settings-file", "C:\\Test\\ContosoDeploymentSettings.zip");
   });
 });
