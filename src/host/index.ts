@@ -2,4 +2,4 @@
 // Licensed under the MIT License.
 
 export { InputValidator } from "./InputValidator";
-export { IHostAbstractions } from "./IHostAbstractions";
+export { IHostAbstractions, HostParameterEntry, WorkingDirectoryParameters } from "./IHostAbstractions";

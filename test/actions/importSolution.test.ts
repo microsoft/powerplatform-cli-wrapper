@@ -4,7 +4,7 @@ import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { ImportSolutionParameters } from "../../src/actions";
+import { ImportSolutionParameters, UpdatedImportSolutionParameters } from "../../src/actions";
 import { CommandRunner } from "../../src/CommandRunner";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mockData";
 import Sinon = require("sinon");
@@ -19,11 +19,13 @@ describe("action: importSolution", () => {
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
   let importSolutionParameters: ImportSolutionParameters;
+  let updatedImportSolutionParameters: UpdatedImportSolutionParameters;
 
   beforeEach(() => {
     pacStub = stub();
     authenticateEnvironmentStub = stub();
     importSolutionParameters = createMinMockImportSolutionParameters();
+    updatedImportSolutionParameters = createMinMockUpdatedImportSolutionParameters();
   });
   afterEach(() => restore());
 
@@ -43,6 +45,20 @@ describe("action: importSolution", () => {
     credentials: mockClientCredentials,
     environmentUrl: environmentUrl,
     path: "C:\\Test\\ContosoSolution.zip",
+    deploymentSettingsFilePath: undefined,
+    async: false,
+    maxAsyncWaitTimeInMin: 60,
+    importAsHolding: false,
+    forceOverwrite: false,
+    publishChanges: false,
+    skipDependencyCheck: false,
+    convertToManaged: false
+  });
+
+  const createMinMockUpdatedImportSolutionParameters = (): UpdatedImportSolutionParameters => ({
+    credentials: mockClientCredentials,
+    environmentUrl: environmentUrl,
+    path: { name: "C:\\Test\\ContosoSolution.zip", required: true },
     deploymentSettingsFilePath: undefined,
     async: false,
     maxAsyncWaitTimeInMin: 60,

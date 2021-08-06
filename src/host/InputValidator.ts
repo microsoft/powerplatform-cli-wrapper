@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { IHostAbstractions } from "./IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions } from "./IHostAbstractions";
 
 export class InputValidator {
   private _host: IHostAbstractions;
@@ -10,9 +10,14 @@ export class InputValidator {
     this._host = host;
   }
 
-  public getMaxAsyncWaitTime(maxAsyncWaitTime: string, required: boolean): number {
-    let parsedMaxAsyncWaitTimeInMin = 60;
-    const maxAsyncWaitTimeInMin = this._host.getValidInput(maxAsyncWaitTime, required);
+  public getInputAsBool(params: HostParameterEntry): boolean {
+    const textValue = this._host.getValidInput(params.name, params.required);
+    return (!textValue) ? (typeof params.defaultValue === 'boolean' ? params.defaultValue : false) : textValue === 'true';
+  }
+
+  public getMaxAsyncWaitTime(params: HostParameterEntry): number {
+    let parsedMaxAsyncWaitTimeInMin = (typeof params.defaultValue === 'string') ? parseInt(params.defaultValue) : 60;
+    const maxAsyncWaitTimeInMin = this._host.getValidInput(params.name, params.required);
 
     if (maxAsyncWaitTimeInMin !== undefined) {
       if (!isNaN(+maxAsyncWaitTimeInMin) && parseInt(maxAsyncWaitTimeInMin) > 0) {
@@ -26,11 +31,11 @@ export class InputValidator {
     return parsedMaxAsyncWaitTimeInMin;
   }
 
-  public getDeploymentSettingsFile(useDeploymentSettings: string, required: boolean, deploymentSettingsFile: string): string | undefined {
-    const useDeploymentSettingsFile = this._host.getInputAsBool(useDeploymentSettings, required, false);
+  public getDeploymentSettingsFile(useDeploymentSettings: HostParameterEntry, deploymentSettingsFile?: HostParameterEntry ): string | undefined {
+    const useDeploymentSettingsFile = this.getInputAsBool(useDeploymentSettings);
 
-    if (useDeploymentSettingsFile) {
-      return this._host.getValidInput(deploymentSettingsFile, true);
+    if (useDeploymentSettingsFile && deploymentSettingsFile !== undefined) {
+      return this._host.getValidInput(deploymentSettingsFile.name, deploymentSettingsFile.required);
     }
   }
 }
