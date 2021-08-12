@@ -19,7 +19,7 @@ describe("action: exportSolution", () => {
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
   let exportSolutionParameters: ExportSolutionParameters;
-
+  
   beforeEach(() => {
     pacStub = stub();
     authenticateEnvironmentStub = stub();
@@ -43,32 +43,28 @@ describe("action: exportSolution", () => {
     credentials: mockClientCredentials,
     environmentUrl: environmentUrl,
     name: "Contoso",
-    path: "C:\\Test\\ContosoSolution.zip",
-    managed: false,
-    async: false,
-    maxAsyncWaitTimeInMin: 60,
-    include: []
+    path: "C:\\Test\\ContosoSolution.zip"
   });
 
-  it("with minimal settings, calls pac runner stub with correct arguments", async () => {
+  it("with minimal inputs, calls pac runner with correct arguments", async () => {
     await runActionWithMocks(exportSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", "Contoso", "--path", "C:\\Test\\ContosoSolution.zip",
-      "--managed", "false", "--async", "false", "--max-async-wait-time", "60");
+    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", "Contoso", "--path", "C:\\Test\\ContosoSolution.zip");
   });
 
-  it("with maximal settings, calls pac runner stub with correct arguments", async () => {
+  it("with optional inputs, calls pac runner with correct arguments", async () => {
     exportSolutionParameters.async = true;
     exportSolutionParameters.managed = true;
     exportSolutionParameters.maxAsyncWaitTimeInMin = 60;
+    exportSolutionParameters.targetVersion = "0.0.0";
     exportSolutionParameters.include = ["autonumbering", "calendar"];
 
     await runActionWithMocks(exportSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "export", "--name", "Contoso", "--path", "C:\\Test\\ContosoSolution.zip",
-      "--managed", "true", "--async", "true", "--max-async-wait-time", "60", "--include", "autonumbering,calendar");
+      "--managed", "--targetversion", "0.0.0", "--async", "--max-async-wait-time", "60", "--include", "autonumbering,calendar");
   });
 
   it("include parameter is already comma-delimited", async () => {
@@ -77,7 +73,7 @@ describe("action: exportSolution", () => {
     await runActionWithMocks(exportSolutionParameters);
 
     pacStub.should.have.been.calledOnceWith("solution", "export", "--name", "Contoso", "--path", "C:\\Test\\ContosoSolution.zip",
-      "--managed", "false", "--async", "false", "--max-async-wait-time", "60", "--include", "autonumbering,customization,calendar");
+      "--include", "autonumbering,customization,calendar");
   });
 
   it("falsey number for async wait time is also successfully passed", async () => {
@@ -86,6 +82,6 @@ describe("action: exportSolution", () => {
     await runActionWithMocks(exportSolutionParameters);
 
     pacStub.should.have.been.calledOnceWith("solution", "export", "--name", "Contoso", "--path", "C:\\Test\\ContosoSolution.zip",
-      "--managed", "false", "--async", "false", "--max-async-wait-time", "0");
+      "--max-async-wait-time", "0");
   });
 });
