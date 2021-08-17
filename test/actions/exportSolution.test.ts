@@ -6,7 +6,7 @@ import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { ExportSolutionParameters } from "../../src/actions";
 import { CommandRunner } from "../../src/CommandRunner";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import Sinon = require("sinon");
 should();
 use(sinonChai);
@@ -19,7 +19,7 @@ describe("action: exportSolution", () => {
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
   let exportSolutionParameters: ExportSolutionParameters;
-  
+
   beforeEach(() => {
     pacStub = stub();
     authenticateEnvironmentStub = stub();

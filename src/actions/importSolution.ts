@@ -22,6 +22,7 @@ export interface ImportSolutionParameters {
   publishChanges: HostParameterEntry;
   skipDependencyCheck: HostParameterEntry;
   convertToManaged: HostParameterEntry;
+  activatePlugins: HostParameterEntry;
 }
 
 export async function importSolution(parameters: ImportSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
@@ -42,9 +43,10 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
   pacArgs.push("--publish-changes", validator.getBoolInputAsString(parameters.publishChanges));
   pacArgs.push("--skip-dependency-check", validator.getBoolInputAsString(parameters.skipDependencyCheck));
   pacArgs.push("--convert-to-managed", validator.getBoolInputAsString(parameters.convertToManaged));
-  pacArgs.push("--max-async-wait-time", validator.getMaxAsyncWaitTime(parameters.convertToManaged).toString());
+  pacArgs.push("--max-async-wait-time", validator.getIntegerInputAsString(parameters.maxAsyncWaitTimeInMin));
+  pacArgs.push("--activate-plugins", validator.getBoolInputAsString(parameters.activatePlugins));
 
-  const deploymentSettingsFile = validator.getDeploymentSettingsFile(parameters.useDeploymentSettingsFile, parameters.deploymentSettingsFile);
+  const deploymentSettingsFile = validator.getAbsoluteFilePath(parameters.useDeploymentSettingsFile, parameters.deploymentSettingsFile);
   if (deploymentSettingsFile) {
     pacArgs.push("--settings-file", deploymentSettingsFile);
   }

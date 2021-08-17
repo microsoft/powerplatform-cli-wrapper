@@ -16,29 +16,25 @@ export class InputValidator {
     return boolValue.toString();
   }
 
-  public getMaxAsyncWaitTime(params: HostParameterEntry): number {
-    let parsedMaxAsyncWaitTimeInMin = (typeof params.defaultValue === 'string') ? parseInt(params.defaultValue) : 60;
-    const maxAsyncWaitTimeInMin = this._host.getValidInput(params.name, params.required);
+  public getIntegerInputAsString(params: HostParameterEntry): string {
+    const defaultValue = (typeof params.defaultValue === 'string') ? parseInt(params.defaultValue) : 60;
+    const textValue = this._host.getValidInput(params.name, params.required);
 
-    if (maxAsyncWaitTimeInMin !== undefined) {
-      if (!isNaN(+maxAsyncWaitTimeInMin) && parseInt(maxAsyncWaitTimeInMin) > 0) {
-        parsedMaxAsyncWaitTimeInMin = parseInt(maxAsyncWaitTimeInMin);
+    if (textValue !== undefined) {
+      if (parseInt(textValue) > 0 && parseFloat(textValue) === parseInt(textValue)) {
+        return textValue;
       }
       else {
-        throw new Error(`${maxAsyncWaitTimeInMin} is not a valid positive number`);
+        throw new Error(`${textValue} is not a valid positive number`);
       }
     }
 
-    return parsedMaxAsyncWaitTimeInMin;
-  }
-  
-  public getDeploymentSettingsFile(useDeploymentSettingsFile: HostParameterEntry, deploymentSettingsFile?: HostParameterEntry): string | undefined {
-    if (this.getBoolInputAsString(useDeploymentSettingsFile) === "true" && this.isDeploymentSettingsFileValid(deploymentSettingsFile)) {
-      return this._host.getValidInput(deploymentSettingsFile.name, deploymentSettingsFile.required);
-    }
+    return defaultValue.toString();
   }
 
-  private isDeploymentSettingsFileValid(deploymentSettingsFile: HostParameterEntry | undefined): deploymentSettingsFile is HostParameterEntry {
-    return (deploymentSettingsFile as HostParameterEntry).name !== undefined;
+  public getAbsoluteFilePath(useFile: HostParameterEntry, file?: HostParameterEntry): string | undefined {
+    if (this.getBoolInputAsString(useFile) === "true" && file !== undefined) {
+      return this._host.getValidInput(file.name, file.required);
+    }
   }
 }
