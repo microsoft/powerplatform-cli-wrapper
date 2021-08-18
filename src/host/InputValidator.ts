@@ -10,15 +10,15 @@ export class InputValidator {
     this._host = host;
   }
 
-  public getBoolInputAsString(params: HostParameterEntry): string {
-    const textValue = this._host.getValidInput(params.name, params.required);
+  public getBoolInput(params: HostParameterEntry): string {
+    const textValue = this._host.getInput(params.name, params.required);
     const boolValue = (!textValue) ? (typeof params.defaultValue === 'boolean' ? params.defaultValue : false) : textValue === 'true';
     return boolValue.toString();
   }
 
-  public getIntegerInputAsString(params: HostParameterEntry): string {
+  public getIntInput(params: HostParameterEntry): string {
     const defaultValue = (typeof params.defaultValue === 'string') ? parseInt(params.defaultValue) : 60;
-    const textValue = this._host.getValidInput(params.name, params.required);
+    const textValue = this._host.getInput(params.name, params.required);
 
     if (textValue !== undefined) {
       if (parseInt(textValue) > 0 && parseFloat(textValue) === parseInt(textValue)) {
@@ -32,9 +32,7 @@ export class InputValidator {
     return defaultValue.toString();
   }
 
-  public getAbsoluteFilePath(useFile: HostParameterEntry, file?: HostParameterEntry): string | undefined {
-    if (this.getBoolInputAsString(useFile) === "true" && file !== undefined) {
-      return this._host.getValidInput(file.name, file.required);
-    }
+  public isEntryValid(entry?: HostParameterEntry): entry is HostParameterEntry {
+    return entry !== undefined && entry.name !== undefined && entry.required !== undefined;
   }
 }

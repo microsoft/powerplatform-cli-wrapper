@@ -1,18 +1,14 @@
-import rewiremock from "../rewiremock";
-import * as sinonChai from "sinon-chai";
-import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
+import * as chaiAsPromised from "chai-as-promised";
 import { restore, stub } from "sinon";
+import * as sinonChai from "sinon-chai";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { ImportSolutionParameters } from "../../src/actions";
 import { CommandRunner } from "../../src/CommandRunner";
-import {
-  createDefaultMockRunnerParameters, createMockClientCredentials, deploymentSettingsFile,
-  maxAsyncWaitTime, mockEnvironmentUrl
-} from "./mock/mockData";
-import Sinon = require("sinon");
-import { IHostAbstractions } from "../../src/host/IHostAbstractions";
+import rewiremock from "../rewiremock";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { mockHost } from "./mock/mockHost";
+import Sinon = require("sinon");
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -21,7 +17,7 @@ describe("action: importSolution", () => {
   let pacStub: CommandRunner;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
-  let host: IHostAbstractions;
+  const host= new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
   let importSolutionParameters: ImportSolutionParameters;
@@ -29,7 +25,6 @@ describe("action: importSolution", () => {
   beforeEach(() => {
     pacStub = stub();
     authenticateEnvironmentStub = stub();
-    host = new mockHost();
     importSolutionParameters = createMinMockImportSolutionParameters();
   });
   afterEach(() => restore());
@@ -65,7 +60,7 @@ describe("action: importSolution", () => {
     await runActionWithMocks(importSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", "C:\\Test\\ContosoSolution.zip",
+    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.solutionPath,
       "--async", "false", "--import-as-holding", "false", "--force-overwrite", "false", "--publish-changes", "false",
       "--skip-dependency-check", "false", "--convert-to-managed", "false", "--max-async-wait-time", "60", "--activate-plugins", "false");
   });
@@ -74,7 +69,7 @@ describe("action: importSolution", () => {
     importSolutionParameters.useDeploymentSettingsFile = { name: 'UseDeploymentSettingsFile', required: true, defaultValue: true };
     importSolutionParameters.deploymentSettingsFile = { name: 'DeploymentSettingsFile', required: true, defaultValue: true };
     importSolutionParameters.async = { name: 'AsyncOperation', required: true, defaultValue: true };
-    importSolutionParameters.maxAsyncWaitTimeInMin = { name: 'MaxAsyncWaitTime', required: true, defaultValue: '120' };
+    importSolutionParameters.maxAsyncWaitTimeInMin = { name: 'MaxAsyncWaitTime', required: true, defaultValue: '180' };
     importSolutionParameters.importAsHolding = { name: 'HoldingSolution', required: true, defaultValue: true };
     importSolutionParameters.forceOverwrite = { name: 'OverwriteUnmanagedCustomizations', required: true, defaultValue: true };
     importSolutionParameters.publishChanges = { name: 'PublishWorkflows', required: true, defaultValue: true };
@@ -85,10 +80,10 @@ describe("action: importSolution", () => {
     await runActionWithMocks(importSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", "C:\\Test\\ContosoSolution.zip",
+    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.solutionPath,
       "--async", "true", "--import-as-holding", "true", "--force-overwrite", "true", "--publish-changes", "true",
-      "--skip-dependency-check", "true", "--convert-to-managed", "true", "--max-async-wait-time", maxAsyncWaitTime,
-      "--activate-plugins", "true", "--settings-file", deploymentSettingsFile);
+      "--skip-dependency-check", "true", "--convert-to-managed", "true", "--max-async-wait-time", host.maxAsyncWaitTime,
+      "--activate-plugins", "true", "--settings-file", host.deploymentSettingsFile);
   });
 
   it("with optional inputs set to default values, calls pac runner stub with correct arguments", async () => {
@@ -105,7 +100,7 @@ describe("action: importSolution", () => {
     await runActionWithMocks(importSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", "C:\\Test\\ContosoSolution.zip",
+    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.solutionPath,
       "--async", "true", "--import-as-holding", "false", "--force-overwrite", "true", "--publish-changes", "false",
       "--skip-dependency-check", "true", "--convert-to-managed", "false", "--max-async-wait-time", "180", "--activate-plugins", "true");
   });

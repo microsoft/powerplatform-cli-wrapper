@@ -1,24 +1,20 @@
-import { HostParameterEntry, IHostAbstractions, WorkingDirectoryParameters } from "../../../src/host/IHostAbstractions";
-import { deploymentSettingsFile, maxAsyncWaitTime, solutionPath, workingDirectory } from "./mockData";
+import { IHostAbstractions } from "../../../src/host/IHostAbstractions";
 
 export class mockHost implements IHostAbstractions {
+  name = 'Mock-Host';
+  solutionPath = '//Test//ContosoSolution.zip';
+  deploymentSettingsFile = '//Test//deploymentSettings.txt';
+  maxAsyncWaitTime = '120';
 
-  name = "Mock-Host";
+  public getInput(name: string, required: boolean): string | undefined {
 
-  public getValidInput(name: string, required: boolean): string | undefined {
     if (required) {
       switch (name) {
-        case 'SolutionInputFile': return solutionPath;
-        case 'MaxAsyncWaitTime': return maxAsyncWaitTime;
-        case 'DeploymentSettingsFile': return deploymentSettingsFile;
+        case 'SolutionInputFile': return this.solutionPath;
+        case 'MaxAsyncWaitTime': return this.maxAsyncWaitTime;
+        case 'DeploymentSettingsFile': return this.deploymentSettingsFile;
         default: return 'true';
       }
     }
-  }
-
-  public getWorkingDirectory(params: HostParameterEntry): string | WorkingDirectoryParameters {
-    const workingDir = workingDirectory;
-    const textValue = this.getValidInput(params.name, params.required);
-    return (!textValue) ? (typeof params.defaultValue === 'string' ? params.defaultValue : workingDir) : { workingDir: workingDir, path: textValue };
   }
 }

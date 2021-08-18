@@ -32,23 +32,30 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
   const pacArgs = ["solution", "import"];
   const validator = new InputValidator(host);
 
-  const workingDirCandidate = host.getWorkingDirectory(parameters.path);
-  const workingDir = (typeof workingDirCandidate === 'string') ?
-    workingDirCandidate : path.resolve(workingDirCandidate.workingDir, workingDirCandidate.path);
-  pacArgs.push("--path", workingDir);
+  const solutionPath = host.getInput(parameters.path.name, parameters.path.required);
+  if (solutionPath === undefined) {
+    throw new Error("Solution Path cannot be undefined.");
+  }
+  if (!path.isAbsolute(solutionPath)) {
+    throw new Error(`Solution Path - ${solutionPath} is not an absolute solution path.`);
+  }
+  else {
+    pacArgs.push("--path", solutionPath);
+  }
 
-  pacArgs.push("--async", validator.getBoolInputAsString(parameters.async));
-  pacArgs.push("--import-as-holding", validator.getBoolInputAsString(parameters.importAsHolding));
-  pacArgs.push("--force-overwrite", validator.getBoolInputAsString(parameters.forceOverwrite));
-  pacArgs.push("--publish-changes", validator.getBoolInputAsString(parameters.publishChanges));
-  pacArgs.push("--skip-dependency-check", validator.getBoolInputAsString(parameters.skipDependencyCheck));
-  pacArgs.push("--convert-to-managed", validator.getBoolInputAsString(parameters.convertToManaged));
-  pacArgs.push("--max-async-wait-time", validator.getIntegerInputAsString(parameters.maxAsyncWaitTimeInMin));
-  pacArgs.push("--activate-plugins", validator.getBoolInputAsString(parameters.activatePlugins));
+  pacArgs.push("--async", validator.getBoolInput(parameters.async));
+  pacArgs.push("--import-as-holding", validator.getBoolInput(parameters.importAsHolding));
+  pacArgs.push("--force-overwrite", validator.getBoolInput(parameters.forceOverwrite));
+  pacArgs.push("--publish-changes", validator.getBoolInput(parameters.publishChanges));
+  pacArgs.push("--skip-dependency-check", validator.getBoolInput(parameters.skipDependencyCheck));
+  pacArgs.push("--convert-to-managed", validator.getBoolInput(parameters.convertToManaged));
+  pacArgs.push("--max-async-wait-time", validator.getIntInput(parameters.maxAsyncWaitTimeInMin));
+  pacArgs.push("--activate-plugins", validator.getBoolInput(parameters.activatePlugins));
 
-  const deploymentSettingsFile = validator.getAbsoluteFilePath(parameters.useDeploymentSettingsFile, parameters.deploymentSettingsFile);
-  if (deploymentSettingsFile) {
-    pacArgs.push("--settings-file", deploymentSettingsFile);
+  if (validator.getBoolInput(parameters.useDeploymentSettingsFile) === "true" && validator.isEntryValid(parameters.deploymentSettingsFile)) {
+    const settingsFile = host.getInput(parameters.deploymentSettingsFile.name, parameters.deploymentSettingsFile.required);
+    if (settingsFile !== undefined)
+      pacArgs.push("--settings-file", settingsFile);
   }
 
   await pac(...pacArgs);

@@ -21,11 +21,3 @@ export const createMockLogger = (): Logger => ({
   warn: stub(),
   error: stub(),
 });
-
-export const solutionPath = 'C:\\Test\\ContosoSolution.zip';
-
-export const workingDirectory = 'C:\\Test';
-
-export const deploymentSettingsFile = 'C:\\Test\\deploymentSettings.txt';
-
-export const maxAsyncWaitTime = '120';
