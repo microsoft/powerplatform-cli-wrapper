@@ -17,7 +17,7 @@ describe("action: importSolution", () => {
   let pacStub: CommandRunner;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
-  const host= new mockHost();
+  const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
   let importSolutionParameters: ImportSolutionParameters;
@@ -60,7 +60,7 @@ describe("action: importSolution", () => {
     await runActionWithMocks(importSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.solutionPath,
+    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath,
       "--async", "false", "--import-as-holding", "false", "--force-overwrite", "false", "--publish-changes", "false",
       "--skip-dependency-check", "false", "--convert-to-managed", "false", "--max-async-wait-time", "60", "--activate-plugins", "false");
   });
@@ -80,7 +80,7 @@ describe("action: importSolution", () => {
     await runActionWithMocks(importSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.solutionPath,
+    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath,
       "--async", "true", "--import-as-holding", "true", "--force-overwrite", "true", "--publish-changes", "true",
       "--skip-dependency-check", "true", "--convert-to-managed", "true", "--max-async-wait-time", host.maxAsyncWaitTime,
       "--activate-plugins", "true", "--settings-file", host.deploymentSettingsFile);
@@ -100,7 +100,7 @@ describe("action: importSolution", () => {
     await runActionWithMocks(importSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.solutionPath,
+    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath,
       "--async", "true", "--import-as-holding", "false", "--force-overwrite", "true", "--publish-changes", "false",
       "--skip-dependency-check", "true", "--convert-to-managed", "false", "--max-async-wait-time", "180", "--activate-plugins", "true");
   });

@@ -32,17 +32,11 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
   const pacArgs = ["solution", "import"];
   const validator = new InputValidator(host);
 
-  const solutionPath = host.getInput(parameters.path.name, parameters.path.required);
+  const solutionPath = host.getInput(parameters.path);
   if (solutionPath === undefined) {
-    throw new Error("Solution Path cannot be undefined.");
+    throw new Error("This error should never occur, solution path is undefined, it must always be set by host.");
   }
-  if (!path.isAbsolute(solutionPath)) {
-    throw new Error(`Solution Path - ${solutionPath} is not an absolute solution path.`);
-  }
-  else {
-    pacArgs.push("--path", solutionPath);
-  }
-
+  pacArgs.push("--path", path.resolve(runnerParameters.workingDir, solutionPath));
   pacArgs.push("--async", validator.getBoolInput(parameters.async));
   pacArgs.push("--import-as-holding", validator.getBoolInput(parameters.importAsHolding));
   pacArgs.push("--force-overwrite", validator.getBoolInput(parameters.forceOverwrite));
@@ -53,7 +47,7 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
   pacArgs.push("--activate-plugins", validator.getBoolInput(parameters.activatePlugins));
 
   if (validator.getBoolInput(parameters.useDeploymentSettingsFile) === "true" && validator.isEntryValid(parameters.deploymentSettingsFile)) {
-    const settingsFile = host.getInput(parameters.deploymentSettingsFile.name, parameters.deploymentSettingsFile.required);
+    const settingsFile = host.getInput(parameters.deploymentSettingsFile);
     if (settingsFile !== undefined)
       pacArgs.push("--settings-file", settingsFile);
   }

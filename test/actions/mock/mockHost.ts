@@ -1,16 +1,17 @@
-import { IHostAbstractions } from "../../../src/host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions } from "../../../src/host/IHostAbstractions";
+import { platform } from "os";
 
 export class mockHost implements IHostAbstractions {
   name = 'Mock-Host';
-  solutionPath = '//Test//ContosoSolution.zip';
-  deploymentSettingsFile = '//Test//deploymentSettings.txt';
+  relativeSolutionPath = './ContosoSolution.zip';
+  absoluteSolutionPath = (platform() === "win32") ? 'D:\\Test\\working\\ContosoSolution.zip' : '/Test/working/ContosoSolution.zip';
+  deploymentSettingsFile = '/Test/deploymentSettings.txt';
   maxAsyncWaitTime = '120';
 
-  public getInput(name: string, required: boolean): string | undefined {
-
-    if (required) {
-      switch (name) {
-        case 'SolutionInputFile': return this.solutionPath;
+  public getInput(entry: HostParameterEntry): string | undefined {
+    if (entry.required) {
+      switch (entry.name) {
+        case 'SolutionInputFile': return this.relativeSolutionPath;
         case 'MaxAsyncWaitTime': return this.maxAsyncWaitTime;
         case 'DeploymentSettingsFile': return this.deploymentSettingsFile;
         default: return 'true';

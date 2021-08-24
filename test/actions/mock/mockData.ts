@@ -1,5 +1,6 @@
 import { stub } from "sinon";
 import { ClientCredentials, Logger, RunnerParameters } from "../../../src";
+import { platform } from "os";
 
 export const createMockClientCredentials = (): ClientCredentials => ({
   appId: 'APP_ID',
@@ -10,8 +11,8 @@ export const createMockClientCredentials = (): ClientCredentials => ({
 export const mockEnvironmentUrl = 'https://contoso.crm.dynamics.com/';
 
 export const createDefaultMockRunnerParameters = (): RunnerParameters => ({
-  runnersDir: 'C:\\Test\\runners\\',
-  workingDir: 'C:\\Test\\working\\',
+  runnersDir: (platform() === "win32") ? 'D:/Test/runners/' : '/Test/runners/',
+  workingDir: (platform() === "win32") ? 'D:/Test/working/' : '/Test/working/',
   logger: createMockLogger(),
 });
 

@@ -11,14 +11,14 @@ export class InputValidator {
   }
 
   public getBoolInput(params: HostParameterEntry): string {
-    const textValue = this._host.getInput(params.name, params.required);
+    const textValue = this._host.getInput(params);
     const boolValue = (!textValue) ? (typeof params.defaultValue === 'boolean' ? params.defaultValue : false) : textValue === 'true';
     return boolValue.toString();
   }
 
   public getIntInput(params: HostParameterEntry): string {
     const defaultValue = (typeof params.defaultValue === 'string') ? parseInt(params.defaultValue) : 60;
-    const textValue = this._host.getInput(params.name, params.required);
+    const textValue = this._host.getInput(params);
 
     if (textValue !== undefined) {
       if (parseInt(textValue) > 0 && parseFloat(textValue) === parseInt(textValue)) {
