@@ -1,1 +1,0 @@
-{"version":3,"sources":["../src/sopa/restrictPlatformToWindows.ts"],"names":[],"mappings":";;AAAA,2BAA8B;AAE9B,SAAwB,yBAAyB;IAC/C,MAAM,eAAe,GAAG,aAAQ,EAAE,CAAC;IACnC,IAAI,eAAe,KAAK,OAAO,EAAE;QAC/B,MAAM,KAAK,CACT,kCAAkC,aAAQ,wGAAwG,CACnJ,CAAC;KACH;AACH,CAAC;AAPD,4CAOC","file":"restrictPlatformToWindows.js","sourceRoot":"../"}
