@@ -1,12 +1,12 @@
-import rewiremock from "../rewiremock";
-import * as sinonChai from "sinon-chai";
-import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
+import * as chaiAsPromised from "chai-as-promised";
 import { restore, stub } from "sinon";
-import { CommandRunner } from "../../src/CommandRunner";
+import * as sinonChai from "sinon-chai";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mockData";
 import { WhoAmIParameters } from "../../src/actions";
+import { CommandRunner } from "../../src/CommandRunner";
+import rewiremock from "../rewiremock";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import Sinon = require("sinon");
 should();
 use(sinonChai);

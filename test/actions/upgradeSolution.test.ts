@@ -5,7 +5,7 @@ import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { CommandRunner } from "../../src/CommandRunner";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { UpgradeSolutionParameters } from "src/actions/upgradeSolution";
 import Sinon = require("sinon");
 should();
