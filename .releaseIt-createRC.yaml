@@ -1,0 +1,25 @@
+# https://github.com/release-it/release-it/blob/master/config/release-it.json
+
+hooks: {}
+
+# https://github.com/release-it/release-it/blob/master/docs/git.md
+git:
+  addUntrackedFiles: false
+  commit: false
+  push: true
+  requireBranch: main
+  requireCommits: false
+  requireCleanWorkingDir: true
+  requireUpstream: true
+  tag: true
+  tagArgs: [ '--force' ]
+  tagAnnotation: |
+    build ${version}:
+    ${changelog}
+  tagName: 'rc${version}'
+
+#https://github.com/release-it/release-it/blob/master/docs/npm.md
+npm: false
+
+# https://github.com/release-it/release-it/blob/master/docs/github-releases.md
+github: false
