@@ -8,7 +8,7 @@ git:
   commit: false
   push: true
   requireBranch: main
-  requireCommits: true
+  requireCommits: false
   requireCleanWorkingDir: true
   requireUpstream: true
   tag: true
@@ -25,6 +25,5 @@ npm:
 
 # https://github.com/release-it/release-it/blob/master/docs/github-releases.md
 github:
-  draft: false
+  draft: true
   release: false
-

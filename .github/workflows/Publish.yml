@@ -3,7 +3,8 @@ name: Publish Npm Package
 on:
   push:
     tags:
-      - "v*"
+      # trigger publish builds via npm run trigger-pkg-release (requires push tags permissions to origin)
+      - "rc*"
 
 jobs:
   build_publish:
@@ -22,7 +23,8 @@ jobs:
 
       - name: Build
         run: |
-          npm i
+          npm ci
+          npm run set-version
           npm run dist
         env:
           AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
