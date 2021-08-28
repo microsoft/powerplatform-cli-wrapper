@@ -23,6 +23,11 @@ jobs:
           node-version: 14
           registry-url: "https://npm.pkg.github.com"
 
+      - name: Setup git tag committer info for set-version
+        run: |
+          git config --global user.name "DPX Tools Team"
+          git config --global user.email "capisvaatdev@microsoft.com"
+
       - name: Build
         run: |
           npm ci
