@@ -7,7 +7,7 @@ git:
   addUntrackedFiles: false
   commit: false
   push: true
-  requireBranch: false
+  requireBranch: main
   requireCommits: false
   requireCleanWorkingDir: true
   requireUpstream: true
