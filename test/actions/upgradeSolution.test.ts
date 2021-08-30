@@ -7,6 +7,7 @@ import { ClientCredentials, RunnerParameters } from "../../src";
 import { CommandRunner } from "../../src/CommandRunner";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { UpgradeSolutionParameters } from "src/actions/upgradeSolution";
+import { mockHost } from "./mock/mockHost";
 import Sinon = require("sinon");
 should();
 use(sinonChai);
@@ -16,6 +17,7 @@ describe("action: upgrade solution", () => {
   let pacStub: CommandRunner;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
+  const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const envUrl: string = mockEnvironmentUrl;
   let upgradeSolutionParameters: UpgradeSolutionParameters;
@@ -34,37 +36,41 @@ describe("action: upgrade solution", () => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
         mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateEnvironment: authenticateEnvironmentStub });
       });
-    await mockedActionModule.upgradeSolution(upgradeSolutionParameters, runnerParameters);
+    await mockedActionModule.upgradeSolution(upgradeSolutionParameters, runnerParameters, host);
   }
 
   const createUpgradeSolutionParameters = (): UpgradeSolutionParameters => ({
     credentials: mockClientCredentials,
     environmentUrl: envUrl,
-    name: "mock-solution-name",
+    name: { name: 'SolutionName', required: true },
+    async: { name: 'AsyncOperation', required: false },
+    maxAsyncWaitTimeInMin: { name: 'MaxAsyncWaitTime', required: false },
   });
 
   it("with required params, calls pac runner with correct args", async () => {
     await runActionWithMocks(upgradeSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "upgrade", "--solution-name", "mock-solution-name");
+    pacStub.should.have.been.calledOnceWith("solution", "upgrade", "--solution-name", host.name);
   });
 
   it("with minimal inputs and with all optional inputs, calls pac runner with correct args", async () => {
-    upgradeSolutionParameters.async = true;
-    upgradeSolutionParameters.maxAsyncWaitTimeInMin = 60;
+    upgradeSolutionParameters.async = { name: 'AsyncOperation', required: true, defaultValue: true };
+    upgradeSolutionParameters.maxAsyncWaitTimeInMin = { name: 'MaxAsyncWaitTime', required: true, defaultValue: '180' };
 
     await runActionWithMocks(upgradeSolutionParameters);
 
-    pacStub.should.have.been.calledOnceWith("solution", "upgrade", "--solution-name", "mock-solution-name", "--async", 
-      "true", "--max-async-wait-time", "60");
+    pacStub.should.have.been.calledOnceWith("solution", "upgrade", "--solution-name", host.name, "--async", 
+      "true", "--max-async-wait-time", host.maxAsyncWaitTime);
   });
 
-  it("falsey number for async wait time is also successfully passed", async () => {
-    upgradeSolutionParameters.maxAsyncWaitTimeInMin = 0;
+  it("with optional inputs set to default values, calls pac runner stub with correct arguments", async () => {
+    upgradeSolutionParameters.async = { name: 'AsyncOperation', required: false, defaultValue: false };
+    upgradeSolutionParameters.maxAsyncWaitTimeInMin = { name: 'MaxAsyncWaitTime', required: false, defaultValue: '180' };
 
     await runActionWithMocks(upgradeSolutionParameters);
 
-    pacStub.should.have.been.calledOnceWith("solution", "upgrade", "--solution-name", "mock-solution-name", "--max-async-wait-time", "0");
+    pacStub.should.have.been.calledOnceWith("solution", "upgrade", "--solution-name", host.name, "--async", 
+      "false", "--max-async-wait-time", "180");
   });
 });

@@ -7,6 +7,7 @@ export class mockHost implements IHostAbstractions {
   relativeSolutionPath = './ContosoSolution.zip';
   absoluteSolutionPath = (platform() === "win32") ? 'D:\\Test\\working\\ContosoSolution.zip' : '/Test/working/ContosoSolution.zip';
   deploymentSettingsFile = '/Test/deploymentSettings.txt';
+  logDataFile = 'c:\\samplelogdata'
   maxAsyncWaitTime = '120';
   targetVersion = '0.0.0';
   backupLabel = 'Mock-Label';
@@ -21,6 +22,8 @@ export class mockHost implements IHostAbstractions {
         case 'DeploymentSettingsFile': return this.deploymentSettingsFile;
         case 'TargetVersion': return this.targetVersion;
         case 'BackupLabel': return this.backupLabel;
+        case 'LogDataFile': return this.logDataFile;
+
         default: return 'true';
       }
     }
