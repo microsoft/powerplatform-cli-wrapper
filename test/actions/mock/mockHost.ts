@@ -10,6 +10,15 @@ export class mockHost implements IHostAbstractions {
   ruleLevelOverride = 'c:\\sameplejson';
   geoInstance = 'UnitedStates';
   maxAsyncWaitTime = '120';
+  customPACheckerEndpoint = 'https://japan.api.advisor.powerapps.com/';
+  fileLocation = 'c:\\localFiles';
+  filesToAnalyze = '/Test/analyze.zip';
+  filesToAnalyzeSasUri = 'c:\\filesToAnalyzeSasUri';
+  filesToExclude = 'c:\\filesToExclude';
+  ruleSet = '083a2ef5-7e0e-4754-9d88-9455142dc08b';
+  errorLevel = 'HighIssueCount';
+  errorThreshold = '0';
+  artifactDestinationName = 'CodeAnalysisLogs';
 
   public getInput(entry: HostParameterEntry): string | undefined {
     if (entry.required) {
@@ -20,6 +29,15 @@ export class mockHost implements IHostAbstractions {
         case 'OutputDirectory': return this.outputdirectory;
         case 'RuleLevelOverride': return this.ruleLevelOverride;
         case 'GeoInstance': return this.geoInstance;
+        case 'CustomPACheckerEndpoint': return this.customPACheckerEndpoint;
+        case 'FileLocation': return this.fileLocation;
+        case 'FilesToAnalyze': return this.filesToAnalyze;
+        case 'FilesToAnalyzeSasUri': return this.filesToAnalyzeSasUri;
+        case 'FilesToExclude': return this.filesToExclude;
+        case 'RuleSet': return this.ruleSet;
+        case 'ErrorLevel': return this.errorLevel;
+        case 'ErrorThreshold': return this.errorThreshold;
+        case 'ArtifactDestinationName': return this.artifactDestinationName;
         default: return 'true';
       }
     }

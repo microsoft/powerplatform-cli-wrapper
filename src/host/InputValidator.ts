@@ -21,7 +21,7 @@ export class InputValidator {
     const textValue = this._host.getInput(params);
 
     if (textValue !== undefined) {
-      if (parseInt(textValue) > 0 && parseFloat(textValue) === parseInt(textValue)) {
+      if (parseInt(textValue) >= 0 && parseFloat(textValue) === parseInt(textValue)) {
         return textValue;
       }
       else {
