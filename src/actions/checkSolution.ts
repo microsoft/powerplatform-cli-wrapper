@@ -16,12 +16,12 @@ export interface CheckSolutionParameters
   ruleLevelOverride?: HostParameterEntry;
   useDefaultPACheckerEndpoint: HostParameterEntry;
   customPACheckerEndpoint?: HostParameterEntry;
-  fileLocation?: HostParameterEntry;
-  filesToAnalyze?: HostParameterEntry;
+  fileLocation: HostParameterEntry;
+  filesToAnalyze: HostParameterEntry;
   filesToAnalyzeSasUri?: HostParameterEntry;
   filesToExclude?: HostParameterEntry;
-  ruleSet?: HostParameterEntry;
-  errorLevel: HostParameterEntry;
+  ruleSet: HostParameterEntry;
+  errorLevel?: HostParameterEntry;
   errorThreshold: HostParameterEntry;
   failOnPowerAppsCheckerAnalysisError: HostParameterEntry;
   artifactDestinationName?: HostParameterEntry;
@@ -62,17 +62,10 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     if (settingsFile !== undefined)
       pacArgs.push("--customPACheckerEndpoint", settingsFile);
   }
-  if (validator.isEntryValid(parameters.fileLocation)) {
-    const fileLocation = host.getInput(parameters.fileLocation);
-    if (fileLocation !== undefined) 
-      pacArgs.push("--fileLocation", fileLocation); 
-  }
-  if (validator.isEntryValid(parameters.filesToAnalyze)) {
-    const filesToAnalyze = host.getInput(parameters.filesToAnalyze);
-    if (filesToAnalyze !== undefined) 
-      pacArgs.push("--filesToAnalyze", filesToAnalyze); 
-  }
-  if (validator.isEntryValid(parameters.filesToAnalyzeSasUri)) {
+  const fileLocation = validator.getValidEntryOrDefault(parameters.fileLocation);
+  if (fileLocation == 'localFiles') {
+    pacArgs.push("--filesToAnalyze", validator.getValidEntryOrDefault(parameters.filesToAnalyze));
+  } else if (fileLocation == 'sasUriFile' && validator.isEntryValid(parameters.filesToAnalyzeSasUri)) {
     const filesToAnalyzeSasUri = host.getInput(parameters.filesToAnalyzeSasUri);
     if (filesToAnalyzeSasUri !== undefined) 
       pacArgs.push("--filesToAnalyzeSasUri", filesToAnalyzeSasUri); 
@@ -82,20 +75,16 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     if (filesToExclude !== undefined) 
       pacArgs.push("--filesToExclude", filesToExclude); 
   }
-  if (validator.isEntryValid(parameters.ruleSet)) {
-    const ruleSet = host.getInput(parameters.ruleSet);
-    if (ruleSet !== undefined) 
-      pacArgs.push("--ruleSet", ruleSet); 
+  const ruleSet = host.getInput(parameters.ruleSet);
+  if (ruleSet === undefined) {
+    throw new Error("Select a rule set that will be executed as part of this build.");
   }
+  pacArgs.push("--ruleSet", ruleSet); 
   if (validator.isEntryValid(parameters.errorLevel)) {
-    const errorLevel = host.getInput(parameters.errorLevel);
-    if (errorLevel !== undefined) 
-      pacArgs.push("--errorLevel", errorLevel); 
+    pacArgs.push("--errorLevel", validator.getValidEntryOrDefault(parameters.errorLevel));
   }
   if (validator.isEntryValid(parameters.artifactDestinationName)) {
-    const artifactDestinationName = host.getInput(parameters.artifactDestinationName);
-    if (artifactDestinationName !== undefined) 
-      pacArgs.push("--artifactDestinationName", artifactDestinationName); 
+    pacArgs.push("--artifactDestinationName", validator.getValidEntryOrDefault(parameters.artifactDestinationName)); 
   }
   
   await pac(...pacArgs);

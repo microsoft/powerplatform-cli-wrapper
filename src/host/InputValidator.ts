@@ -17,9 +17,7 @@ export class InputValidator {
   }
 
   public getIntInput(params: HostParameterEntry): string {
-    const defaultValue = (typeof params.defaultValue === 'string') ? parseInt(params.defaultValue) : 60;
     const textValue = this._host.getInput(params);
-
     if (textValue !== undefined) {
       if (parseInt(textValue) >= 0 && parseFloat(textValue) === parseInt(textValue)) {
         return textValue;
@@ -28,11 +26,28 @@ export class InputValidator {
         throw new Error(`${textValue} is not a valid positive number`);
       }
     }
-
+    const defaultValue = params.defaultValue?.toString();
+    if (defaultValue === undefined) {
+      throw new Error(`${params.name}'s default value is not defined`);
+    }
     return defaultValue.toString();
   }
 
   public isEntryValid(entry?: HostParameterEntry): entry is HostParameterEntry {
     return entry !== undefined && entry.name !== undefined && entry.required !== undefined;
+  }
+
+  public getValidEntryOrDefault(entry: HostParameterEntry): string {
+    if (this.isEntryValid(entry)) {
+      const textValue = this._host.getInput(entry);
+      if (textValue !== undefined) {
+        return textValue;
+      }
+    }
+    const defaultValue = entry.defaultValue?.toString();
+    if (defaultValue === undefined) {
+      throw new Error(`${entry.name}'s default value is not defined`);
+    }
+    return defaultValue.toString();
   }
 }
