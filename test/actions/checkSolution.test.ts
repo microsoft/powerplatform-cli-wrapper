@@ -51,14 +51,17 @@ describe("action: check solution", () => {
     ruleSet: { name: "RuleSet", required: true },
     errorThreshold: { name: "ErrorThreshold", required: false, defaultValue: "0" },
     failOnPowerAppsCheckerAnalysisError: { name: "FailOnPowerAppsCheckerAnalysisError", required: false },
+    errorLevel: { name: "ErrorLevel", required: false, defaultValue: "HighIssueCount" },
+    artifactDestinationName: { name: "ArtifactDestinationName", required: false, defaultValue: "CodeAnalysisLogs" },
   });
 
-  it("with required params, calls pac runner stub with correct args", async () => {
+  it("with optional inputs set to default values, calls pac runner stub with correct arguments", async () => {
     await runActionWithMocks(checkSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "check", "--path", host.absoluteSolutionPath, "--errorThreshold", host.errorThreshold, 
-    "--failOnPowerAppsCheckerAnalysisError", "false", "--filesToAnalyze", "**\\*.zip", "--ruleSet", host.ruleSet);
+    "--failOnPowerAppsCheckerAnalysisError", "false", "--filesToAnalyze", "**\\*.zip", "--ruleSet", host.ruleSet,
+    "--errorLevel", "HighIssueCount", "--artifactDestinationName", "CodeAnalysisLogs");
   });
 
   it("with minimal inputs and with all optional inputs, calls pac runner stub with correct args", async () => {
@@ -81,21 +84,5 @@ describe("action: check solution", () => {
     "--outputDirectory", host.outputdirectory, "--geo", host.geoInstance, "--ruleLevelOverride", host.ruleLevelOverride, "--customPACheckerEndpoint", 
     host.customPACheckerEndpoint, "--filesToAnalyzeSasUri", host.filesToAnalyzeSasUri, "--filesToExclude", host.filesToExclude,
     "--ruleSet", host.ruleSet, "--errorLevel", host.errorLevel, "--artifactDestinationName", host.artifactDestinationName);
-  });
-
-  it("with optional inputs set to default values, calls pac runner stub with correct arguments", async () => {
-    checkSolutionParameters.useDefaultPACheckerEndpoint = { name: "UseDefaultPACheckerEndpoint", required: true, defaultValue: false };
-    checkSolutionParameters.errorThreshold = { name: "ErrorThreshold", required: true, defaultValue: "0" };
-    checkSolutionParameters.failOnPowerAppsCheckerAnalysisError = { name: "FailOnPowerAppsCheckerAnalysisError", required: false, defaultValue: false };
-    checkSolutionParameters.fileLocation = { name: "FileLocation", required: false, defaultValue: "localFiles" };
-    checkSolutionParameters.filesToAnalyze = { name: "FilesToAnalyze", required: false, defaultValue: "test.zip" };
-    checkSolutionParameters.ruleSet = { name: "RuleSet", required: true };
-    checkSolutionParameters.errorLevel = { name: "ErrorLevel", required: false, defaultValue: "HighIssueCount" };
-    checkSolutionParameters.artifactDestinationName = { name: "ArtifactDestinationName", required: false, defaultValue: "CodeAnalysisLogs" };
-    await runActionWithMocks(checkSolutionParameters);
-
-    pacStub.should.have.been.calledOnceWith("solution", "check", "--path", host.absoluteSolutionPath, "--errorThreshold", "0", 
-    "--failOnPowerAppsCheckerAnalysisError", "false", "--filesToAnalyze", "test.zip", "--ruleSet", host.ruleSet,
-    "--errorLevel", "HighIssueCount", "--artifactDestinationName", "CodeAnalysisLogs");
   });
 });

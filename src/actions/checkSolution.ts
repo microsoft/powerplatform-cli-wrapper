@@ -21,10 +21,10 @@ export interface CheckSolutionParameters
   filesToAnalyzeSasUri?: HostParameterEntry;
   filesToExclude?: HostParameterEntry;
   ruleSet: HostParameterEntry;
-  errorLevel?: HostParameterEntry;
+  errorLevel: HostParameterEntry;
   errorThreshold: HostParameterEntry;
   failOnPowerAppsCheckerAnalysisError: HostParameterEntry;
-  artifactDestinationName?: HostParameterEntry;
+  artifactDestinationName: HostParameterEntry;
 }
 
 export async function checkSolution(parameters: CheckSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> 
@@ -80,12 +80,8 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     throw new Error("Select a rule set that will be executed as part of this build.");
   }
   pacArgs.push("--ruleSet", ruleSet); 
-  if (validator.isEntryValid(parameters.errorLevel)) {
-    pacArgs.push("--errorLevel", validator.getValidEntryOrDefault(parameters.errorLevel));
-  }
-  if (validator.isEntryValid(parameters.artifactDestinationName)) {
-    pacArgs.push("--artifactDestinationName", validator.getValidEntryOrDefault(parameters.artifactDestinationName)); 
-  }
+  pacArgs.push("--errorLevel", validator.getValidEntryOrDefault(parameters.errorLevel));
+  pacArgs.push("--artifactDestinationName", validator.getValidEntryOrDefault(parameters.artifactDestinationName)); 
   
   await pac(...pacArgs);
 }
