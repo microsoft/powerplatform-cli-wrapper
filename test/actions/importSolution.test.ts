@@ -47,7 +47,7 @@ describe("action: importSolution", () => {
     path: { name: "SolutionInputFile", required: true },
     useDeploymentSettingsFile: { name: 'UseDeploymentSettingsFile', required: false },
     async: { name: 'AsyncOperation', required: false },
-    maxAsyncWaitTimeInMin: { name: 'MaxAsyncWaitTime', required: false },
+    maxAsyncWaitTimeInMin: { name: 'MaxAsyncWaitTime', required: false, defaultValue: '60' },
     importAsHolding: { name: 'HoldingSolution', required: false },
     forceOverwrite: { name: 'OverwriteUnmanagedCustomizations', required: false },
     publishChanges: { name: 'PublishWorkflows', required: false },
