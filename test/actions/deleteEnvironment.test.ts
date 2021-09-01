@@ -6,7 +6,7 @@ import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { DeleteEnvironmentParameters } from "../../src/actions";
 import { CommandRunner } from "../../src/CommandRunner";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import Sinon = require("sinon");
 should();
 use(sinonChai);
@@ -23,7 +23,10 @@ describe("action: deleteEnvironment", () => {
   beforeEach(() => {
     pacStub = stub();
     authenticateAdminStub = stub();
-    deleteEnvironmentParameters = createMockdeleteEnvironmentParameters();
+    deleteEnvironmentParameters = {
+      credentials: mockClientCredentials,
+      environmentUrl: environmentUrl,
+    };
   });
   afterEach(() => restore());
 
@@ -39,25 +42,10 @@ describe("action: deleteEnvironment", () => {
     await mockedActionModule.deleteEnvironment(deleteEnvironmentParameters, runnerParameters);
   }
 
-  const createMockdeleteEnvironmentParameters = (): DeleteEnvironmentParameters => ({
-    adminCredentials: mockClientCredentials,
-    environmentUrl: environmentUrl,
-  });
-
-  it("with minimal inputs, calls pac runner with correct arguments", async () => {
+  it("with inputs, calls pac runner with correct arguments", async () => {
     await runActionWithMocks(deleteEnvironmentParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
     pacStub.should.have.been.calledOnceWith("admin", "delete", "--url", environmentUrl);
-  });
-
-  it("with all optional inputs, calls pac runner with correct arguments", async () => {
-    deleteEnvironmentParameters.async = true;
-    
-    await runActionWithMocks(deleteEnvironmentParameters);
-
-    authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("admin", "delete", "--url", environmentUrl,
-      "--async");
   });
 });
