@@ -4,7 +4,7 @@
 import { IHostAbstractions, HostParameterEntry } from "./IHostAbstractions";
 
 export class InputValidator {
-  private _host: IHostAbstractions;
+  protected _host: IHostAbstractions;
 
   public constructor(host: IHostAbstractions) {
     this._host = host;
