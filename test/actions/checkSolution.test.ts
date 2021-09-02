@@ -43,6 +43,7 @@ describe("action: check solution", () => {
     credentials: mockClientCredentials,
     environmentUrl: environmentUrl,
     solutionPath: { name: "SolutionInputFile", required: true },
+    ruleLevelOverride: { name: "RuleLevelOverride", required: false },
     useDefaultPACheckerEndpoint: { name: "UseDefaultPACheckerEndpoint", required: false },
     fileLocation: { name: "FileLocation", required: false, defaultValue: "localFiles" },
     filesToAnalyze: { name: "FilesToAnalyze", required: false, defaultValue: "**\\*.zip" },
@@ -59,8 +60,8 @@ describe("action: check solution", () => {
     await runActionWithMocks(checkSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "check", "--path", host.absoluteSolutionPath, "--errorThreshold", host.errorThreshold, 
-    "--failOnPowerAppsCheckerAnalysisError", "false", "--filesToAnalyze", "**\\*.zip", "--ruleSet", host.ruleSet,
+    pacStub.should.have.been.calledOnceWith("solution", "check", "--path", host.absoluteSolutionPath, "--ruleSet", host.ruleSet,
+    "--errorThreshold", host.errorThreshold, "--failOnPowerAppsCheckerAnalysisError", "false", "--filesToAnalyze", "**\\*.zip", 
     "--errorLevel", "HighIssueCount", "--artifactDestinationName", "CodeAnalysisLogs");
   });
 
@@ -80,9 +81,10 @@ describe("action: check solution", () => {
     checkSolutionParameters.artifactDestinationName = { name: "ArtifactDestinationName", required: true, defaultValue: "CodeAnalysisLogs" };
     await runActionWithMocks(checkSolutionParameters);
 
-    pacStub.should.have.been.calledOnceWith("solution", "check", "--path", host.absoluteSolutionPath, "--errorThreshold", host.errorThreshold, "--failOnPowerAppsCheckerAnalysisError", "true", 
-    "--outputDirectory", host.outputdirectory, "--geo", host.geoInstance, "--ruleLevelOverride", host.ruleLevelOverride, "--customPACheckerEndpoint", 
-    host.customPACheckerEndpoint, "--filesToAnalyzeSasUri", host.filesToAnalyzeSasUri, "--filesToExclude", host.filesToExclude,
-    "--ruleSet", host.ruleSet, "--errorLevel", host.errorLevel, "--artifactDestinationName", host.artifactDestinationName);
+    pacStub.should.have.been.calledOnceWith("solution", "check", "--path", host.absoluteSolutionPath, "--ruleSet", host.ruleSet, 
+    "--errorThreshold", host.errorThreshold, "--failOnPowerAppsCheckerAnalysisError", "true", "--outputDirectory", host.outputdirectory, 
+    "--geo", host.geoInstance, "--ruleLevelOverride", host.ruleLevelOverride, "--customPACheckerEndpoint", host.customPACheckerEndpoint, 
+    "--filesToAnalyzeSasUri", host.filesToAnalyzeSasUri, "--filesToExclude", host.filesToExclude, "--errorLevel", host.errorLevel, 
+    "--artifactDestinationName", host.artifactDestinationName);
   });
 });
