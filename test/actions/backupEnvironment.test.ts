@@ -6,7 +6,8 @@ import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { BackupEnvironmentParameters } from "../../src/actions";
 import { CommandRunner } from "../../src/CommandRunner";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { mockHost } from "./mock/mockHost";
 import Sinon = require("sinon");
 should();
 use(sinonChai);
@@ -16,19 +17,23 @@ describe("action: backupEnvironment", () => {
   let pacStub: CommandRunner;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
+  const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
-  const backupLabel = "mock label";
   let backupEnvironmentParameters: BackupEnvironmentParameters;
 
   beforeEach(() => {
     pacStub = stub();
     authenticateAdminStub = stub();
-    backupEnvironmentParameters = createMinMockBackupEnvironmentParameters();
+    backupEnvironmentParameters = {
+      credentials: mockClientCredentials,
+      environmentUrl: environmentUrl,
+      backupLabel: { name: 'BackupLabel', required: true },
+    };
   });
   afterEach(() => restore());
 
-  async function runActionWithMocks(deleteEnvironmentParameters: BackupEnvironmentParameters): Promise<void> {
+  async function runActionWithMocks(backupEnvironmentParameters: BackupEnvironmentParameters): Promise<void> {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
 
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/backupEnvironment"),
@@ -37,29 +42,13 @@ describe("action: backupEnvironment", () => {
         mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateAdmin: authenticateAdminStub });
       });
 
-    await mockedActionModule.backupEnvironment(deleteEnvironmentParameters, runnerParameters);
+    await mockedActionModule.backupEnvironment(backupEnvironmentParameters, runnerParameters, host);
   }
 
-  const createMinMockBackupEnvironmentParameters = (): BackupEnvironmentParameters => ({
-    adminCredentials: mockClientCredentials,
-    environmentUrl: environmentUrl,
-    backupLabel: backupLabel
-  });
-
-  it("with minimal inputs, calls pac runner with correct arguments", async () => {
+  it("with all inputs set by host, calls pac runner stub with correct arguments", async () => {
     await runActionWithMocks(backupEnvironmentParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("admin", "backup", "--url", environmentUrl, "--label", backupLabel);
-  });
-
-  it("with all optional inputs, calls pac runner with correct arguments", async () => {
-    backupEnvironmentParameters.notes = "mock notes";
-
-    await runActionWithMocks(backupEnvironmentParameters);
-
-    authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("admin", "backup", "--url", environmentUrl, "--label", backupLabel,
-      "--notes", "mock notes");
+    pacStub.should.have.been.calledOnceWith("admin", "backup", "--url", environmentUrl, "--label", host.backupLabel);
   });
 });

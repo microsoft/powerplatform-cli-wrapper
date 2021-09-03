@@ -42,7 +42,7 @@ describe("action: deleteEnvironment", () => {
     await mockedActionModule.deleteEnvironment(deleteEnvironmentParameters, runnerParameters);
   }
 
-  it("with inputs, calls pac runner with correct arguments", async () => {
+  it("with inputs, calls pac runner stub with correct arguments", async () => {
     await runActionWithMocks(deleteEnvironmentParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
