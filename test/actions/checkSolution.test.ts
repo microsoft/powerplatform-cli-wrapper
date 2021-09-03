@@ -2,7 +2,7 @@ import rewiremock from "../rewiremock";
 import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
-import { restore, stub } from "sinon";
+import { stub } from "sinon";
 import { CommandRunner } from "../../src/CommandRunner";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
@@ -15,9 +15,9 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: check solution", () => {
-  let pacStub: CommandRunner;
+  const pacStub: CommandRunner = stub();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
+  const authenticateEnvironmentStub: Sinon.SinonStub<any[], any> = stub();
   const mockHost : IHostAbstractions = {
     name: "SolutionInputFile",
     getInput: () => { throw new Error() },
@@ -29,15 +29,7 @@ describe("action: check solution", () => {
   stubFnc.onCall(1).returns("samplejson");
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
-  let checkSolutionParameters: CheckSolutionParameters;
   const absoluteSolutionPath = (platform() === "win32") ? 'D:\\Test\\working\\ContosoSolution.zip' : '/Test/working/ContosoSolution.zip';
-
-  beforeEach(() => {
-    pacStub = stub();
-    authenticateEnvironmentStub = stub();
-    checkSolutionParameters = createCheckSolutionParameters();
-  });
-  afterEach(() => restore());
 
   async function runActionWithMocks(checkSolutionParameters: CheckSolutionParameters): Promise<void> {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
@@ -57,8 +49,8 @@ describe("action: check solution", () => {
     geoInstance: undefined,
   });
 
-  it("with optional inputs set to default values, calls pac runner stub with correct arguments", async () => {
-    await runActionWithMocks(checkSolutionParameters);
+  it("required, optional, and not required input types calls pac runner stub with correct arguments", async () => {
+    await runActionWithMocks(createCheckSolutionParameters());
     
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "check", "--path", absoluteSolutionPath,
