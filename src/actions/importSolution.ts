@@ -34,7 +34,8 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
 
   const solutionPath = host.getInput(parameters.path);
   if (solutionPath === undefined) {
-    throw new Error("This error should never occur, solution path is undefined, it must always be set by host.");
+    // This error should never occur
+    throw new Error("Solution path is undefined, it must always be set by host.");
   }
   pacArgs.push("--path", path.resolve(runnerParameters.workingDir, solutionPath));
   pacArgs.push("--async", validator.getBoolInput(parameters.async));
@@ -46,10 +47,12 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
   pacArgs.push("--max-async-wait-time", validator.getIntInput(parameters.maxAsyncWaitTimeInMin));
   pacArgs.push("--activate-plugins", validator.getBoolInput(parameters.activatePlugins));
 
-  if (validator.getBoolInput(parameters.useDeploymentSettingsFile) === "true" && validator.isEntryValid(parameters.deploymentSettingsFile)) {
-    const settingsFile = host.getInput(parameters.deploymentSettingsFile);
-    if (settingsFile !== undefined)
-      pacArgs.push("--settings-file", settingsFile);
+  if (validator.getBoolInput(parameters.useDeploymentSettingsFile) === "true") {
+    if (parameters.deploymentSettingsFile) {
+      const settingsFile = host.getInput(parameters.deploymentSettingsFile);
+      if (settingsFile !== undefined)
+        pacArgs.push("--settings-file", settingsFile);
+    }
   }
 
   await pac(...pacArgs);

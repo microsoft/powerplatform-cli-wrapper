@@ -12,7 +12,7 @@ export interface ExportSolutionParameters {
   name: HostParameterEntry;
   path: HostParameterEntry;
   managed: HostParameterEntry;
-  targetVersion?: HostParameterEntry;
+  targetVersion: HostParameterEntry;
   async: HostParameterEntry;
   maxAsyncWaitTimeInMin: HostParameterEntry;
   autoNumberSettings: HostParameterEntry;
@@ -37,13 +37,15 @@ export async function exportSolution(parameters: ExportSolutionParameters, runne
 
   const solutionName = host.getInput(parameters.name);
   if (solutionName === undefined) {
-    throw new Error("This error should never occur, solution name is undefined, it must always be set by host.");
+    // This error should never occur
+    throw new Error("Solution name is undefined, it must always be set by host.");
   }
   pacArgs.push("--name", solutionName);
 
   const solutionPath = host.getInput(parameters.path);
   if (solutionPath === undefined) {
-    throw new Error("This error should never occur, solution path is undefined, it must always be set by host.");
+    // This error should never occur
+    throw new Error("Solution path is undefined, it must always be set by host.");
   }
   pacArgs.push("--path", path.resolve(runnerParameters.workingDir, solutionPath));
 
@@ -51,24 +53,23 @@ export async function exportSolution(parameters: ExportSolutionParameters, runne
   pacArgs.push("--async", validator.getBoolInput(parameters.async));
   pacArgs.push("--max-async-wait-time", validator.getIntInput(parameters.maxAsyncWaitTimeInMin));
 
-  if (validator.isEntryValid(parameters.targetVersion)) {
-    const targetVersion = host.getInput(parameters.targetVersion);
-    if (targetVersion !== undefined)
-      pacArgs.push("--targetversion", targetVersion);
+  const targetVersion = host.getInput(parameters.targetVersion);
+  if (targetVersion !== undefined) {
+    pacArgs.push("--targetversion", targetVersion);
   }
 
   const includeArgs = [];
-  if (validator.getBoolInput(parameters.autoNumberSettings)) { includeArgs.push("autonumbering"); }
-  if (validator.getBoolInput(parameters.calenderSettings)) { includeArgs.push("calendar"); }
-  if (validator.getBoolInput(parameters.customizationSettings)) { includeArgs.push("customization"); }
-  if (validator.getBoolInput(parameters.emailTrackingSettings)) { includeArgs.push("emailtracking"); }
-  if (validator.getBoolInput(parameters.externalApplicationSettings)) { includeArgs.push("externalapplications"); }
-  if (validator.getBoolInput(parameters.generalSettings)) { includeArgs.push("general"); }
-  if (validator.getBoolInput(parameters.isvConfig)) { includeArgs.push("isvconfig"); }
-  if (validator.getBoolInput(parameters.marketingSettings)) { includeArgs.push("marketing"); }
-  if (validator.getBoolInput(parameters.outlookSynchronizationSettings)) { includeArgs.push("outlooksynchronization"); }
-  if (validator.getBoolInput(parameters.relationshipRoles)) { includeArgs.push("relationshiproles"); }
-  if (validator.getBoolInput(parameters.sales)) { includeArgs.push("sales"); }
+  if (validator.getBoolInput(parameters.autoNumberSettings) === 'true') { includeArgs.push("autonumbering"); }
+  if (validator.getBoolInput(parameters.calenderSettings) === 'true') { includeArgs.push("calendar"); }
+  if (validator.getBoolInput(parameters.customizationSettings) === 'true') { includeArgs.push("customization"); }
+  if (validator.getBoolInput(parameters.emailTrackingSettings) === 'true') { includeArgs.push("emailtracking"); }
+  if (validator.getBoolInput(parameters.externalApplicationSettings) === 'true') { includeArgs.push("externalapplications"); }
+  if (validator.getBoolInput(parameters.generalSettings) === 'true') { includeArgs.push("general"); }
+  if (validator.getBoolInput(parameters.isvConfig) === 'true') { includeArgs.push("isvconfig"); }
+  if (validator.getBoolInput(parameters.marketingSettings) === 'true') { includeArgs.push("marketing"); }
+  if (validator.getBoolInput(parameters.outlookSynchronizationSettings) === 'true') { includeArgs.push("outlooksynchronization"); }
+  if (validator.getBoolInput(parameters.relationshipRoles) === 'true') { includeArgs.push("relationshiproles"); }
+  if (validator.getBoolInput(parameters.sales) === 'true') { includeArgs.push("sales"); }
   if (includeArgs.length > 0) { pacArgs.push("--include", includeArgs.join(',')); }
 
   await pac(...pacArgs);
