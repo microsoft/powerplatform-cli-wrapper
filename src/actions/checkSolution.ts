@@ -25,8 +25,8 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
   const solutionPath = validator.getRequiredInput(parameters.solutionPath);
   pacArgs.push("--path", path.resolve(runnerParameters.workingDir, solutionPath));
 
-  validator.pushInput(pacArgs, parameters.geoInstance, "--geo");
-  validator.pushInput(pacArgs, parameters.ruleLevelOverride, "--ruleLevelOverride");
+  validator.pushInput(pacArgs, "--geo", parameters.geoInstance);
+  validator.pushInput(pacArgs, "--ruleLevelOverride", parameters.ruleLevelOverride);
   
   await pac(...pacArgs);
 }

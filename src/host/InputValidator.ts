@@ -38,24 +38,28 @@ export class InputValidator {
     return intValue !== undefined ? intValue : 0;
   }
 
-  public pushInput(pacArgs: string[], params: HostParameterEntry | undefined, property: string): void {
+  public pushInput(pacArgs: string[], property: string, params?: HostParameterEntry): void {
     if (params !== undefined) {
       const value = this.getInput(params, params.required);
       if (value !== undefined ) {
-        pacArgs.push(property, value.toString());
+        pacArgs.push(property, value);
       }
     }
   }
 
-  public pushBoolInput(pacArgs: string[], params: HostParameterEntry, property: string): void {
-    const boolValue = this.getBooleanInput(params, params.required);
-    pacArgs.push(property, boolValue.toString());
+  public pushBoolInput(pacArgs: string[], property: string, params?: HostParameterEntry): void {
+    if (params !== undefined) {
+      const boolValue = this.getBooleanInput(params, params.required);
+      pacArgs.push(property, boolValue.toString());
+    }
   }
 
-  public pushIntInput(pacArgs: string[], params: HostParameterEntry, property: string,): void {
-    const intValue = this.getIntegerInput(params, params.required);
-    if (intValue !== undefined ) {
-      pacArgs.push(property, intValue.toString());
+  public pushIntInput(pacArgs: string[], property: string, params?: HostParameterEntry): void {
+    if (params !== undefined) {
+      const intValue = this.getIntegerInput(params, params.required);
+      if (intValue !== undefined ) {
+        pacArgs.push(property, intValue.toString());
+      }
     }
   }
 
