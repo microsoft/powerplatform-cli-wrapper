@@ -26,7 +26,7 @@ describe("input validator test", () => {
     }
     validator = new InputValidator(mockHost);
     assert.equal(validator.getRequiredInput(hostParameterEntry), stringValue);
-    validator.pushInput(pacArgs, hostParameterEntry, property);
+    validator.pushInput(pacArgs, property, hostParameterEntry);
     assert.deepEqual(pacArgs, [property, stringValue]);
   });
 
@@ -42,7 +42,7 @@ describe("input validator test", () => {
     }
     validator = new InputValidator(mockHost);
     assert.equal(validator.getBooleanInput(hostParameterEntry), true);
-    validator.pushBoolInput(pacArgs, hostParameterEntry, property);
+    validator.pushBoolInput(pacArgs, property, hostParameterEntry);
     assert.deepEqual(pacArgs, [property, "true"]);
   });
 
@@ -59,7 +59,7 @@ describe("input validator test", () => {
     }
     validator = new InputValidator(mockHost);
     assert.equal(validator.getRequiredInt(hostParameterEntry), 5);
-    validator.pushIntInput(pacArgs, hostParameterEntry, property);
+    validator.pushIntInput(pacArgs, property, hostParameterEntry);
     assert.deepEqual(pacArgs, [property, "5"]);
   });
 
@@ -70,7 +70,7 @@ describe("input validator test", () => {
       getInputValue: () => { throw new Error() },
     }
     validator = new InputValidator(mockHost);
-    validator.pushInput(pacArgs, undefined, property);
+    validator.pushInput(pacArgs, property);
     assert.deepEqual(pacArgs, []);
   });
 });
