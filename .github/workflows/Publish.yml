@@ -3,7 +3,8 @@ name: Publish Npm Package
 on:
   push:
     tags:
-      - "v*"
+      # trigger publish builds via npm run trigger-pkg-release (requires push tags permissions to origin)
+      - "rc*"
 
 jobs:
   build_publish:
@@ -12,6 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          fetch-depth: 0
+          ref: main
           lfs: false
 
       - name: Setup Node.js environment
@@ -20,9 +23,15 @@ jobs:
           node-version: 14
           registry-url: "https://npm.pkg.github.com"
 
+      - name: Setup git tag committer info for set-version
+        run: |
+          git config --global user.name "DPX Tools Team"
+          git config --global user.email "capisvaatdev@microsoft.com"
+
       - name: Build
         run: |
-          npm i
+          npm ci
+          npm run set-version
           npm run dist
         env:
           AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}

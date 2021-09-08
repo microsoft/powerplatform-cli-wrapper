@@ -1,6 +1,6 @@
 {
   "name": "@microsoft/powerplatform-cli-wrapper",
-  "version": "0.1.18",
+  "version": "0.0.1",
   "engines": {
     "node": ">=10.0.0"
   },
@@ -13,7 +13,9 @@
     "build": "node node_modules/gulp/bin/gulp.js",
     "test": "node node_modules/gulp/bin/gulp.js test",
     "ci": "node node_modules/gulp/bin/gulp.js ci",
-    "dist": "node node_modules/gulp/bin/gulp.js dist && git add -f -- ./dist"
+    "dist": "node node_modules/gulp/bin/gulp.js dist && git add -f -- ./dist",
+    "trigger-pkg-release": "node node_modules/release-it/bin/release-it --increment patch --ci -VV --config ./.releaseIt-createRC.yaml",
+    "set-version": "node node_modules/release-it/bin/release-it --increment patch --ci -VV"
   },
   "author": "PowerApps-ISV-Tools",
   "license": "MIT",
@@ -46,6 +48,7 @@
     "mocha": "^8.1.3",
     "node-fetch": "^2.6.1",
     "ps-list": "^7.2.0",
+    "release-it": "^14.11.5",
     "rewiremock": "^3.14.3",
     "sinon": "^10.0.0",
     "sinon-chai": "^3.6.0",
