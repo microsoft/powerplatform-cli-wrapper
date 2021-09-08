@@ -7,6 +7,7 @@ export class mockHost implements IHostAbstractions {
   absoluteSolutionPath = (platform() === "win32") ? 'D:\\Test\\working\\ContosoSolution.zip' : '/Test/working/ContosoSolution.zip';
   deploymentSettingsFile = '/Test/deploymentSettings.txt';
   maxAsyncWaitTime = '120';
+  backupLabel = 'Mock-Label';
 
   public getInput(entry: HostParameterEntry): string | undefined {
     if (entry.required) {
@@ -14,6 +15,7 @@ export class mockHost implements IHostAbstractions {
         case 'SolutionInputFile': return this.relativeSolutionPath;
         case 'MaxAsyncWaitTime': return this.maxAsyncWaitTime;
         case 'DeploymentSettingsFile': return this.deploymentSettingsFile;
+        case 'BackupLabel': return this.backupLabel;
         default: return 'true';
       }
     }
