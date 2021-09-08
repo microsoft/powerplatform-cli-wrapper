@@ -9,6 +9,7 @@ export class mockHost implements IHostAbstractions {
   deploymentSettingsFile = '/Test/deploymentSettings.txt';
   maxAsyncWaitTime = '120';
   targetVersion = '0.0.0';
+  backupLabel = 'Mock-Label';
 
   public getInput(entry: HostParameterEntry): string | undefined {
     if (entry.required) {
@@ -19,6 +20,7 @@ export class mockHost implements IHostAbstractions {
         case 'MaxAsyncWaitTime': return this.maxAsyncWaitTime;
         case 'DeploymentSettingsFile': return this.deploymentSettingsFile;
         case 'TargetVersion': return this.targetVersion;
+        case 'BackupLabel': return this.backupLabel;
         default: return 'true';
       }
     }
