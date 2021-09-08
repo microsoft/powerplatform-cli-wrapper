@@ -31,8 +31,4 @@ export class InputValidator {
 
     return defaultValue.toString();
   }
-
-  public isEntryValid(entry?: HostParameterEntry): entry is HostParameterEntry {
-    return entry !== undefined && entry.name !== undefined && entry.required !== undefined;
-  }
 }
