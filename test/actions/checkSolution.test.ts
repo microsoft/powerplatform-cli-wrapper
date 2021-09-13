@@ -18,15 +18,12 @@ describe("action: check solution", () => {
   const pacStub: CommandRunner = stub();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const authenticateEnvironmentStub: Sinon.SinonStub<any[], any> = stub();
+  const zip = "./ContosoSolution.zip";
   const mockHost : IHostAbstractions = {
     name: "SolutionInputFile",
-    getInput: () => { throw new Error() },
-    getInputValue: () => "./ContosoSolution.zip",
+    getInput: () => zip,
   }
   const samplejson = "samplejson";
-  const stubFnc = Sinon.stub(mockHost, "getInputValue");
-  stubFnc.onCall(0).returns("./ContosoSolution.zip");
-  stubFnc.onCall(1).returns("samplejson");
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
   const absoluteSolutionPath = (platform() === "win32") ? 'D:\\Test\\working\\ContosoSolution.zip' : '/Test/working/ContosoSolution.zip';
@@ -38,6 +35,9 @@ describe("action: check solution", () => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
         mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateEnvironment: authenticateEnvironmentStub });
       });
+    const stubFnc = Sinon.stub(mockHost, "getInput");
+    stubFnc.onCall(0).returns(zip);
+    stubFnc.onCall(1).returns(samplejson);
     await mockedActionModule.checkSolution(checkSolutionParameters, runnerParameters, mockHost);
   }
 

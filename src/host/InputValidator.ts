@@ -10,55 +10,27 @@ export class InputValidator {
     this._host = host;
   }
 
-  public getInput(params: HostParameterEntry, isRequired = false): string | undefined {
-      return this._host.getInputValue(params, isRequired);
+  public getInput(params: HostParameterEntry): string | undefined {
+      const val = this._host.getInput(params);
+      if (val === undefined && params.defaultValue !== undefined) {
+        return params.defaultValue.toString();
+      }
+      return val;
   }
 
   public getRequiredInput(params: HostParameterEntry): string {
-    return this.getInput(params, true) || "";
-  }
-
-  public getBooleanInput(params: HostParameterEntry, isRequired = false): boolean {
-    return this.getInput(params, isRequired) === 'true';
-  }
-
-  public getIntegerInput(params: HostParameterEntry, isRequired = false): number | undefined {
-    const intValue = this.getInput(params, isRequired);
-    if (intValue !== undefined) {
-      if (parseInt(intValue) < 0 || parseFloat(intValue) !== parseInt(intValue)) {
-        throw new Error(`${intValue} is not a valid positive number`);
-      }
-      return parseInt(intValue);
+    const val = this.getInput(params);
+    if (val !== undefined) {
+      return val;
     }
-    return intValue;
-  }
-
-  public getRequiredInt(params: HostParameterEntry): number {
-    const intValue = this.getIntegerInput(params, true);
-    return intValue !== undefined ? intValue : 0;
+    throw new Error(`Required ${params.name} not set`);
   }
 
   public pushInput(pacArgs: string[], property: string, params?: HostParameterEntry): void {
     if (params !== undefined) {
-      const value = this.getInput(params, params.required);
-      if (value !== undefined ) {
-        pacArgs.push(property, value);
-      }
-    }
-  }
-
-  public pushBoolInput(pacArgs: string[], property: string, params?: HostParameterEntry): void {
-    if (params !== undefined) {
-      const boolValue = this.getBooleanInput(params, params.required);
-      pacArgs.push(property, boolValue.toString());
-    }
-  }
-
-  public pushIntInput(pacArgs: string[], property: string, params?: HostParameterEntry): void {
-    if (params !== undefined) {
-      const intValue = this.getIntegerInput(params, params.required);
-      if (intValue !== undefined ) {
-        pacArgs.push(property, intValue.toString());
+      const val = this.getInput(params);
+      if (val !== undefined ) {
+        pacArgs.push(property, val);
       }
     }
   }

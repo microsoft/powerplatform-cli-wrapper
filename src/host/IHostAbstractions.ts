@@ -3,8 +3,7 @@
 
 export interface IHostAbstractions {
   name: string;
-  getInput: (entry: HostParameterEntry) => string | undefined; //deprecated
-  getInputValue: (entry: HostParameterEntry, isRequired: boolean) => string | undefined;
+  getInput: (entry: HostParameterEntry) => string | undefined;
 }
 
 export interface HostParameterEntry {

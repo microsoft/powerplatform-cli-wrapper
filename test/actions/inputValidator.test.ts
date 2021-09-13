@@ -7,69 +7,69 @@ describe("input validator test", () => {
   let validator: InputValidator;
   let pacArgs: string[];
   const property = "--property";
-
+  const inputValue = "inputValue";
+  const defaultValue = "defaultValue";
+  const hostName = "name";
+  const mockHostReturnUndefined : IHostAbstractions = {
+    name: hostName,
+    getInput: () => undefined,
+  }
+  const mockHostReturnInput : IHostAbstractions = {
+    name: hostName,
+    getInput: () => inputValue,
+  }
+  const hostParameterEntryRequired : HostParameterEntry = {
+    name: hostName,
+    required: true,
+    defaultValue: defaultValue,
+  };
+  const hostParameterEntryOptional : HostParameterEntry = {
+    name: hostName,
+    required: false,
+    defaultValue: defaultValue,
+  };
   beforeEach(() => {
     pacArgs = [];
   });
   afterEach(() => restore());
 
-  it("returns proper string value", async () => {
-    const stringValue = "string value";
-    const hostParameterEntry : HostParameterEntry = {
-      name: "test",
-      required: true,
-    };
-    const mockHost : IHostAbstractions = {
-      name: "something",
-      getInput: () => { throw new Error() },
-      getInputValue: () => stringValue,
-    }
-    validator = new InputValidator(mockHost);
-    assert.equal(validator.getRequiredInput(hostParameterEntry), stringValue);
-    validator.pushInput(pacArgs, property, hostParameterEntry);
-    assert.deepEqual(pacArgs, [property, stringValue]);
+  it("returns proper string value for a required set param", async () => {
+    validator = new InputValidator(mockHostReturnInput);
+    assert.equal(validator.getRequiredInput(hostParameterEntryRequired), inputValue);
+    validator.pushInput(pacArgs, property, hostParameterEntryRequired);
+    assert.deepEqual(pacArgs, [property, inputValue]);
   });
 
-  it("returns proper boolean value", async () => {
-    const hostParameterEntry : HostParameterEntry = {
+  it("throws error for a required param not set", async () => {
+    const hostParameterEntryWithNoDefault : HostParameterEntry = {
       name: "test",
       required: true,
     };
-    const mockHost : IHostAbstractions = {
-      name: "something",
-      getInput: () => { throw new Error() },
-      getInputValue: () => "true",
-    }
-    validator = new InputValidator(mockHost);
-    assert.equal(validator.getBooleanInput(hostParameterEntry), true);
-    validator.pushBoolInput(pacArgs, property, hostParameterEntry);
-    assert.deepEqual(pacArgs, [property, "true"]);
+    validator = new InputValidator(mockHostReturnUndefined);
+    assert.throw(() => validator.getRequiredInput(hostParameterEntryWithNoDefault));
   });
 
-  
-  it("returns proper integer value", async () => {
-    const hostParameterEntry : HostParameterEntry = {
-      name: "test",
-      required: true,
-    };
-    const mockHost : IHostAbstractions = {
-      name: "something",
-      getInput: () => { throw new Error() },
-      getInputValue: () => "5",
-    }
-    validator = new InputValidator(mockHost);
-    assert.equal(validator.getRequiredInt(hostParameterEntry), 5);
-    validator.pushIntInput(pacArgs, property, hostParameterEntry);
-    assert.deepEqual(pacArgs, [property, "5"]);
+  it("returns default string value for a required param not set", async () => {
+    validator = new InputValidator(mockHostReturnUndefined);
+    validator.pushInput(pacArgs, property, hostParameterEntryRequired);
+    assert.deepEqual(pacArgs, [property, defaultValue]);
+  });
+
+  it("pushes optionally set param", async () => {
+    validator = new InputValidator(mockHostReturnInput);
+    assert.equal(validator.getInput(hostParameterEntryOptional), inputValue);
+    validator.pushInput(pacArgs, property, hostParameterEntryOptional);
+    assert.deepEqual(pacArgs, [property, inputValue]);
+  });
+
+  it("pushes default of optionally param not set", async () => {
+    validator = new InputValidator(mockHostReturnUndefined);
+    validator.pushInput(pacArgs, property, hostParameterEntryOptional);
+    assert.deepEqual(pacArgs, [property, defaultValue]);
   });
 
   it("do not add optional to pac args", async () => {
-    const mockHost : IHostAbstractions = {
-      name: "something",
-      getInput: () => { throw new Error() },
-      getInputValue: () => { throw new Error() },
-    }
-    validator = new InputValidator(mockHost);
+    validator = new InputValidator(mockHostReturnUndefined);
     validator.pushInput(pacArgs, property);
     assert.deepEqual(pacArgs, []);
   });
