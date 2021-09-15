@@ -18,18 +18,16 @@ export class InputValidator {
       return val;
   }
 
-  public getRequiredInput(params: HostParameterEntry): string {
-    const val = this.getInput(params);
-    if (val !== undefined) {
-      return val;
-    }
-    throw new Error(`Required ${params.name} not set`);
-  }
-
-  public pushInput(pacArgs: string[], property: string, params?: HostParameterEntry): void {
+  public pushInput(pacArgs: string[], property: string, params?: HostParameterEntry, callback?: (val: string) => string): void {
     if (params !== undefined) {
-      const val = this.getInput(params);
-      if (val !== undefined ) {
+      let val = this.getInput(params);
+      if (val === undefined && params.required) {
+        throw new Error(`Required ${params.name} not set`);
+      }
+      else if (val !== undefined) {
+        if (callback) {
+          val = callback(val);
+        }
         pacArgs.push(property, val);
       }
     }

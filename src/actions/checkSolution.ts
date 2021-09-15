@@ -22,9 +22,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
   const pacArgs = ["solution", "check"]
   const validator = new InputValidator(host);
 
-  const solutionPath = validator.getRequiredInput(parameters.solutionPath);
-  pacArgs.push("--path", path.resolve(runnerParameters.workingDir, solutionPath));
-
+  validator.pushInput(pacArgs, "--path", parameters.solutionPath, (value) => path.resolve(runnerParameters.workingDir, value));
   validator.pushInput(pacArgs, "--geo", parameters.geoInstance);
   validator.pushInput(pacArgs, "--ruleLevelOverride", parameters.ruleLevelOverride);
   

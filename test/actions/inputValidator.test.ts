@@ -35,7 +35,6 @@ describe("input validator test", () => {
 
   it("returns proper string value for a required set param", async () => {
     validator = new InputValidator(mockHostReturnInput);
-    assert.equal(validator.getRequiredInput(hostParameterEntryRequired), inputValue);
     validator.pushInput(pacArgs, property, hostParameterEntryRequired);
     assert.deepEqual(pacArgs, [property, inputValue]);
   });
@@ -46,7 +45,7 @@ describe("input validator test", () => {
       required: true,
     };
     validator = new InputValidator(mockHostReturnUndefined);
-    assert.throw(() => validator.getRequiredInput(hostParameterEntryWithNoDefault));
+    assert.throw(() => validator.pushInput(pacArgs, property, hostParameterEntryWithNoDefault));
   });
 
   it("returns default string value for a required param not set", async () => {
