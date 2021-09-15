@@ -9,5 +9,5 @@ export interface IHostAbstractions {
 export interface HostParameterEntry {
   readonly name: string;
   readonly required: boolean;
-  readonly defaultValue?: boolean | string; 
+  readonly defaultValue?: boolean | string;
 }
