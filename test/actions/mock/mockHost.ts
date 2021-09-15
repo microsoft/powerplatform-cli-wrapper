@@ -11,6 +11,13 @@ export class mockHost implements IHostAbstractions {
   maxAsyncWaitTime = '120';
   targetVersion = '0.0.0';
   backupLabel = 'Mock-Label';
+  environmentName = 'Mock-Environment';
+  environmentType = 'Sandbox';
+  currency = 'USD';
+  language = 'English';
+  region = 'United States';
+  domainName = 'Contoso';
+  templates = 'Customer Service, Sample App';
 
   public getInput(entry: HostParameterEntry): string | undefined {
     if (entry.required) {
@@ -23,7 +30,13 @@ export class mockHost implements IHostAbstractions {
         case 'TargetVersion': return this.targetVersion;
         case 'BackupLabel': return this.backupLabel;
         case 'LogDataFile': return this.logDataFile;
-
+        case 'DisplayName': return this.environmentName;
+        case 'EnvironmentSku': return this.environmentType;
+        case 'CurrencyName': return this.currency;
+        case 'DomainName': return this.domainName;
+        case 'LanguageName': return this.language;
+        case 'LocationName': return this.region;
+        case 'AppsTemplate': return this.templates;
         default: return 'true';
       }
     }
