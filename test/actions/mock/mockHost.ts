@@ -25,4 +25,9 @@ export class mockHost implements IHostAbstractions {
       }
     }
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public getInputValue(entry: HostParameterEntry, isRequired: boolean): string | undefined {
+    return;
+  }
 }
