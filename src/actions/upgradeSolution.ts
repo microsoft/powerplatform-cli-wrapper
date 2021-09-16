@@ -16,16 +16,12 @@ export interface UpgradeSolutionParameters {
 export async function upgradeSolution(parameters: UpgradeSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const pac = createPacRunner(runnerParameters);
   await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-  
   const pacArgs = ["solution", "upgrade"];
   const validator = new InputValidator(host);
-  const solutionName = host.getInput(parameters.name);
-  if (solutionName === undefined) {
-    throw new Error("This error should never occur, solution name is undefined, it must always be set by host.");
-  }  
-  pacArgs.push("--solution-name", solutionName)
-  pacArgs.push("--async", validator.getBoolInput(parameters.async));
-  pacArgs.push("--max-async-wait-time", validator.getIntInput(parameters.maxAsyncWaitTimeInMin));
+
+  validator.pushInput(pacArgs, "--solution-name", parameters.name);
+  validator.pushInput(pacArgs, "--async", parameters.async);
+  validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
 
   await pac(...pacArgs);
 }
