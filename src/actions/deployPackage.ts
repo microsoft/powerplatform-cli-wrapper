@@ -4,24 +4,25 @@ import { authenticateEnvironment } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
+import path = require("path");
 
-export interface UpgradeSolutionParameters {
+export interface DeployPackageParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
-  name: HostParameterEntry;
-  async: HostParameterEntry;
-  maxAsyncWaitTimeInMin: HostParameterEntry;
+  packagePath: HostParameterEntry;
+  logFile?: HostParameterEntry;
+  logConsole?: HostParameterEntry;
 }
 
-export async function upgradeSolution(parameters: UpgradeSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+export async function deployPackage(parameters: DeployPackageParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const pac = createPacRunner(runnerParameters);
   await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-  const pacArgs = ["solution", "upgrade"];
+  const pacArgs = ["package", "deploy"];
   const validator = new InputValidator(host);
 
-  validator.pushInput(pacArgs, "--solution-name", parameters.name);
-  validator.pushInput(pacArgs, "--async", parameters.async);
-  validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
+  validator.pushInput(pacArgs, "--package", parameters.packagePath, (value) => path.resolve(runnerParameters.workingDir, value));
+  validator.pushInput(pacArgs, "--logFile", parameters.logFile);
+  validator.pushInput(pacArgs, "--logConsole", parameters.logConsole);
 
   await pac(...pacArgs);
 }

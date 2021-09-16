@@ -8,3 +8,5 @@ export * from "./upgradeSolution";
 export * from "./deleteEnvironment";
 export * from "./backupEnvironment";
 export * from "./checkSolution";
+export * from "./publishSolution";
+export * from "./deployPackage";
