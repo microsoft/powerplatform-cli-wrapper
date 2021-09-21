@@ -11,3 +11,5 @@ export * from "./checkSolution";
 export * from "./publishSolution";
 export * from "./deployPackage";
 export * from "./createEnvironment";
+export * from "./packSolution";
+export * from "./unpackSolution";
