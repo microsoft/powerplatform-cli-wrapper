@@ -12,3 +12,6 @@ export * from "./publishSolution";
 export * from "./deployPackage";
 export * from "./createEnvironment";
 export * from "./restoreEnvironment";
+export * from "./deleteSolution";
+export * from "./packSolution";
+export * from "./unpackSolution";
