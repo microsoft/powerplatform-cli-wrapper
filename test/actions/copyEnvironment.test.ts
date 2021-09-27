@@ -6,7 +6,8 @@ import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { CopyEnvironmentParameters } from "../../src/actions";
 import { CommandRunner } from "../../src/CommandRunner";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { mockHost } from "./mock/mockHost";
 import Sinon = require("sinon");
 should();
 use(sinonChai);
@@ -16,9 +17,9 @@ describe("action: copyEnvironment", () => {
   let pacStub: CommandRunner;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
+  const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const sourceEnvironmentUrl: string = mockEnvironmentUrl;
-  const targetEnvironmentUrl = "https://contoso2.crm.dynamics.com/";
   let copyEnvironmentParameters: CopyEnvironmentParameters;
 
   beforeEach(() => {
@@ -37,31 +38,33 @@ describe("action: copyEnvironment", () => {
         mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateAdmin: authenticateAdminStub });
       });
 
-    await mockedActionModule.copyEnvironment(copyEnvironmentParameters, runnerParameters);
+    await mockedActionModule.copyEnvironment(copyEnvironmentParameters, runnerParameters, host);
   }
 
   const createMinMockCopyEnvironmentParameters = (): CopyEnvironmentParameters => ({
-    adminCredentials: mockClientCredentials,
+    credentials: mockClientCredentials,
     sourceEnvironmentUrl: sourceEnvironmentUrl,
-    targetEnvironmentUrl: targetEnvironmentUrl,
+    targetEnvironmentUrl: { name: "TargetEnvironmentUrl", required: true },
+    overrideFriendlyName: { name: "OverrideFriendlyName", required: false },
+    copyType: { name: "CopyType", required: false }
   });
 
   it("with minimal inputs, calls pac runner with correct arguments", async () => {
     await runActionWithMocks(copyEnvironmentParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("admin", "copy", "--source-url", sourceEnvironmentUrl, "--target-url", targetEnvironmentUrl);
+    pacStub.should.have.been.calledOnceWith("admin", "copy", "--source-url", sourceEnvironmentUrl, "--target-url", host.targetEnvironmentUrl);
   });
 
   it("with all optional inputs, calls pac runner with correct arguments", async () => {
-    copyEnvironmentParameters.async = true;
-    copyEnvironmentParameters.targetEnvironmentName = "Target Environment";
-    copyEnvironmentParameters.copyType = "FullCopy";
+    copyEnvironmentParameters.overrideFriendlyName = { name: "OverrideFriendlyName", required: true };
+    copyEnvironmentParameters.friendlyTargetEnvironmentName = { name: "FriendlyName", required: true };
+    copyEnvironmentParameters.copyType = { name: "CopyType", required: true };
 
     await runActionWithMocks(copyEnvironmentParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("admin", "copy", "--source-url", sourceEnvironmentUrl, "--target-url", targetEnvironmentUrl,
-      "--name", "Target Environment", "--type", "FullCopy", "--async");
+    pacStub.should.have.been.calledOnceWith("admin", "copy", "--source-url", sourceEnvironmentUrl, "--target-url", host.targetEnvironmentUrl,
+      "--name", host.friendlyName, "--type", host.copyType);
   });
 });
