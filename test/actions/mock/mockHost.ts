@@ -21,6 +21,7 @@ export class mockHost implements IHostAbstractions {
   targetEnvironmentUrl = 'https://contoso2.crm.dynamics.com/';
   restoreTimeStamp = '01/01/2001 00:00';
   friendlyName = 'Mock-Friendly-Name';
+  copyType = 'Minimal Copy';
 
   public getInput(entry: HostParameterEntry): string | undefined {
     if (entry.required) {
@@ -43,6 +44,7 @@ export class mockHost implements IHostAbstractions {
         case 'TargetEnvironmentUrl': return this.targetEnvironmentUrl;
         case 'RestoreTimeStamp': return this.restoreTimeStamp;
         case 'FriendlyName': return this.friendlyName;
+        case 'CopyType': return this.copyType;
         default: return 'true';
       }
     }
