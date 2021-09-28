@@ -15,4 +15,5 @@ export * from "./restoreEnvironment";
 export * from "./deleteSolution";
 export * from "./packSolution";
 export * from "./unpackSolution";
+export * from "./resetEnvironment";
 export * from "./copyEnvironment";

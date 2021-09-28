@@ -26,7 +26,7 @@ export class mockHost implements IHostAbstractions {
   public getInput(entry: HostParameterEntry): string | undefined {
     if (entry.required) {
       switch (entry.name) {
-        case 'SolutionInputFile': return this.relativeSolutionPath;
+        case 'SolutionInputFile': 
         case 'SolutionOutputFile': return this.relativeSolutionPath;
         case 'SolutionName': return this.solutionName;
         case 'MaxAsyncWaitTime': return this.maxAsyncWaitTime;
@@ -38,6 +38,7 @@ export class mockHost implements IHostAbstractions {
         case 'EnvironmentSku': return this.environmentType;
         case 'CurrencyName': return this.currency;
         case 'DomainName': return this.domainName;
+        case 'Language':
         case 'LanguageName': return this.language;
         case 'LocationName': return this.region;
         case 'AppsTemplate': return this.templates;
