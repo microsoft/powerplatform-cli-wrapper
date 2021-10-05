@@ -32,27 +32,18 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
   const pacArgs = ["solution", "import"];
   const validator = new InputValidator(host);
 
-  const solutionPath = host.getInput(parameters.path);
-  if (solutionPath === undefined) {
-    // This error should never occur
-    throw new Error("Solution path is undefined, it must always be set by host.");
-  }
-  pacArgs.push("--path", path.resolve(runnerParameters.workingDir, solutionPath));
-  pacArgs.push("--async", validator.getBoolInput(parameters.async));
-  pacArgs.push("--import-as-holding", validator.getBoolInput(parameters.importAsHolding));
-  pacArgs.push("--force-overwrite", validator.getBoolInput(parameters.forceOverwrite));
-  pacArgs.push("--publish-changes", validator.getBoolInput(parameters.publishChanges));
-  pacArgs.push("--skip-dependency-check", validator.getBoolInput(parameters.skipDependencyCheck));
-  pacArgs.push("--convert-to-managed", validator.getBoolInput(parameters.convertToManaged));
-  pacArgs.push("--max-async-wait-time", validator.getIntInput(parameters.maxAsyncWaitTimeInMin));
-  pacArgs.push("--activate-plugins", validator.getBoolInput(parameters.activatePlugins));
+  validator.pushInput(pacArgs, "--path", parameters.path, (value) => path.resolve(runnerParameters.workingDir, value));
+  validator.pushInput(pacArgs, "--async", parameters.async);
+  validator.pushInput(pacArgs, "--import-as-holding", parameters.importAsHolding);
+  validator.pushInput(pacArgs, "--force-overwrite", parameters.forceOverwrite);
+  validator.pushInput(pacArgs, "--publish-changes", parameters.publishChanges);
+  validator.pushInput(pacArgs, "--skip-dependency-check", parameters.skipDependencyCheck);
+  validator.pushInput(pacArgs, "--convert-to-managed", parameters.convertToManaged);
+  validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
+  validator.pushInput(pacArgs, "--activate-plugins", parameters.activatePlugins);
 
-  if (validator.getBoolInput(parameters.useDeploymentSettingsFile) === "true") {
-    if (parameters.deploymentSettingsFile) {
-      const settingsFile = host.getInput(parameters.deploymentSettingsFile);
-      if (settingsFile !== undefined)
-        pacArgs.push("--settings-file", settingsFile);
-    }
+  if (validator.getInput(parameters.useDeploymentSettingsFile) === "true") {
+    validator.pushInput(pacArgs, "--settings-file", parameters.deploymentSettingsFile);
   }
 
   await pac(...pacArgs);
