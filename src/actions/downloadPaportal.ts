@@ -21,7 +21,7 @@ export async function downloadPaportal(parameters: DownloadPaportalParameters, r
   const pacArgs = ["paportal", "download"]
   const validator = new InputValidator(host);
 
-  validator.pushInput(pacArgs, "--path", parameters.path, (value) => path.resolve(runnerParameters.workingDir, value));
+  validator.pushInput(pacArgs, "--path", parameters.path);
   validator.pushInput(pacArgs, "--websiteId", parameters.websiteId);
   
   await pac(...pacArgs);
