@@ -4,7 +4,6 @@ import { authenticateEnvironment } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
-import path = require("path");
 
 export interface UploadPaportalParameters 
 {
