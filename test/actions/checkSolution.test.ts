@@ -20,7 +20,7 @@ describe("action: check solution", () => {
   const authenticateEnvironmentStub: Sinon.SinonStub<any[], any> = stub();
   const zip = "./ContosoSolution.zip";
   const mockHost : IHostAbstractions = {
-    name: "SolutionInputFile",
+    name: "host",
     getInput: () => zip,
   }
   const samplejson = "samplejson";
@@ -47,6 +47,7 @@ describe("action: check solution", () => {
     solutionPath: { name: "SolutionInputFile", required: true },
     ruleLevelOverride: { name: "RuleLevelOverride", required: false },
     geoInstance: undefined,
+    outputDirectory: { name: "OutputDirectory", required: false },
   });
 
   it("required, optional, and not required input types calls pac runner stub with correct arguments", async () => {
