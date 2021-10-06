@@ -67,8 +67,7 @@ describe("action: exportSolution", () => {
     await runActionWithMocks(exportSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath,
-      "--managed", "false", "--async", "false", "--max-async-wait-time", "60");
+    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath);
   });
 
   it("with all inputs set by host, calls pac runner stub with correct arguments", async () => {

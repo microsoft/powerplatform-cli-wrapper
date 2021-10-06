@@ -32,28 +32,4 @@ export class InputValidator {
       }
     }
   }
-
-  //deprecated
-  public getBoolInput(params: HostParameterEntry): string {
-    const textValue = this._host.getInput(params);
-    const boolValue = (!textValue) ? (typeof params.defaultValue === 'boolean' ? params.defaultValue : false) : textValue === 'true';
-    return boolValue.toString();
-  }
-
-  //deprecated
-  public getIntInput(params: HostParameterEntry): string {
-    const defaultValue = (typeof params.defaultValue === 'string') ? parseInt(params.defaultValue) : 60;
-    const textValue = this._host.getInput(params);
-
-    if (textValue !== undefined) {
-      if (parseInt(textValue) > 0 && parseFloat(textValue) === parseInt(textValue)) {
-        return textValue;
-      }
-      else {
-        throw new Error(`${textValue} is not a valid positive number`);
-      }
-    }
-
-    return defaultValue.toString();
-  }
 }

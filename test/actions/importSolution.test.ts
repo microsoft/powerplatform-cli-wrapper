@@ -60,9 +60,7 @@ describe("action: importSolution", () => {
     await runActionWithMocks(importSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath,
-      "--async", "false", "--import-as-holding", "false", "--force-overwrite", "false", "--publish-changes", "false",
-      "--skip-dependency-check", "false", "--convert-to-managed", "false", "--max-async-wait-time", "60", "--activate-plugins", "false");
+    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath);
   });
 
   it("with all inputs set by host, calls pac runner stub with correct arguments", async () => {
