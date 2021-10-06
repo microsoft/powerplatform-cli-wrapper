@@ -1,6 +1,6 @@
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
-import { authenticateEnvironment } from "../pac/auth/authenticate";
+import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
@@ -25,4 +25,5 @@ export async function deployPackage(parameters: DeployPackageParameters, runnerP
   validator.pushInput(pacArgs, "--logConsole", parameters.logConsole);
 
   await pac(...pacArgs);
+  await clearAuthentication(pac);
 }

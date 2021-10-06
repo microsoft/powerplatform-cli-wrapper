@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { authenticateEnvironment } from "../pac/auth/authenticate";
+import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
@@ -17,4 +17,5 @@ export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: Run
   const pac = createPacRunner(runnerParameters);
   await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
   await pac("org", "who");
+  await clearAuthentication(pac);
 }

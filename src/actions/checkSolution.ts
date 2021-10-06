@@ -1,6 +1,6 @@
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
-import { authenticateEnvironment } from "../pac/auth/authenticate";
+import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
@@ -29,4 +29,5 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
   validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory)
   
   await pac(...pacArgs);
+  await clearAuthentication(pac);
 }

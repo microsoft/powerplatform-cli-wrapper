@@ -3,7 +3,7 @@
 
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
-import { authenticateEnvironment } from "../pac/auth/authenticate";
+import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
@@ -47,4 +47,5 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
   }
 
   await pac(...pacArgs);
+  await clearAuthentication(pac);
 }

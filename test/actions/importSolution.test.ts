@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { should, use } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { restore, stub } from "sinon";
@@ -15,8 +16,8 @@ use(chaiAsPromised);
 
 describe("action: importSolution", () => {
   let pacStub: CommandRunner;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
+  let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
@@ -25,6 +26,7 @@ describe("action: importSolution", () => {
   beforeEach(() => {
     pacStub = stub();
     authenticateEnvironmentStub = stub();
+    clearAuthenticationStub = stub();
     importSolutionParameters = createMinMockImportSolutionParameters();
   });
   afterEach(() => restore());
@@ -35,7 +37,11 @@ describe("action: importSolution", () => {
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/importSolution"),
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
-        mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateEnvironment: authenticateEnvironmentStub });
+        mock(() => import("../../src/pac/auth/authenticate")).with(
+          {
+            authenticateEnvironment: authenticateEnvironmentStub,
+            clearAuthentication: clearAuthenticationStub
+          });
       });
 
     await mockedActionModule.importSolution(importSolutionParameters, runnerParameters, host);
@@ -60,7 +66,8 @@ describe("action: importSolution", () => {
     await runActionWithMocks(importSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath);
+      pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath);
+      clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 
   it("with all inputs set by host, calls pac runner stub with correct arguments", async () => {

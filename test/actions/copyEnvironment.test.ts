@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import rewiremock from "../rewiremock";
 import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
@@ -15,8 +16,8 @@ use(chaiAsPromised);
 
 describe("action: copyEnvironment", () => {
   let pacStub: CommandRunner;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
+  let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const sourceEnvironmentUrl: string = mockEnvironmentUrl;
@@ -25,6 +26,7 @@ describe("action: copyEnvironment", () => {
   beforeEach(() => {
     pacStub = stub();
     authenticateAdminStub = stub();
+    clearAuthenticationStub = stub();
     copyEnvironmentParameters = createMinMockCopyEnvironmentParameters();
   });
   afterEach(() => restore());
@@ -35,7 +37,11 @@ describe("action: copyEnvironment", () => {
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/copyEnvironment"),
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
-        mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateAdmin: authenticateAdminStub });
+        mock(() => import("../../src/pac/auth/authenticate")).with(
+          {
+            authenticateAdmin: authenticateAdminStub,
+            clearAuthentication: clearAuthenticationStub
+          });
       });
 
     await mockedActionModule.copyEnvironment(copyEnvironmentParameters, runnerParameters, host);
@@ -54,6 +60,7 @@ describe("action: copyEnvironment", () => {
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
     pacStub.should.have.been.calledOnceWith("admin", "copy", "--source-url", sourceEnvironmentUrl, "--target-url", host.targetEnvironmentUrl);
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 
   it("with all optional inputs, calls pac runner with correct arguments", async () => {
@@ -63,7 +70,6 @@ describe("action: copyEnvironment", () => {
 
     await runActionWithMocks(copyEnvironmentParameters);
 
-    authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
     pacStub.should.have.been.calledOnceWith("admin", "copy", "--source-url", sourceEnvironmentUrl, "--target-url", host.targetEnvironmentUrl,
       "--name", host.friendlyName, "--type", host.copyType);
   });

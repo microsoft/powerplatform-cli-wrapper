@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { should, use } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { restore, stub } from "sinon";
@@ -15,8 +16,8 @@ use(chaiAsPromised);
 
 describe("action: exportSolution", () => {
   let pacStub: CommandRunner;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
+  let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
@@ -25,6 +26,7 @@ describe("action: exportSolution", () => {
   beforeEach(() => {
     pacStub = stub();
     authenticateEnvironmentStub = stub();
+    clearAuthenticationStub = stub();
     exportSolutionParameters = createMinMockExportSolutionParameters();
   });
   afterEach(() => restore());
@@ -35,7 +37,11 @@ describe("action: exportSolution", () => {
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/exportSolution"),
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
-        mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateEnvironment: authenticateEnvironmentStub });
+        mock(() => import("../../src/pac/auth/authenticate")).with(
+          {
+            authenticateEnvironment: authenticateEnvironmentStub,
+            clearAuthentication: clearAuthenticationStub
+          });
       });
 
     await mockedActionModule.exportSolution(exportSolutionParameters, runnerParameters, host);
@@ -67,7 +73,8 @@ describe("action: exportSolution", () => {
     await runActionWithMocks(exportSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath);
+      pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath);
+      clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 
   it("with all inputs set by host, calls pac runner stub with correct arguments", async () => {
@@ -89,7 +96,6 @@ describe("action: exportSolution", () => {
 
     await runActionWithMocks(exportSolutionParameters);
 
-    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath,
       "--managed", "true", "--async", "true", "--max-async-wait-time", "120", "--targetversion", host.targetVersion, "--include",
       "autonumbering,calendar,customization,emailtracking,externalapplications,general,isvconfig,marketing,outlooksynchronization,relationshiproles,sales");
@@ -114,7 +120,6 @@ describe("action: exportSolution", () => {
 
     await runActionWithMocks(exportSolutionParameters);
 
-    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath,
       "--managed", "true", "--async", "true", "--max-async-wait-time", "120", "--targetversion", host.targetVersion, "--include",
       "autonumbering,calendar,emailtracking,externalapplications,marketing,relationshiproles");

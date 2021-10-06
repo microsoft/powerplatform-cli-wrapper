@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { should, use } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { restore, stub } from "sinon";
@@ -16,8 +17,8 @@ use(chaiAsPromised);
 
 describe("action: pack solution", () => {
   let pacStub: CommandRunner;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
+  let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const zip = "./ContosoSolution.zip";
   const mockHost : IHostAbstractions = {
     name: "host",
@@ -32,6 +33,7 @@ describe("action: pack solution", () => {
   beforeEach(() => {
     pacStub = stub();
     authenticateEnvironmentStub = stub();
+    clearAuthenticationStub = stub();
   });
   afterEach(() => restore());
 
@@ -41,7 +43,11 @@ describe("action: pack solution", () => {
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/packSolution"),
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
-        mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateEnvironment: authenticateEnvironmentStub });
+        mock(() => import("../../src/pac/auth/authenticate")).with(
+          {
+            authenticateEnvironment: authenticateEnvironmentStub,
+            clearAuthentication: clearAuthenticationStub
+          });
       });
     const stubFnc = Sinon.stub(mockHost, "getInput");
     stubFnc.onCall(0).returns(zip);
@@ -63,5 +69,6 @@ describe("action: pack solution", () => {
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "pack", "--zipFile", absoluteSolutionPath, "--folder", absoluteFolderPath,
     "--packageType", "Unmanaged");
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

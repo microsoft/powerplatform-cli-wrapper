@@ -1,4 +1,4 @@
-import { authenticateAdmin } from "../pac/auth/authenticate";
+import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
@@ -16,4 +16,5 @@ export async function deleteEnvironment(parameters: DeleteEnvironmentParameters,
   const pacArgs = ["admin", "delete", "--url", parameters.environmentUrl];
 
   await pac(...pacArgs);
+  await clearAuthentication(pac);
 }
