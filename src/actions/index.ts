@@ -17,3 +17,5 @@ export * from "./packSolution";
 export * from "./unpackSolution";
 export * from "./resetEnvironment";
 export * from "./copyEnvironment";
+export * from "./uploadPaportal";
+export * from "./downloadPaportal";
