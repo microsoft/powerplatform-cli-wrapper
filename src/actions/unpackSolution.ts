@@ -16,6 +16,8 @@ export interface UnpackSolutionParameters
   solutionZipFile: HostParameterEntry;
   sourceFolder: HostParameterEntry;
   solutionType: HostParameterEntry;
+  allowWrite?: HostParameterEntry;
+  clobber?: HostParameterEntry;
 }
 
 export async function unpackSolution(parameters: UnpackSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void>
@@ -28,6 +30,8 @@ export async function unpackSolution(parameters: UnpackSolutionParameters, runne
   validator.pushInput(pacArgs, "--zipFile", parameters.solutionZipFile, (value) => path.resolve(runnerParameters.workingDir, value));
   validator.pushInput(pacArgs, "--folder", parameters.sourceFolder, (value) => path.resolve(runnerParameters.workingDir, value));
   validator.pushInput(pacArgs, "--packageType", parameters.solutionType);
+  validator.pushInput(pacArgs, "--allowWrite", parameters.allowWrite);
+  validator.pushInput(pacArgs, "--clobber", parameters.clobber);
 
   await pac(...pacArgs);
 }
