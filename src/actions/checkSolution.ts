@@ -13,6 +13,7 @@ export interface CheckSolutionParameters
   solutionPath: HostParameterEntry;
   geoInstance?: HostParameterEntry;
   ruleLevelOverride: HostParameterEntry;
+  outputDirectory: HostParameterEntry;
 }
 
 export async function checkSolution(parameters: CheckSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> 
@@ -25,6 +26,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
   validator.pushInput(pacArgs, "--path", parameters.solutionPath, (value) => path.resolve(runnerParameters.workingDir, value));
   validator.pushInput(pacArgs, "--geo", parameters.geoInstance);
   validator.pushInput(pacArgs, "--ruleLevelOverride", parameters.ruleLevelOverride);
+  validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory)
   
   await pac(...pacArgs);
 }

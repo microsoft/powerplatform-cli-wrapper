@@ -56,12 +56,13 @@ describe("action: unpack solution", () => {
       solutionZipFile: { name: 'SolutionInputFile', required: true },
       sourceFolder: { name: 'SolutionTargetFolder', required: true },
       solutionType: { name: 'SolutionType', required: false, defaultValue: "Unmanaged" },
+      allowWrite: { name: 'AllowWrite', required: false, defaultValue: "false" },
     };
 
     await runActionWithMocks(unpackSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "unpack", "--zipFile", absoluteSolutionPath, "--folder", absoluteFolderPath,
-    "--packageType", "Unmanaged");
+    "--packageType", "Unmanaged", "--allowWrite", "false");
   });
 });
