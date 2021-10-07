@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import rewiremock from "../rewiremock";
 import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
@@ -15,8 +16,8 @@ use(chaiAsPromised);
 
 describe("action: upload paportal", () => {
   let pacStub: CommandRunner;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
+  let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const path = "C:\\portals\\starter-portal";
   const mockHost : IHostAbstractions = {
     name: "host",
@@ -29,6 +30,7 @@ describe("action: upload paportal", () => {
   beforeEach(() => {
     pacStub = stub();
     authenticateEnvironmentStub = stub();
+    clearAuthenticationStub = stub();
     uploadPaportalParameters = createUploadPaportalParameters();
   })
   afterEach(() => restore())
@@ -38,7 +40,11 @@ describe("action: upload paportal", () => {
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/uploadPaportal"),
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
-        mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateEnvironment: authenticateEnvironmentStub });
+        mock(() => import("../../src/pac/auth/authenticate")).with(
+          {
+            authenticateEnvironment: authenticateEnvironmentStub,
+            clearAuthentication: clearAuthenticationStub
+          });
       });
     await mockedActionModule.uploadPaportal(uploadPaportalParameters, runnerParameters, mockHost);
   }
@@ -55,5 +61,6 @@ describe("action: upload paportal", () => {
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
     pacStub.should.have.been.calledOnceWith("paportal", "upload", "--path", path);
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

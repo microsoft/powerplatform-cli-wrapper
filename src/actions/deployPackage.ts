@@ -1,6 +1,6 @@
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
-import { authenticateEnvironment } from "../pac/auth/authenticate";
+import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
@@ -16,13 +16,18 @@ export interface DeployPackageParameters {
 
 export async function deployPackage(parameters: DeployPackageParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const pac = createPacRunner(runnerParameters);
-  await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-  const pacArgs = ["package", "deploy"];
-  const validator = new InputValidator(host);
 
-  validator.pushInput(pacArgs, "--package", parameters.packagePath, (value) => path.resolve(runnerParameters.workingDir, value));
-  validator.pushInput(pacArgs, "--logFile", parameters.logFile);
-  validator.pushInput(pacArgs, "--logConsole", parameters.logConsole);
+  try {
+    await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const pacArgs = ["package", "deploy"];
+    const validator = new InputValidator(host);
 
-  await pac(...pacArgs);
+    validator.pushInput(pacArgs, "--package", parameters.packagePath, (value) => path.resolve(runnerParameters.workingDir, value));
+    validator.pushInput(pacArgs, "--logFile", parameters.logFile);
+    validator.pushInput(pacArgs, "--logConsole", parameters.logConsole);
+
+    await pac(...pacArgs);
+  } finally {
+    await clearAuthentication(pac);
+  }
 }

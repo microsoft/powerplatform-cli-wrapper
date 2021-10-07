@@ -1,6 +1,6 @@
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
-import { authenticateEnvironment } from "../pac/auth/authenticate";
+import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
@@ -15,13 +15,18 @@ export interface UpgradeSolutionParameters {
 
 export async function upgradeSolution(parameters: UpgradeSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const pac = createPacRunner(runnerParameters);
-  await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-  const pacArgs = ["solution", "upgrade"];
-  const validator = new InputValidator(host);
 
-  validator.pushInput(pacArgs, "--solution-name", parameters.name);
-  validator.pushInput(pacArgs, "--async", parameters.async);
-  validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
+  try {
+    await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const pacArgs = ["solution", "upgrade"];
+    const validator = new InputValidator(host);
 
-  await pac(...pacArgs);
+    validator.pushInput(pacArgs, "--solution-name", parameters.name);
+    validator.pushInput(pacArgs, "--async", parameters.async);
+    validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
+
+    await pac(...pacArgs);
+  } finally {
+    await clearAuthentication(pac);
+  }
 }

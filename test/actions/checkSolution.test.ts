@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import rewiremock from "../rewiremock";
 import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
@@ -16,8 +17,8 @@ use(chaiAsPromised);
 
 describe("action: check solution", () => {
   const pacStub: CommandRunner = stub();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const authenticateEnvironmentStub: Sinon.SinonStub<any[], any> = stub();
+  const clearAuthenticationStub: Sinon.SinonStub<any[], any> = stub();
   const zip = "./ContosoSolution.zip";
   const mockHost : IHostAbstractions = {
     name: "host",
@@ -33,7 +34,11 @@ describe("action: check solution", () => {
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/checkSolution"),
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
-        mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateEnvironment: authenticateEnvironmentStub });
+        mock(() => import("../../src/pac/auth/authenticate")).with(
+          {
+            authenticateEnvironment: authenticateEnvironmentStub,
+            clearAuthentication: clearAuthenticationStub
+          });
       });
     const stubFnc = Sinon.stub(mockHost, "getInput");
     stubFnc.onCall(0).returns(zip);
@@ -56,5 +61,6 @@ describe("action: check solution", () => {
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "check", "--path", absoluteSolutionPath,
     "--ruleLevelOverride", samplejson);
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

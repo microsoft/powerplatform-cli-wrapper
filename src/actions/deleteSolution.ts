@@ -1,6 +1,6 @@
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
-import { authenticateEnvironment } from "../pac/auth/authenticate";
+import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
@@ -13,11 +13,16 @@ export interface DeleteSolutionParameters {
 
 export async function deleteSolution(parameters: DeleteSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const pac = createPacRunner(runnerParameters);
-  await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-  const pacArgs = ["solution", "delete"];
-  const validator = new InputValidator(host);
 
-  validator.pushInput(pacArgs, "--solution-name", parameters.name);
+  try {
+    await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const pacArgs = ["solution", "delete"];
+    const validator = new InputValidator(host);
 
-  await pac(...pacArgs);
+    validator.pushInput(pacArgs, "--solution-name", parameters.name);
+
+    await pac(...pacArgs);
+  } finally {
+    await clearAuthentication(pac);
+  }
 }

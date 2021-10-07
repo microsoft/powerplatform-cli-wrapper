@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import rewiremock from "../rewiremock";
 import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
@@ -15,8 +16,8 @@ use(chaiAsPromised);
 
 describe("action: backupEnvironment", () => {
   let pacStub: CommandRunner;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
+  let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
@@ -25,6 +26,7 @@ describe("action: backupEnvironment", () => {
   beforeEach(() => {
     pacStub = stub();
     authenticateAdminStub = stub();
+    clearAuthenticationStub = stub();
     backupEnvironmentParameters = {
       credentials: mockClientCredentials,
       environmentUrl: environmentUrl,
@@ -39,7 +41,11 @@ describe("action: backupEnvironment", () => {
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/backupEnvironment"),
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
-        mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateAdmin: authenticateAdminStub });
+        mock(() => import("../../src/pac/auth/authenticate")).with(
+          {
+            authenticateAdmin: authenticateAdminStub,
+            clearAuthentication: clearAuthenticationStub
+          });
       });
 
     await mockedActionModule.backupEnvironment(backupEnvironmentParameters, runnerParameters, host);
@@ -50,5 +56,6 @@ describe("action: backupEnvironment", () => {
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
     pacStub.should.have.been.calledOnceWith("admin", "backup", "--url", environmentUrl, "--label", host.backupLabel);
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

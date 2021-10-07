@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import rewiremock from "../rewiremock";
 import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
@@ -15,8 +16,8 @@ use(chaiAsPromised);
 
 describe("action: createEnvironment", () => {
   let pacStub: CommandRunner;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
+  let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   let createEnvironmentParameters: CreateEnvironmentParameters;
@@ -24,6 +25,7 @@ describe("action: createEnvironment", () => {
   beforeEach(() => {
     pacStub = stub();
     authenticateAdminStub = stub();
+    clearAuthenticationStub = stub();
     createEnvironmentParameters = {
       credentials: mockClientCredentials,
       environmentName: { name: 'DisplayName', required: true },
@@ -43,7 +45,11 @@ describe("action: createEnvironment", () => {
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/createEnvironment"),
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
-        mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateAdmin: authenticateAdminStub });
+        mock(() => import("../../src/pac/auth/authenticate")).with(
+          {
+            authenticateAdmin: authenticateAdminStub,
+            clearAuthentication: clearAuthenticationStub
+          });
       });
 
     await mockedActionModule.createEnvironment(createEnvironmentParameters, runnerParameters, host);
@@ -55,6 +61,7 @@ describe("action: createEnvironment", () => {
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
     pacStub.should.have.been.calledOnceWith("admin", "create", "--name", host.environmentName, "--type", host.environmentType,
       "--region", host.region, "--currency", host.currency, "--language", host.language, "--domain", host.domainName);
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 
   it("with all inputs set by host, calls pac runner stub with correct arguments", async () => {
