@@ -10,11 +10,15 @@ export interface DeleteEnvironmentParameters {
 
 export async function deleteEnvironment(parameters: DeleteEnvironmentParameters, runnerParameters: RunnerParameters): Promise<void> {
   const pac = createPacRunner(runnerParameters);
-  await authenticateAdmin(pac, parameters.credentials);
 
-  // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
-  const pacArgs = ["admin", "delete", "--url", parameters.environmentUrl];
+  try {
+    await authenticateAdmin(pac, parameters.credentials);
 
-  await pac(...pacArgs);
-  await clearAuthentication(pac);
+    // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
+    const pacArgs = ["admin", "delete", "--url", parameters.environmentUrl];
+
+    await pac(...pacArgs);
+  } finally {
+    await clearAuthentication(pac);
+  }
 }

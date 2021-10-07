@@ -9,8 +9,7 @@ import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import path = require("path");
 
-export interface PackSolutionParameters
-{
+export interface PackSolutionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   solutionZipFile: HostParameterEntry;
@@ -18,17 +17,20 @@ export interface PackSolutionParameters
   solutionType: HostParameterEntry;
 }
 
-export async function packSolution(parameters: PackSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void>
-{
+export async function packSolution(parameters: PackSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const pac = createPacRunner(runnerParameters);
-  await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-  const pacArgs = ["solution", "pack"];
-  const validator = new InputValidator(host);
 
-  validator.pushInput(pacArgs, "--zipFile", parameters.solutionZipFile, (value) => path.resolve(runnerParameters.workingDir, value));
-  validator.pushInput(pacArgs, "--folder", parameters.sourceFolder, (value) => path.resolve(runnerParameters.workingDir, value));
-  validator.pushInput(pacArgs, "--packageType", parameters.solutionType);
+  try {
+    await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const pacArgs = ["solution", "pack"];
+    const validator = new InputValidator(host);
 
-  await pac(...pacArgs);
-  await clearAuthentication(pac);
+    validator.pushInput(pacArgs, "--zipFile", parameters.solutionZipFile, (value) => path.resolve(runnerParameters.workingDir, value));
+    validator.pushInput(pacArgs, "--folder", parameters.sourceFolder, (value) => path.resolve(runnerParameters.workingDir, value));
+    validator.pushInput(pacArgs, "--packageType", parameters.solutionType);
+
+    await pac(...pacArgs);
+  } finally {
+    await clearAuthentication(pac);
+  }
 }

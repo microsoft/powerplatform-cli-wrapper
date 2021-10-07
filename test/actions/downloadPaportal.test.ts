@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import rewiremock from "../rewiremock";
 import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
@@ -15,8 +16,8 @@ use(chaiAsPromised);
 
 describe("action: download paportal", () => {
   let pacStub: CommandRunner;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
+  let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const path = "C:\\portals";
   const websiteId = "f88b70cc-580b-4f1a-87c3-41debefeb902";
   const mockHost : IHostAbstractions = {
@@ -30,6 +31,7 @@ describe("action: download paportal", () => {
   beforeEach(() => {
     pacStub = stub();
     authenticateEnvironmentStub = stub();
+    clearAuthenticationStub = stub();
     downloadPaportalParameters = createDownloadPaportalParameters();
   })
   afterEach(() => restore())
@@ -39,7 +41,11 @@ describe("action: download paportal", () => {
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/downloadPaportal"),
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
-        mock(() => import("../../src/pac/auth/authenticate")).with({ authenticateEnvironment: authenticateEnvironmentStub });
+        mock(() => import("../../src/pac/auth/authenticate")).with(
+          {
+            authenticateEnvironment: authenticateEnvironmentStub,
+            clearAuthentication: clearAuthenticationStub
+          });
       });
     const stubFnc = Sinon.stub(mockHost, "getInput");
     stubFnc.onCall(0).returns(path);
@@ -59,5 +65,6 @@ describe("action: download paportal", () => {
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
     pacStub.should.have.been.calledOnceWith("paportal", "download", "--path", path, "--websiteId", websiteId);
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

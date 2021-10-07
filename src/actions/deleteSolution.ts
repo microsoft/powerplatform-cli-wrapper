@@ -13,12 +13,16 @@ export interface DeleteSolutionParameters {
 
 export async function deleteSolution(parameters: DeleteSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const pac = createPacRunner(runnerParameters);
-  await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-  const pacArgs = ["solution", "delete"];
-  const validator = new InputValidator(host);
 
-  validator.pushInput(pacArgs, "--solution-name", parameters.name);
+  try {
+    await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const pacArgs = ["solution", "delete"];
+    const validator = new InputValidator(host);
 
-  await pac(...pacArgs);
-  await clearAuthentication(pac);
+    validator.pushInput(pacArgs, "--solution-name", parameters.name);
+
+    await pac(...pacArgs);
+  } finally {
+    await clearAuthentication(pac);
+  }
 }

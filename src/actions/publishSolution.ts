@@ -10,7 +10,11 @@ export interface PublishSolutionParameters {
 
 export async function publishSolution(parameters: PublishSolutionParameters, runnerParameters: RunnerParameters): Promise<void> {
   const pac = createPacRunner(runnerParameters);
-  await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-  await pac("solution", "publish");
-  await clearAuthentication(pac);
+
+  try {
+    await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    await pac("solution", "publish");
+  } finally {
+    await clearAuthentication(pac);
+  }
 }

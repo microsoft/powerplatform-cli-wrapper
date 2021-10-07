@@ -16,14 +16,18 @@ export interface DeployPackageParameters {
 
 export async function deployPackage(parameters: DeployPackageParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const pac = createPacRunner(runnerParameters);
-  await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-  const pacArgs = ["package", "deploy"];
-  const validator = new InputValidator(host);
 
-  validator.pushInput(pacArgs, "--package", parameters.packagePath, (value) => path.resolve(runnerParameters.workingDir, value));
-  validator.pushInput(pacArgs, "--logFile", parameters.logFile);
-  validator.pushInput(pacArgs, "--logConsole", parameters.logConsole);
+  try {
+    await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const pacArgs = ["package", "deploy"];
+    const validator = new InputValidator(host);
 
-  await pac(...pacArgs);
-  await clearAuthentication(pac);
+    validator.pushInput(pacArgs, "--package", parameters.packagePath, (value) => path.resolve(runnerParameters.workingDir, value));
+    validator.pushInput(pacArgs, "--logFile", parameters.logFile);
+    validator.pushInput(pacArgs, "--logConsole", parameters.logConsole);
+
+    await pac(...pacArgs);
+  } finally {
+    await clearAuthentication(pac);
+  }
 }

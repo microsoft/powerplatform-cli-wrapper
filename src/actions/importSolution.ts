@@ -27,25 +27,29 @@ export interface ImportSolutionParameters {
 
 export async function importSolution(parameters: ImportSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const pac = createPacRunner(runnerParameters);
-  await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+  
+  try {
+    await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
 
-  const pacArgs = ["solution", "import"];
-  const validator = new InputValidator(host);
+    const pacArgs = ["solution", "import"];
+    const validator = new InputValidator(host);
 
-  validator.pushInput(pacArgs, "--path", parameters.path, (value) => path.resolve(runnerParameters.workingDir, value));
-  validator.pushInput(pacArgs, "--async", parameters.async);
-  validator.pushInput(pacArgs, "--import-as-holding", parameters.importAsHolding);
-  validator.pushInput(pacArgs, "--force-overwrite", parameters.forceOverwrite);
-  validator.pushInput(pacArgs, "--publish-changes", parameters.publishChanges);
-  validator.pushInput(pacArgs, "--skip-dependency-check", parameters.skipDependencyCheck);
-  validator.pushInput(pacArgs, "--convert-to-managed", parameters.convertToManaged);
-  validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
-  validator.pushInput(pacArgs, "--activate-plugins", parameters.activatePlugins);
+    validator.pushInput(pacArgs, "--path", parameters.path, (value) => path.resolve(runnerParameters.workingDir, value));
+    validator.pushInput(pacArgs, "--async", parameters.async);
+    validator.pushInput(pacArgs, "--import-as-holding", parameters.importAsHolding);
+    validator.pushInput(pacArgs, "--force-overwrite", parameters.forceOverwrite);
+    validator.pushInput(pacArgs, "--publish-changes", parameters.publishChanges);
+    validator.pushInput(pacArgs, "--skip-dependency-check", parameters.skipDependencyCheck);
+    validator.pushInput(pacArgs, "--convert-to-managed", parameters.convertToManaged);
+    validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
+    validator.pushInput(pacArgs, "--activate-plugins", parameters.activatePlugins);
 
-  if (validator.getInput(parameters.useDeploymentSettingsFile) === "true") {
-    validator.pushInput(pacArgs, "--settings-file", parameters.deploymentSettingsFile);
+    if (validator.getInput(parameters.useDeploymentSettingsFile) === "true") {
+      validator.pushInput(pacArgs, "--settings-file", parameters.deploymentSettingsFile);
+    }
+
+    await pac(...pacArgs);
+  } finally {
+    await clearAuthentication(pac);
   }
-
-  await pac(...pacArgs);
-  await clearAuthentication(pac);
 }
