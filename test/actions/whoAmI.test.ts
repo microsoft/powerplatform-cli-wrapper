@@ -5,7 +5,6 @@ import { restore, stub } from "sinon";
 import * as sinonChai from "sinon-chai";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { WhoAmIParameters } from "../../src/actions";
-import { CommandRunner } from "../../src/CommandRunner";
 import rewiremock from "../rewiremock";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import Sinon = require("sinon");
@@ -14,7 +13,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: whoAmI", () => {
-  let pacStub: CommandRunner;
+  let pacStub: Sinon.SinonStub<any[], any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
@@ -40,6 +39,9 @@ describe("action: whoAmI", () => {
           });
       });
 
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns("Connected to...");
     await mockedActionModule.whoAmI(whoAmIParameters, runnerParameters);
   }
 
@@ -51,8 +53,9 @@ describe("action: whoAmI", () => {
 
     await runActionWithMocks(whoAmIParameters);
 
-    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWith("org", "who");
-    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl)
+      .returned("Authentication successfully created.");
+    pacStub.should.have.been.calledOnceWith("org", "who").returned("Connected to...");
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub).returned("Authentication profiles and token cache removed");
   });
 });
