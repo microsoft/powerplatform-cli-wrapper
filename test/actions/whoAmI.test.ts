@@ -53,9 +53,8 @@ describe("action: whoAmI", () => {
 
     await runActionWithMocks(whoAmIParameters);
 
-    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl)
-      .returned("Authentication successfully created.");
-    pacStub.should.have.been.calledOnceWith("org", "who").returned("Connected to...");
-    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub).returned("Authentication profiles and token cache removed");
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
+    pacStub.should.have.been.calledOnceWith("org", "who");
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });
