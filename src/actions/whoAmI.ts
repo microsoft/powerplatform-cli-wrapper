@@ -12,12 +12,20 @@ export interface WhoAmIParameters {
 }
 
 export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: RunnerParameters): Promise<void> {
+  const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
   try {
-    await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-    await pac("org", "who");
+    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    logger.log("The Authentication Result: " + authenticateResult);
+
+    const pacResult = await pac("org", "who");
+    logger.log("WhoAmI Action Result: " + pacResult);
+  } catch (error) {
+    logger.error(`failed: ${error.message}`);
+    throw error;
   } finally {
-    await clearAuthentication(pac);
+    const clearAuthResult = await clearAuthentication(pac);
+    logger.log("The Clear Authentication Result: " + clearAuthResult);
   }
 }
