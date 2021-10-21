@@ -5,7 +5,6 @@ import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { CommandRunner } from "../../src/CommandRunner";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import { DeployPackageParameters } from "src/actions/deployPackage";
@@ -16,11 +15,11 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: deploy package", () => {
-  let pacStub: CommandRunner;
-  let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
+  let pacStub: Sinon.SinonStub<any[],any>;
+  let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const zip = "./ContosoSolution.zip";
-  const mockHost : IHostAbstractions = {
+  const mockHost: IHostAbstractions = {
     name: "SolutionInputFile",
     getInput: () => zip,
   }
@@ -50,6 +49,10 @@ describe("action: deploy package", () => {
       });
     const stubFnc = Sinon.stub(mockHost, "getInput");
     stubFnc.onCall(0).returns(zip);
+
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns("");
     await mockedActionModule.deployPackage(deployPackageParameters, runnerParameters, mockHost);
   }
 

@@ -5,7 +5,6 @@ import { restore, stub } from "sinon";
 import * as sinonChai from "sinon-chai";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { PackSolutionParameters } from "../../src/actions";
-import { CommandRunner } from "../../src/CommandRunner";
 import rewiremock from "../rewiremock";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import Sinon = require("sinon");
@@ -16,11 +15,11 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: pack solution", () => {
-  let pacStub: CommandRunner;
+  let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const zip = "./ContosoSolution.zip";
-  const mockHost : IHostAbstractions = {
+  const mockHost: IHostAbstractions = {
     name: "host",
     getInput: () => zip,
   }
@@ -52,6 +51,10 @@ describe("action: pack solution", () => {
     const stubFnc = Sinon.stub(mockHost, "getInput");
     stubFnc.onCall(0).returns(zip);
     stubFnc.onCall(1).returns(folder);
+
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns("");
     await mockedActionModule.packSolution(packSolutionParameters, runnerParameters, mockHost);
   }
 
@@ -68,7 +71,7 @@ describe("action: pack solution", () => {
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "pack", "--zipFile", absoluteSolutionPath, "--folder", absoluteFolderPath,
-    "--packageType", "Unmanaged");
+      "--packageType", "Unmanaged");
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

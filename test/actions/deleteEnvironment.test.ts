@@ -6,7 +6,6 @@ import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { DeleteEnvironmentParameters } from "../../src/actions";
-import { CommandRunner } from "../../src/CommandRunner";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import Sinon = require("sinon");
 should();
@@ -14,7 +13,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: deleteEnvironment", () => {
-  let pacStub: CommandRunner;
+  let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
@@ -45,6 +44,9 @@ describe("action: deleteEnvironment", () => {
           });
       });
 
+    authenticateAdminStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns("");  
     await mockedActionModule.deleteEnvironment(deleteEnvironmentParameters, runnerParameters);
   }
 

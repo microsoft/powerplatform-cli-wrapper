@@ -5,7 +5,6 @@ import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { CommandRunner } from "../../src/CommandRunner";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import { UploadPaportalParameters } from "src/actions/uploadPaportal";
@@ -15,7 +14,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: upload paportal", () => {
-  let pacStub: CommandRunner;
+  let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const path = "C:\\portals\\starter-portal";
@@ -46,6 +45,10 @@ describe("action: upload paportal", () => {
             clearAuthentication: clearAuthenticationStub
           });
       });
+
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns("");
     await mockedActionModule.uploadPaportal(uploadPaportalParameters, runnerParameters, mockHost);
   }
 

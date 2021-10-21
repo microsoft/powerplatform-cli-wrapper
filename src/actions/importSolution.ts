@@ -26,15 +26,17 @@ export interface ImportSolutionParameters {
 }
 
 export async function importSolution(parameters: ImportSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+  const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
   
   try {
-    await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    logger.log("The Authentication Result: " + authenticateResult);
 
     const pacArgs = ["solution", "import"];
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--path", parameters.path, (value) => path.resolve(runnerParameters.workingDir, value));
+    validator.pushInput(pacArgs, "--path", parameters.path, (value) => path.resolve(runnerParameters.workingDir, value), logger);
     validator.pushInput(pacArgs, "--async", parameters.async);
     validator.pushInput(pacArgs, "--import-as-holding", parameters.importAsHolding);
     validator.pushInput(pacArgs, "--force-overwrite", parameters.forceOverwrite);
@@ -48,8 +50,13 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
       validator.pushInput(pacArgs, "--settings-file", parameters.deploymentSettingsFile);
     }
 
-    await pac(...pacArgs);
+    const pacResult = await pac(...pacArgs);
+    logger.log("ImportSolution Action Result: " + pacResult);
+  } catch (error) {
+    logger.error(`failed: ${error.message}`);
+    throw error;
   } finally {
-    await clearAuthentication(pac);
+    const clearAuthResult = await clearAuthentication(pac);
+    logger.log("The Clear Authentication Result: " + clearAuthResult);
   }
 }

@@ -29,16 +29,18 @@ export interface ExportSolutionParameters {
 }
 
 export async function exportSolution(parameters: ExportSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+  const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
   try {
-    await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    logger.log("The Authentication Result: " + authenticateResult);
 
     const pacArgs = ["solution", "export"];
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--name", parameters.name);
-    validator.pushInput(pacArgs, "--path", parameters.path, (value) => path.resolve(runnerParameters.workingDir, value));
+    validator.pushInput(pacArgs, "--name", parameters.name, undefined, logger);
+    validator.pushInput(pacArgs, "--path", parameters.path, (value) => path.resolve(runnerParameters.workingDir, value), logger);
     validator.pushInput(pacArgs, "--managed", parameters.managed);
     validator.pushInput(pacArgs, "--async", parameters.async);
     validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
@@ -58,8 +60,13 @@ export async function exportSolution(parameters: ExportSolutionParameters, runne
     if (validator.getInput(parameters.sales) === 'true') { includeArgs.push("sales"); }
     if (includeArgs.length > 0) { pacArgs.push("--include", includeArgs.join(',')); }
 
-    await pac(...pacArgs);
+    const pacResult = await pac(...pacArgs);
+    logger.log("ExportSolution Action Result: " + pacResult);
+  } catch (error) {
+    logger.error(`failed: ${error.message}`);
+    throw error;
   } finally {
-    await clearAuthentication(pac);
+    const clearAuthResult = await clearAuthentication(pac);
+    logger.log("The Clear Authentication Result: " + clearAuthResult);
   }
 }

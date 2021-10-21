@@ -17,10 +17,13 @@ export interface CreateEnvironmentParameters {
 }
 
 export async function createEnvironment(parameters: CreateEnvironmentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+  const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
   try {
-    await authenticateAdmin(pac, parameters.credentials);
+    const authenticateResult = await authenticateAdmin(pac, parameters.credentials);
+    logger.log("The Authentication Result: " + authenticateResult);
+
     const pacArgs = ["admin", "create"];
     const validator = new InputValidator(host);
 
@@ -32,8 +35,13 @@ export async function createEnvironment(parameters: CreateEnvironmentParameters,
     validator.pushInput(pacArgs, "--language", parameters.language);
     validator.pushInput(pacArgs, "--domain", parameters.domainName);
 
-    await pac(...pacArgs);
+    const pacResult = await pac(...pacArgs);
+    logger.log("CreateEnvironment Action Result: " + pacResult);
+  } catch (error) {
+    logger.error(`failed: ${error.message}`);
+    throw error;
   } finally {
-    await clearAuthentication(pac);
+    const clearAuthResult = await clearAuthentication(pac);
+    logger.log("The Clear Authentication Result: " + clearAuthResult);
   }
 }

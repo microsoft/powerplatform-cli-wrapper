@@ -6,7 +6,6 @@ import { expect, should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { RestoreEnvironmentParameters } from "../../src/actions";
-import { CommandRunner } from "../../src/CommandRunner";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { mockHost } from "./mock/mockHost";
 import Sinon = require("sinon");
@@ -15,7 +14,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: restoreEnvironment", () => {
-  let pacStub: CommandRunner;
+  let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
@@ -50,6 +49,9 @@ describe("action: restoreEnvironment", () => {
           });
       });
 
+    authenticateAdminStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns("");
     await mockedActionModule.restoreEnvironment(restoreEnvironmentParameters, runnerParameters, host);
   }
 

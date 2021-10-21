@@ -5,7 +5,6 @@ import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { CommandRunner } from "../../src/CommandRunner";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import { DownloadPaportalParameters } from "src/actions/downloadPaportal";
@@ -15,12 +14,12 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: download paportal", () => {
-  let pacStub: CommandRunner;
-  let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
+  let pacStub: Sinon.SinonStub<any[],any>;
+  let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const path = "C:\\portals";
   const websiteId = "f88b70cc-580b-4f1a-87c3-41debefeb902";
-  const mockHost : IHostAbstractions = {
+  const mockHost: IHostAbstractions = {
     name: "host",
     getInput: () => path,
   }
@@ -50,6 +49,10 @@ describe("action: download paportal", () => {
     const stubFnc = Sinon.stub(mockHost, "getInput");
     stubFnc.onCall(0).returns(path);
     stubFnc.onCall(1).returns(websiteId);
+
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns("");
     await mockedActionModule.downloadPaportal(downloadPaportalParameters, runnerParameters, mockHost);
   }
 
