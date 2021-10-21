@@ -15,16 +15,19 @@ export interface RestoreEnvironmentParameters {
 }
 
 export async function restoreEnvironment(parameters: RestoreEnvironmentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+  const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
   try {
-    await authenticateAdmin(pac, parameters.credentials);
+    const authenticateResult = await authenticateAdmin(pac, parameters.credentials);
+    logger.log("The Authentication Result: " + authenticateResult);
 
     const pacArgs = ["admin", "restore", "--source-url", parameters.sourceEnvironmentUrl];
+    logger.log("Source Url: " + parameters.sourceEnvironmentUrl);
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl);
-    validator.pushInput(pacArgs, "--name", parameters.targetEnvironmentName);
+    validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl, undefined, logger);
+    validator.pushInput(pacArgs, "--name", parameters.targetEnvironmentName, undefined, logger);
 
     if (validator.getInput(parameters.restoreLatestBackup) === 'true') {
       pacArgs.push("--selected-backup", "latest");
@@ -34,8 +37,13 @@ export async function restoreEnvironment(parameters: RestoreEnvironmentParameter
       throw new Error("Either latest backup must be true or Valid date and time for backup must be provided.");
     }
 
-    await pac(...pacArgs);
+    const pacResult = await pac(...pacArgs);
+    logger.log("RestoreEnvironment Action Result: " + pacResult);
+  } catch (error) {
+    logger.error(`failed: ${error.message}`);
+    throw error;
   } finally {
-    await clearAuthentication(pac);
+    const clearAuthResult = await clearAuthentication(pac);
+    logger.log("The Clear Authentication Result: " + clearAuthResult);
   }
 }

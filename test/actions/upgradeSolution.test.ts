@@ -5,7 +5,6 @@ import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { CommandRunner } from "../../src/CommandRunner";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { UpgradeSolutionParameters } from "src/actions/upgradeSolution";
 import { IHostAbstractions } from "../../src/host/IHostAbstractions";
@@ -15,7 +14,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: upgrade solution", () => {
-  let pacStub: CommandRunner;
+  let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const mockHost : IHostAbstractions = {
@@ -52,6 +51,10 @@ describe("action: upgrade solution", () => {
     stubFnc.onCall(0).returns(name);
     stubFnc.onCall(1).returns(asyncValue);
     stubFnc.onCall(2).returns(asyncTime);
+
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns("");
     await mockedActionModule.upgradeSolution(upgradeSolutionParameters, runnerParameters, mockHost);
   }
 

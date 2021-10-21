@@ -5,7 +5,6 @@ import { restore, stub } from "sinon";
 import * as sinonChai from "sinon-chai";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { UnpackSolutionParameters } from "../../src/actions";
-import { CommandRunner } from "../../src/CommandRunner";
 import rewiremock from "../rewiremock";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import Sinon = require("sinon");
@@ -16,13 +15,13 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: unpack solution", () => {
-  let pacStub: CommandRunner;
+  let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
   const zip = "./ContosoSolution.zip";
-  const mockHost : IHostAbstractions = {
+  const mockHost: IHostAbstractions = {
     name: "host",
     getInput: () => zip,
   }
@@ -52,6 +51,10 @@ describe("action: unpack solution", () => {
     const stubFnc = Sinon.stub(mockHost, "getInput");
     stubFnc.onCall(0).returns(zip);
     stubFnc.onCall(1).returns(folder);
+
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns("");
     await mockedActionModule.unpackSolution(unpackSolutionParameters, runnerParameters, mockHost);
   }
 
@@ -69,7 +72,7 @@ describe("action: unpack solution", () => {
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "unpack", "--zipFile", absoluteSolutionPath, "--folder", absoluteFolderPath,
-        "--packageType", "Unmanaged", "--allowWrite", "false");
+      "--packageType", "Unmanaged", "--allowWrite", "false");
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

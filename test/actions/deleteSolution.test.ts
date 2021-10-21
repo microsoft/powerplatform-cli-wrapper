@@ -5,7 +5,6 @@ import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { CommandRunner } from "../../src/CommandRunner";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { DeleteSolutionParameters } from "src/actions/deleteSolution";
 import { IHostAbstractions } from "../../src/host/IHostAbstractions";
@@ -15,11 +14,11 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: delete solution", () => {
-  let pacStub: CommandRunner;
-  let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
+  let pacStub: Sinon.SinonStub<any[],any>;
+  let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const name = "test";
-  const mockHost : IHostAbstractions = {
+  const mockHost: IHostAbstractions = {
     name: "host",
     getInput: () => name,
   }
@@ -46,6 +45,10 @@ describe("action: delete solution", () => {
             clearAuthentication: clearAuthenticationStub
           });
       });
+
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns("");
     await mockedActionModule.deleteSolution(deleteSolutionParameters, runnerParameters, mockHost);
   }
 

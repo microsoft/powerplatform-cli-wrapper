@@ -16,15 +16,18 @@ export interface ResetEnvironmentParameters {
 }
 
 export async function resetEnvironment(parameters: ResetEnvironmentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+  const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
   try {
-    await authenticateAdmin(pac, parameters.credentials);
+    const authenticateResult = await authenticateAdmin(pac, parameters.credentials);
+    logger.log("The Authentication Result: " + authenticateResult);
 
     // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
     const pacArgs = ["admin", "reset", "--url", parameters.environmentUrl];
-    const validator = new InputValidator(host);
+    logger.log("Url: " + parameters.environmentUrl);
 
+    const validator = new InputValidator(host);
     validator.pushInput(pacArgs, "--language", parameters.language);
     if (validator.getInput(parameters.overrideDomainName) === 'true') {
       validator.pushInput(pacArgs, "--domain", parameters.domainName);
@@ -33,8 +36,13 @@ export async function resetEnvironment(parameters: ResetEnvironmentParameters, r
       validator.pushInput(pacArgs, "--name", parameters.friendlyEnvironmentName);
     }
 
-    await pac(...pacArgs);
+    const pacResult = await pac(...pacArgs);
+    logger.log("ResetEnvironment Action Result: " + pacResult);
+  } catch (error) {
+    logger.error(`failed: ${error.message}`);
+    throw error;
   } finally {
-    await clearAuthentication(pac);
+    const clearAuthResult = await clearAuthentication(pac);
+    logger.log("The Clear Authentication Result: " + clearAuthResult);
   }
 }

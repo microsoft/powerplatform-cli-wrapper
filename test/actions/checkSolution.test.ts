@@ -4,7 +4,6 @@ import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { stub } from "sinon";
-import { CommandRunner } from "../../src/CommandRunner";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { IHostAbstractions } from "../../src/host/IHostAbstractions";
@@ -16,7 +15,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: check solution", () => {
-  const pacStub: CommandRunner = stub();
+  const pacStub: Sinon.SinonStub<any[],any> = stub();
   const authenticateEnvironmentStub: Sinon.SinonStub<any[], any> = stub();
   const clearAuthenticationStub: Sinon.SinonStub<any[], any> = stub();
   const zip = "./ContosoSolution.zip";
@@ -43,6 +42,10 @@ describe("action: check solution", () => {
     const stubFnc = Sinon.stub(mockHost, "getInput");
     stubFnc.onCall(0).returns(zip);
     stubFnc.onCall(1).returns(samplejson);
+
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns("");
     await mockedActionModule.checkSolution(checkSolutionParameters, runnerParameters, mockHost);
   }
 

@@ -5,7 +5,6 @@ import { restore, stub } from "sinon";
 import * as sinonChai from "sinon-chai";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { ExportSolutionParameters } from "../../src/actions";
-import { CommandRunner } from "../../src/CommandRunner";
 import rewiremock from "../rewiremock";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { mockHost } from "./mock/mockHost";
@@ -15,7 +14,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: exportSolution", () => {
-  let pacStub: CommandRunner;
+  let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
@@ -44,6 +43,9 @@ describe("action: exportSolution", () => {
           });
       });
 
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns("");
     await mockedActionModule.exportSolution(exportSolutionParameters, runnerParameters, host);
   }
 
@@ -73,26 +75,26 @@ describe("action: exportSolution", () => {
     await runActionWithMocks(exportSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-      pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath);
-      clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
+    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath);
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 
   it("with all inputs set by host, calls pac runner stub with correct arguments", async () => {
     exportSolutionParameters.managed = { name: 'Managed', required: true },
-    exportSolutionParameters.async = { name: 'AsyncOperation', required: true },
-    exportSolutionParameters.maxAsyncWaitTimeInMin = { name: 'MaxAsyncWaitTime', required: true },
-    exportSolutionParameters.targetVersion = { name: 'TargetVersion', required: true },
-    exportSolutionParameters.autoNumberSettings = { name: 'ExportAutoNumberingSettings', required: true },
-    exportSolutionParameters.calenderSettings = { name: 'ExportCalendarSettings', required: true },
-    exportSolutionParameters.customizationSettings = { name: 'ExportCustomizationSettings', required: true },
-    exportSolutionParameters.emailTrackingSettings = { name: 'ExportEmailTrackingSettings', required: true },
-    exportSolutionParameters.externalApplicationSettings = { name: 'ExportExternalApplicationSettings', required: true },
-    exportSolutionParameters.generalSettings = { name: 'ExportGeneralSettings', required: true },
-    exportSolutionParameters.isvConfig = { name: 'ExportIsvConfig', required: true },
-    exportSolutionParameters.marketingSettings = { name: 'ExportMarketingSettings', required: true },
-    exportSolutionParameters.outlookSynchronizationSettings = { name: 'ExportOutlookSynchronizationSettings', required: true },
-    exportSolutionParameters.relationshipRoles = { name: 'ExportRelationshipRoles', required: true },
-    exportSolutionParameters.sales = { name: 'ExportSales', required: true }
+      exportSolutionParameters.async = { name: 'AsyncOperation', required: true },
+      exportSolutionParameters.maxAsyncWaitTimeInMin = { name: 'MaxAsyncWaitTime', required: true },
+      exportSolutionParameters.targetVersion = { name: 'TargetVersion', required: true },
+      exportSolutionParameters.autoNumberSettings = { name: 'ExportAutoNumberingSettings', required: true },
+      exportSolutionParameters.calenderSettings = { name: 'ExportCalendarSettings', required: true },
+      exportSolutionParameters.customizationSettings = { name: 'ExportCustomizationSettings', required: true },
+      exportSolutionParameters.emailTrackingSettings = { name: 'ExportEmailTrackingSettings', required: true },
+      exportSolutionParameters.externalApplicationSettings = { name: 'ExportExternalApplicationSettings', required: true },
+      exportSolutionParameters.generalSettings = { name: 'ExportGeneralSettings', required: true },
+      exportSolutionParameters.isvConfig = { name: 'ExportIsvConfig', required: true },
+      exportSolutionParameters.marketingSettings = { name: 'ExportMarketingSettings', required: true },
+      exportSolutionParameters.outlookSynchronizationSettings = { name: 'ExportOutlookSynchronizationSettings', required: true },
+      exportSolutionParameters.relationshipRoles = { name: 'ExportRelationshipRoles', required: true },
+      exportSolutionParameters.sales = { name: 'ExportSales', required: true }
 
     await runActionWithMocks(exportSolutionParameters);
 
@@ -103,20 +105,20 @@ describe("action: exportSolution", () => {
 
   it("with optional inputs set to default values, calls pac runner stub with correct arguments", async () => {
     exportSolutionParameters.managed = { name: 'Managed', required: true, defaultValue: true },
-    exportSolutionParameters.async = { name: 'AsyncOperation', required: true },
-    exportSolutionParameters.maxAsyncWaitTimeInMin = { name: 'MaxAsyncWaitTime', required: true },
-    exportSolutionParameters.targetVersion = { name: 'TargetVersion', required: true },
-    exportSolutionParameters.autoNumberSettings = { name: 'ExportAutoNumberingSettings', required: false, defaultValue: true },
-    exportSolutionParameters.calenderSettings = { name: 'ExportCalendarSettings', required: false, defaultValue: true },
-    exportSolutionParameters.customizationSettings = { name: 'ExportCustomizationSettings', required: false, defaultValue: false },
-    exportSolutionParameters.emailTrackingSettings = { name: 'ExportEmailTrackingSettings', required: false, defaultValue: true  },
-    exportSolutionParameters.externalApplicationSettings = { name: 'ExportExternalApplicationSettings', required: false, defaultValue: true  },
-    exportSolutionParameters.generalSettings = { name: 'ExportGeneralSettings', required: false, defaultValue: false },
-    exportSolutionParameters.isvConfig = { name: 'ExportIsvConfig', required: false, defaultValue: false },
-    exportSolutionParameters.marketingSettings = { name: 'ExportMarketingSettings', required: false, defaultValue: true },
-    exportSolutionParameters.outlookSynchronizationSettings = { name: 'ExportOutlookSynchronizationSettings', required: false, defaultValue: false },
-    exportSolutionParameters.relationshipRoles = { name: 'ExportRelationshipRoles', required: false, defaultValue: true },
-    exportSolutionParameters.sales = { name: 'ExportSales', required: false, defaultValue: false }
+      exportSolutionParameters.async = { name: 'AsyncOperation', required: true },
+      exportSolutionParameters.maxAsyncWaitTimeInMin = { name: 'MaxAsyncWaitTime', required: true },
+      exportSolutionParameters.targetVersion = { name: 'TargetVersion', required: true },
+      exportSolutionParameters.autoNumberSettings = { name: 'ExportAutoNumberingSettings', required: false, defaultValue: true },
+      exportSolutionParameters.calenderSettings = { name: 'ExportCalendarSettings', required: false, defaultValue: true },
+      exportSolutionParameters.customizationSettings = { name: 'ExportCustomizationSettings', required: false, defaultValue: false },
+      exportSolutionParameters.emailTrackingSettings = { name: 'ExportEmailTrackingSettings', required: false, defaultValue: true },
+      exportSolutionParameters.externalApplicationSettings = { name: 'ExportExternalApplicationSettings', required: false, defaultValue: true },
+      exportSolutionParameters.generalSettings = { name: 'ExportGeneralSettings', required: false, defaultValue: false },
+      exportSolutionParameters.isvConfig = { name: 'ExportIsvConfig', required: false, defaultValue: false },
+      exportSolutionParameters.marketingSettings = { name: 'ExportMarketingSettings', required: false, defaultValue: true },
+      exportSolutionParameters.outlookSynchronizationSettings = { name: 'ExportOutlookSynchronizationSettings', required: false, defaultValue: false },
+      exportSolutionParameters.relationshipRoles = { name: 'ExportRelationshipRoles', required: false, defaultValue: true },
+      exportSolutionParameters.sales = { name: 'ExportSales', required: false, defaultValue: false }
 
     await runActionWithMocks(exportSolutionParameters);
 

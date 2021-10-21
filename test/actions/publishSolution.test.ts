@@ -4,7 +4,6 @@ import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
-import { CommandRunner } from "../../src/CommandRunner";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { PublishSolutionParameters } from "../../src/actions";
@@ -14,7 +13,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: publish solution", () => {
-  let pacStub: CommandRunner;
+  let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
@@ -38,6 +37,10 @@ describe("action: publish solution", () => {
             clearAuthentication: clearAuthenticationStub
           });
       });
+
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns("");
     await mockedActionModule.publishSolution(publishSolutionParameters, runnerParameters);
   }
 

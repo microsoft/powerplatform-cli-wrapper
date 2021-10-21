@@ -13,18 +13,26 @@ export interface UploadPaportalParameters {
 }
 
 export async function uploadPaportal(parameters: UploadPaportalParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+  const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
   try {
-    await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    logger.log("The Authentication Result: " + authenticateResult);
+
     const pacArgs = ["paportal", "upload"]
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--path", parameters.path);
+    validator.pushInput(pacArgs, "--path", parameters.path, undefined, logger);
     validator.pushInput(pacArgs, "--deploymentProfile", parameters.deploymentProfile);
 
-    await pac(...pacArgs);
+    const pacResult = await pac(...pacArgs);
+    logger.log("UploadPaPortal Action Result: " + pacResult);
+  } catch (error) {
+    logger.error(`failed: ${error.message}`);
+    throw error;
   } finally {
-    await clearAuthentication(pac);
+    const clearAuthResult = await clearAuthentication(pac);
+    logger.log("The Clear Authentication Result: " + clearAuthResult);
   }
 }

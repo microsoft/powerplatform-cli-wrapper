@@ -5,7 +5,6 @@ import { restore, stub } from "sinon";
 import * as sinonChai from "sinon-chai";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { ImportSolutionParameters } from "../../src/actions";
-import { CommandRunner } from "../../src/CommandRunner";
 import rewiremock from "../rewiremock";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { mockHost } from "./mock/mockHost";
@@ -15,7 +14,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: importSolution", () => {
-  let pacStub: CommandRunner;
+  let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
@@ -44,6 +43,9 @@ describe("action: importSolution", () => {
           });
       });
 
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns("");
     await mockedActionModule.importSolution(importSolutionParameters, runnerParameters, host);
   }
 
@@ -66,8 +68,8 @@ describe("action: importSolution", () => {
     await runActionWithMocks(importSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-      pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath);
-      clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
+    pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath);
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 
   it("with all inputs set by host, calls pac runner stub with correct arguments", async () => {

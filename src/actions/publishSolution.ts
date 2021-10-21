@@ -9,12 +9,20 @@ export interface PublishSolutionParameters {
 }
 
 export async function publishSolution(parameters: PublishSolutionParameters, runnerParameters: RunnerParameters): Promise<void> {
+  const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
   try {
-    await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-    await pac("solution", "publish");
+    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    logger.log("The Authentication Result: " + authenticateResult);
+
+    const pacResult = await pac("solution", "publish");
+    logger.log("PublishSolution Action Result: " + pacResult);
+  } catch (error) {
+    logger.error(`failed: ${error.message}`);
+    throw error;
   } finally {
-    await clearAuthentication(pac);
+    const clearAuthResult = await clearAuthentication(pac);
+    logger.log("The Clear Authentication Result: " + clearAuthResult);
   }
 }
