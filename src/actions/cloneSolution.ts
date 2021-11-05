@@ -26,7 +26,7 @@ export async function cloneSolution(parameters: CloneSolutionParameters, runnerP
 
     const pacArgs = ["solution", "clone"]
     const validator = new InputValidator(host);
-
+    logger.log("Cloning solution name: " + parameters.name.name);
     validator.pushInput(pacArgs, "--name", parameters.name);
     validator.pushInput(pacArgs, "--targetversion", parameters.targetVersion);
     validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory, undefined, logger);
