@@ -11,9 +11,19 @@ export interface CloneSolutionParameters {
   name: HostParameterEntry;
   targetVersion: HostParameterEntry;
   outputDirectory: HostParameterEntry;
-  include?: HostParameterEntry;
   async?: HostParameterEntry;
   maxAsyncWaitTimeInMin?: HostParameterEntry;
+  autoNumberSettings: HostParameterEntry;
+  calenderSettings: HostParameterEntry;
+  customizationSettings: HostParameterEntry;
+  emailTrackingSettings: HostParameterEntry;
+  externalApplicationSettings: HostParameterEntry;
+  generalSettings: HostParameterEntry;
+  isvConfig: HostParameterEntry;
+  marketingSettings: HostParameterEntry;
+  outlookSynchronizationSettings: HostParameterEntry;
+  relationshipRoles: HostParameterEntry;
+  sales: HostParameterEntry;
 }
 
 export async function cloneSolution(parameters: CloneSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
@@ -30,9 +40,22 @@ export async function cloneSolution(parameters: CloneSolutionParameters, runnerP
     validator.pushInput(pacArgs, "--name", parameters.name);
     validator.pushInput(pacArgs, "--targetversion", parameters.targetVersion);
     validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory, undefined, logger);
-    validator.pushInput(pacArgs, "--include", parameters.include);
     validator.pushInput(pacArgs, "--async", parameters.async);
     validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
+
+    const includeArgs = [];
+    if (validator.getInput(parameters.autoNumberSettings) === 'true') { includeArgs.push("autonumbering"); }
+    if (validator.getInput(parameters.calenderSettings) === 'true') { includeArgs.push("calendar"); }
+    if (validator.getInput(parameters.customizationSettings) === 'true') { includeArgs.push("customization"); }
+    if (validator.getInput(parameters.emailTrackingSettings) === 'true') { includeArgs.push("emailtracking"); }
+    if (validator.getInput(parameters.externalApplicationSettings) === 'true') { includeArgs.push("externalapplications"); }
+    if (validator.getInput(parameters.generalSettings) === 'true') { includeArgs.push("general"); }
+    if (validator.getInput(parameters.isvConfig) === 'true') { includeArgs.push("isvconfig"); }
+    if (validator.getInput(parameters.marketingSettings) === 'true') { includeArgs.push("marketing"); }
+    if (validator.getInput(parameters.outlookSynchronizationSettings) === 'true') { includeArgs.push("outlooksynchronization"); }
+    if (validator.getInput(parameters.relationshipRoles) === 'true') { includeArgs.push("relationshiproles"); }
+    if (validator.getInput(parameters.sales) === 'true') { includeArgs.push("sales"); }
+    if (includeArgs.length > 0) { pacArgs.push("--include", includeArgs.join(',')); }
 
     const pacResult = await pac(...pacArgs);
     logger.log("CloneSolution Action Result: " + pacResult);

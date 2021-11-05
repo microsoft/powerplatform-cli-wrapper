@@ -62,6 +62,17 @@ describe("action: clone solution", () => {
     name: { name: 'SolutionName', required: true },
     targetVersion: { name: 'TargetVersion', required: false },
     outputDirectory: { name: 'OutputDirectory', required: false },
+    autoNumberSettings: { name: 'ExportAutoNumberingSettings', required: false },
+    calenderSettings: { name: 'ExportCalendarSettings', required: false },
+    customizationSettings: { name: 'ExportCustomizationSettings', required: false },
+    emailTrackingSettings: { name: 'ExportEmailTrackingSettings', required: false },
+    externalApplicationSettings: { name: 'ExportExternalApplicationSettings', required: false },
+    generalSettings: { name: 'ExportGeneralSettings', required: false },
+    isvConfig: { name: 'ExportIsvConfig', required: false },
+    marketingSettings: { name: 'ExportMarketingSettings', required: false },
+    outlookSynchronizationSettings: { name: 'ExportOutlookSynchronizationSettings', required: false },
+    relationshipRoles: { name: 'ExportRelationshipRoles', required: false },
+    sales: { name: 'ExportSales', required: false }
   });
 
   it("with required params, calls pac runner with correct args", async () => {
