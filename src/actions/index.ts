@@ -19,3 +19,5 @@ export * from "./resetEnvironment";
 export * from "./copyEnvironment";
 export * from "./uploadPaportal";
 export * from "./downloadPaportal";
+export * from "./cloneSolution";
+export * from "./updateVersionSolution";
