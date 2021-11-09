@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { Logger } from "../Logger";
 import { IHostAbstractions, HostParameterEntry } from "./IHostAbstractions";
 
 export class InputValidator {
