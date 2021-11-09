@@ -26,8 +26,8 @@ export async function restoreEnvironment(parameters: RestoreEnvironmentParameter
     logger.log("Source Url: " + parameters.sourceEnvironmentUrl);
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl, undefined, logger);
-    validator.pushInput(pacArgs, "--name", parameters.targetEnvironmentName, undefined, logger);
+    validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl);
+    validator.pushInput(pacArgs, "--name", parameters.targetEnvironmentName);
 
     if (validator.getInput(parameters.restoreLatestBackup) === 'true') {
       pacArgs.push("--selected-backup", "latest");
@@ -37,6 +37,7 @@ export async function restoreEnvironment(parameters: RestoreEnvironmentParameter
       throw new Error("Either latest backup must be true or Valid date and time for backup must be provided.");
     }
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("RestoreEnvironment Action Result: " + pacResult);
   } catch (error) {

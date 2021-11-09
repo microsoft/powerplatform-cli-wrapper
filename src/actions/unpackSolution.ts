@@ -29,8 +29,8 @@ export async function unpackSolution(parameters: UnpackSolutionParameters, runne
     const pacArgs = ["solution", "unpack"];
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--zipFile", parameters.solutionZipFile, (value) => path.resolve(runnerParameters.workingDir, value), logger);
-    validator.pushInput(pacArgs, "--folder", parameters.sourceFolder, (value) => path.resolve(runnerParameters.workingDir, value), logger);
+    validator.pushInput(pacArgs, "--zipFile", parameters.solutionZipFile, (value) => path.resolve(runnerParameters.workingDir, value));
+    validator.pushInput(pacArgs, "--folder", parameters.sourceFolder, (value) => path.resolve(runnerParameters.workingDir, value));
     validator.pushInput(pacArgs, "--packageType", parameters.solutionType);
     if (validator.getInput(parameters.overwriteFiles) === "true") {
       pacArgs.push("--allowDelete");
@@ -41,6 +41,7 @@ export async function unpackSolution(parameters: UnpackSolutionParameters, runne
       pacArgs.push("true");
     }
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("UnpackSolution Action Result: " + pacResult);
   } catch (error) {

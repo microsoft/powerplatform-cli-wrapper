@@ -24,10 +24,11 @@ export async function upgradeSolution(parameters: UpgradeSolutionParameters, run
     const pacArgs = ["solution", "upgrade"];
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--solution-name", parameters.name, undefined, logger);
+    validator.pushInput(pacArgs, "--solution-name", parameters.name);
     validator.pushInput(pacArgs, "--async", parameters.async);
     validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("UpgradeSolution Action Result: " + pacResult);
   } catch (error) {

@@ -36,10 +36,10 @@ export async function cloneSolution(parameters: CloneSolutionParameters, runnerP
 
     const pacArgs = ["solution", "clone"]
     const validator = new InputValidator(host);
-    logger.log("Cloning solution name: " + parameters.name.name);
+
     validator.pushInput(pacArgs, "--name", parameters.name);
     validator.pushInput(pacArgs, "--targetversion", parameters.targetVersion);
-    validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory, undefined, logger);
+    validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory);
     validator.pushInput(pacArgs, "--async", parameters.async);
     validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
 
@@ -57,6 +57,7 @@ export async function cloneSolution(parameters: CloneSolutionParameters, runnerP
     if (validator.getInput(parameters.sales) === 'true') { includeArgs.push("sales"); }
     if (includeArgs.length > 0) { pacArgs.push("--include", includeArgs.join(',')); }
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("CloneSolution Action Result: " + pacResult);
   } catch (error) {
