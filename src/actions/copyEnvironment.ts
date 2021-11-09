@@ -27,12 +27,13 @@ export async function copyEnvironment(parameters: CopyEnvironmentParameters, run
     logger.log("Source Url: " + parameters.sourceEnvironmentUrl);
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl, undefined, logger);
+    validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl);
     if (validator.getInput(parameters.overrideFriendlyName) === 'true') {
       validator.pushInput(pacArgs, "--name", parameters.friendlyTargetEnvironmentName);
     }
     validator.pushInput(pacArgs, "--type", parameters.copyType);
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("CopyEnvironment Action Result: " + pacResult);
   } catch (error) {

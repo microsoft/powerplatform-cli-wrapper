@@ -28,10 +28,11 @@ export async function packSolution(parameters: PackSolutionParameters, runnerPar
     const pacArgs = ["solution", "pack"];
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--zipFile", parameters.solutionZipFile, (value) => path.resolve(runnerParameters.workingDir, value), logger);
-    validator.pushInput(pacArgs, "--folder", parameters.sourceFolder, (value) => path.resolve(runnerParameters.workingDir, value), logger);
+    validator.pushInput(pacArgs, "--zipFile", parameters.solutionZipFile, (value) => path.resolve(runnerParameters.workingDir, value));
+    validator.pushInput(pacArgs, "--folder", parameters.sourceFolder, (value) => path.resolve(runnerParameters.workingDir, value));
     validator.pushInput(pacArgs, "--packageType", parameters.solutionType);
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("PackSolution Action Result: " + pacResult);
   } catch (error) {

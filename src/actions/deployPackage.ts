@@ -25,10 +25,11 @@ export async function deployPackage(parameters: DeployPackageParameters, runnerP
     const pacArgs = ["package", "deploy"];
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--package", parameters.packagePath, (value) => path.resolve(runnerParameters.workingDir, value), logger);
+    validator.pushInput(pacArgs, "--package", parameters.packagePath, (value) => path.resolve(runnerParameters.workingDir, value));
     validator.pushInput(pacArgs, "--logFile", parameters.logFile);
     validator.pushInput(pacArgs, "--logConsole", parameters.logConsole);
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("DeployPackage Action Result: " + pacResult);
   } catch (error) {

@@ -36,7 +36,7 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
     const pacArgs = ["solution", "import"];
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--path", parameters.path, (value) => path.resolve(runnerParameters.workingDir, value), logger);
+    validator.pushInput(pacArgs, "--path", parameters.path, (value) => path.resolve(runnerParameters.workingDir, value));
     validator.pushInput(pacArgs, "--async", parameters.async);
     validator.pushInput(pacArgs, "--import-as-holding", parameters.importAsHolding);
     validator.pushInput(pacArgs, "--force-overwrite", parameters.forceOverwrite);
@@ -50,6 +50,7 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
       validator.pushInput(pacArgs, "--settings-file", parameters.deploymentSettingsFile);
     }
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("ImportSolution Action Result: " + pacResult);
   } catch (error) {

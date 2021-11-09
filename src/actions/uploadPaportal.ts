@@ -23,9 +23,10 @@ export async function uploadPaportal(parameters: UploadPaportalParameters, runne
     const pacArgs = ["paportal", "upload"]
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--path", parameters.path, undefined, logger);
+    validator.pushInput(pacArgs, "--path", parameters.path);
     validator.pushInput(pacArgs, "--deploymentProfile", parameters.deploymentProfile);
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("UploadPaPortal Action Result: " + pacResult);
   } catch (error) {
