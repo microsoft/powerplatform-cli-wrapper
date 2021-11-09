@@ -16,12 +16,12 @@ export interface CreateEnvironmentParameters {
   domainName: HostParameterEntry;
 }
 
-export interface EnvironmentParameters {
+export interface EnvironmentResult {
   environmentId?: string,
   environmentUrl?: string
 }
 
-export async function createEnvironment(parameters: CreateEnvironmentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<EnvironmentParameters> {
+export async function createEnvironment(parameters: CreateEnvironmentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<EnvironmentResult> {
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
