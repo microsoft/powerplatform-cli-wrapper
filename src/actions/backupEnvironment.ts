@@ -25,6 +25,7 @@ export async function backupEnvironment(parameters: BackupEnvironmentParameters,
 
     validator.pushInput(pacArgs, "--label", parameters.backupLabel);
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("BackupEnvironment Action Result: " + pacResult);
   } catch (error) {

@@ -35,6 +35,7 @@ export async function createEnvironment(parameters: CreateEnvironmentParameters,
     validator.pushInput(pacArgs, "--language", parameters.language);
     validator.pushInput(pacArgs, "--domain", parameters.domainName);
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("CreateEnvironment Action Result: " + pacResult);
   } catch (error) {

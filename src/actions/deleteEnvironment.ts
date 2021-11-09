@@ -20,6 +20,7 @@ export async function deleteEnvironment(parameters: DeleteEnvironmentParameters,
     const pacArgs = ["admin", "delete", "--url", parameters.environmentUrl];
     logger.log("Url: " + parameters.environmentUrl);
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("DeleteEnvironment Action Result: " + pacResult);
   } catch (error) {

@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { Logger } from "../Logger";
 import { IHostAbstractions, HostParameterEntry } from "./IHostAbstractions";
 
 export class InputValidator {
@@ -19,21 +18,15 @@ export class InputValidator {
     return val;
   }
 
-  public pushInput(pacArgs: string[], property: string, params?: HostParameterEntry, callback?: (val: string) => string, logger?: Logger): void {
+  public pushInput(pacArgs: string[], property: string, params?: HostParameterEntry, callback?: (val: string) => string): void {
     if (params !== undefined) {
       let val = this.getInput(params);
       if (val === undefined && params.required) {
-        if (logger) {
-          logger.error(`Required ${params.name} not set`);
-        }
         throw new Error(`Required ${params.name} not set`);
       }
       else if (val !== undefined) {
         if (callback) {
           val = callback(val);
-        }
-        if (logger) {
-          logger.log(`${params.name}: ` + val);
         }
         pacArgs.push(property, val);
       }

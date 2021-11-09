@@ -26,11 +26,12 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     const pacArgs = ["solution", "check"]
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--path", parameters.solutionPath, (value) => path.resolve(runnerParameters.workingDir, value), logger);
+    validator.pushInput(pacArgs, "--path", parameters.solutionPath, (value) => path.resolve(runnerParameters.workingDir, value));
     validator.pushInput(pacArgs, "--geo", parameters.geoInstance);
     validator.pushInput(pacArgs, "--ruleLevelOverride", parameters.ruleLevelOverride);
-    validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory, undefined, logger);
+    validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory);
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("CheckSolution Action Result: " + pacResult);
   } catch (error) {

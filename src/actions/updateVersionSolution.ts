@@ -28,6 +28,7 @@ export async function updateVersionSolution(parameters: UpdateVersionSolutionPar
     validator.pushInput(pacArgs, "--strategy", parameters.strategy);
     validator.pushInput(pacArgs, "--filename", parameters.fileName);
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("UpdateVersionSolution Action Result: " + pacResult);
   } catch (error) {

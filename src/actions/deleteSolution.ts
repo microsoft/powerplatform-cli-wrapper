@@ -22,8 +22,9 @@ export async function deleteSolution(parameters: DeleteSolutionParameters, runne
     const pacArgs = ["solution", "delete"];
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--solution-name", parameters.name, undefined, logger);
+    validator.pushInput(pacArgs, "--solution-name", parameters.name);
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("DeleteSolution Action Result: " + pacResult);
   } catch (error) {

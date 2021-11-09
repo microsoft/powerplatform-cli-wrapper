@@ -36,6 +36,7 @@ export async function resetEnvironment(parameters: ResetEnvironmentParameters, r
       validator.pushInput(pacArgs, "--name", parameters.friendlyEnvironmentName);
     }
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("ResetEnvironment Action Result: " + pacResult);
   } catch (error) {

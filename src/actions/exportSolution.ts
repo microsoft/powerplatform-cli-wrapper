@@ -39,8 +39,8 @@ export async function exportSolution(parameters: ExportSolutionParameters, runne
     const pacArgs = ["solution", "export"];
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--name", parameters.name, undefined, logger);
-    validator.pushInput(pacArgs, "--path", parameters.path, (value) => path.resolve(runnerParameters.workingDir, value), logger);
+    validator.pushInput(pacArgs, "--name", parameters.name);
+    validator.pushInput(pacArgs, "--path", parameters.path, (value) => path.resolve(runnerParameters.workingDir, value));
     validator.pushInput(pacArgs, "--managed", parameters.managed);
     validator.pushInput(pacArgs, "--async", parameters.async);
     validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
@@ -60,6 +60,7 @@ export async function exportSolution(parameters: ExportSolutionParameters, runne
     if (validator.getInput(parameters.sales) === 'true') { includeArgs.push("sales"); }
     if (includeArgs.length > 0) { pacArgs.push("--include", includeArgs.join(',')); }
 
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("ExportSolution Action Result: " + pacResult);
   } catch (error) {
