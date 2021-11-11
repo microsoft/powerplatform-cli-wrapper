@@ -18,6 +18,14 @@ describe("input validator test", () => {
     name: hostName,
     getInput: () => inputValue,
   }
+  const mockHostReturnEmpty : IHostAbstractions = {
+    name: hostName,
+    getInput: () => "",
+  }
+  const hostParameterEntryNoDefault : HostParameterEntry = {
+    name: hostName,
+    required: false,
+  };
   const hostParameterEntryRequired : HostParameterEntry = {
     name: hostName,
     required: true,
@@ -65,6 +73,12 @@ describe("input validator test", () => {
     validator = new InputValidator(mockHostReturnUndefined);
     validator.pushInput(pacArgs, property, hostParameterEntryOptional);
     assert.deepEqual(pacArgs, [property, defaultValue]);
+  });
+
+  it("empty string", async () => {
+    validator = new InputValidator(mockHostReturnEmpty);
+    validator.pushInput(pacArgs, property, hostParameterEntryNoDefault);
+    assert.deepEqual(pacArgs, []);
   });
 
   it("do not add optional to pac args", async () => {

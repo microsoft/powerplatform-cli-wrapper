@@ -15,6 +15,9 @@ export class InputValidator {
     if (val === undefined && params.defaultValue !== undefined) {
       return params.defaultValue.toString();
     }
+    else if (val == '') {
+      return undefined;
+    }
     return val;
   }
 
