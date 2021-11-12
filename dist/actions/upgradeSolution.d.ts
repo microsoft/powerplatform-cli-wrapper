@@ -1,10 +1,11 @@
+import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 export interface UpgradeSolutionParameters {
-    name: string;
     credentials: AuthCredentials;
     environmentUrl: string;
-    async?: boolean;
-    maxAsyncWaitTimeInMin?: number;
+    name: HostParameterEntry;
+    async: HostParameterEntry;
+    maxAsyncWaitTimeInMin: HostParameterEntry;
 }
-export declare function upgradeSolution(parameters: UpgradeSolutionParameters, runnerParameters: RunnerParameters): Promise<void>;
+export declare function upgradeSolution(parameters: UpgradeSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void>;
