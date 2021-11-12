@@ -19,5 +19,18 @@ __exportStar(require("./upgradeSolution"), exports);
 __exportStar(require("./deleteEnvironment"), exports);
 __exportStar(require("./backupEnvironment"), exports);
 __exportStar(require("./checkSolution"), exports);
+__exportStar(require("./publishSolution"), exports);
+__exportStar(require("./deployPackage"), exports);
+__exportStar(require("./createEnvironment"), exports);
+__exportStar(require("./restoreEnvironment"), exports);
+__exportStar(require("./deleteSolution"), exports);
+__exportStar(require("./packSolution"), exports);
+__exportStar(require("./unpackSolution"), exports);
+__exportStar(require("./resetEnvironment"), exports);
+__exportStar(require("./copyEnvironment"), exports);
+__exportStar(require("./uploadPaportal"), exports);
+__exportStar(require("./downloadPaportal"), exports);
+__exportStar(require("./cloneSolution"), exports);
+__exportStar(require("./updateVersionSolution"), exports);
 
 //# sourceMappingURL=index.js.map

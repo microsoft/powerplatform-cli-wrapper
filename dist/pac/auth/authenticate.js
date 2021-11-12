@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authenticateEnvironment = exports.authenticateAdmin = void 0;
+exports.clearAuthentication = exports.authenticateEnvironment = exports.authenticateAdmin = void 0;
 function authenticateAdmin(pac, credentials) {
     return pac("auth", "create", "--kind", "ADMIN", ...addCredentials(credentials));
 }
@@ -9,6 +9,10 @@ function authenticateEnvironment(pac, credentials, environmentUrl) {
     return pac("auth", "create", ...addUrl(environmentUrl), ...addCredentials(credentials));
 }
 exports.authenticateEnvironment = authenticateEnvironment;
+function clearAuthentication(pac) {
+    return pac("auth", "clear");
+}
+exports.clearAuthentication = clearAuthentication;
 function addUrl(url) {
     return ["--url", url];
 }

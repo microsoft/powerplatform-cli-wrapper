@@ -7,5 +7,6 @@ export interface CheckSolutionParameters {
     solutionPath: HostParameterEntry;
     geoInstance?: HostParameterEntry;
     ruleLevelOverride: HostParameterEntry;
+    outputDirectory: HostParameterEntry;
 }
 export declare function checkSolution(parameters: CheckSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void>;

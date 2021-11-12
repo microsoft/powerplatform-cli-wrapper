@@ -14,43 +14,22 @@ class InputValidator {
         }
         return val;
     }
-    pushInput(pacArgs, property, params, callback) {
-        if (params !== undefined) {
-            let val = this.getInput(params);
-            if (val === undefined && params.required) {
-                throw new Error(`Required ${params.name} not set`);
-            }
-            else if (val !== undefined) {
-                if (callback) {
-                    val = callback(val);
-                }
-                pacArgs.push(property, val);
-            }
+    pushInput(pacArgs, property, paramEntry, callback) {
+        // TODO: change action-specific ...Parameters contracts to always require the parameter definition
+        // today, we double-encode if a task/action parameter is optional in the ...Parameters interface definition, but shouldn't!
+        if (!paramEntry) {
+            return;
         }
-    }
-    //deprecated
-    getBoolInput(params) {
-        const textValue = this._host.getInput(params);
-        const boolValue = (!textValue) ? (typeof params.defaultValue === 'boolean' ? params.defaultValue : false) : textValue === 'true';
-        return boolValue.toString();
-    }
-    //deprecated
-    getIntInput(params) {
-        const defaultValue = (typeof params.defaultValue === 'string') ? parseInt(params.defaultValue) : 60;
-        const textValue = this._host.getInput(params);
-        if (textValue !== undefined) {
-            if (parseInt(textValue) > 0 && parseFloat(textValue) === parseInt(textValue)) {
-                return textValue;
-            }
-            else {
-                throw new Error(`${textValue} is not a valid positive number`);
-            }
+        let val = this.getInput(paramEntry);
+        if (!val && paramEntry.required) {
+            throw new Error(`Required ${paramEntry.name} not set`);
         }
-        return defaultValue.toString();
-    }
-    //deprecated
-    isEntryValid(entry) {
-        return entry !== undefined && entry.name !== undefined && entry.required !== undefined;
+        else if (val) {
+            if (callback) {
+                val = callback(val);
+            }
+            pacArgs.push(property, val);
+        }
     }
 }
 exports.InputValidator = InputValidator;

@@ -10,20 +10,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.upgradeSolution = void 0;
+const InputValidator_1 = require("../host/InputValidator");
 const authenticate_1 = require("../pac/auth/authenticate");
 const createPacRunner_1 = require("../pac/createPacRunner");
-function upgradeSolution(parameters, runnerParameters) {
+function upgradeSolution(parameters, runnerParameters, host) {
     return __awaiter(this, void 0, void 0, function* () {
+        const logger = runnerParameters.logger;
         const pac = createPacRunner_1.default(runnerParameters);
-        yield authenticate_1.authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-        const upgradeArgs = ["solution", "upgrade", "--solution-name", parameters.name];
-        if (parameters.async) {
-            upgradeArgs.push("--async");
+        try {
+            const authenticateResult = yield authenticate_1.authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+            logger.log("The Authentication Result: " + authenticateResult);
+            const pacArgs = ["solution", "upgrade"];
+            const validator = new InputValidator_1.InputValidator(host);
+            validator.pushInput(pacArgs, "--solution-name", parameters.name);
+            validator.pushInput(pacArgs, "--async", parameters.async);
+            validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
+            logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
+            const pacResult = yield pac(...pacArgs);
+            logger.log("UpgradeSolution Action Result: " + pacResult);
         }
-        if (parameters.maxAsyncWaitTimeInMin) {
-            upgradeArgs.push("--max-async-wait-time", parameters.maxAsyncWaitTimeInMin.toString());
+        catch (error) {
+            logger.error(`failed: ${error.message}`);
+            throw error;
         }
-        yield pac(...upgradeArgs);
+        finally {
+            const clearAuthResult = yield authenticate_1.clearAuthentication(pac);
+            logger.log("The Clear Authentication Result: " + clearAuthResult);
+        }
     });
 }
 exports.upgradeSolution = upgradeSolution;

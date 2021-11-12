@@ -16,14 +16,29 @@ const createPacRunner_1 = require("../pac/createPacRunner");
 const path = require("path");
 function checkSolution(parameters, runnerParameters, host) {
     return __awaiter(this, void 0, void 0, function* () {
+        const logger = runnerParameters.logger;
         const pac = createPacRunner_1.default(runnerParameters);
-        yield authenticate_1.authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-        const pacArgs = ["solution", "check"];
-        const validator = new InputValidator_1.InputValidator(host);
-        validator.pushInput(pacArgs, "--path", parameters.solutionPath, (value) => path.resolve(runnerParameters.workingDir, value));
-        validator.pushInput(pacArgs, "--geo", parameters.geoInstance);
-        validator.pushInput(pacArgs, "--ruleLevelOverride", parameters.ruleLevelOverride);
-        yield pac(...pacArgs);
+        try {
+            const authenticateResult = yield authenticate_1.authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+            logger.log("The Authentication Result: " + authenticateResult);
+            const pacArgs = ["solution", "check"];
+            const validator = new InputValidator_1.InputValidator(host);
+            validator.pushInput(pacArgs, "--path", parameters.solutionPath, (value) => path.resolve(runnerParameters.workingDir, value));
+            validator.pushInput(pacArgs, "--geo", parameters.geoInstance);
+            validator.pushInput(pacArgs, "--ruleLevelOverride", parameters.ruleLevelOverride);
+            validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory);
+            logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
+            const pacResult = yield pac(...pacArgs);
+            logger.log("CheckSolution Action Result: " + pacResult);
+        }
+        catch (error) {
+            logger.error(`failed: ${error.message}`);
+            throw error;
+        }
+        finally {
+            const clearAuthResult = yield authenticate_1.clearAuthentication(pac);
+            logger.log("The Clear Authentication Result: " + clearAuthResult);
+        }
     });
 }
 exports.checkSolution = checkSolution;

@@ -10,21 +10,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.backupEnvironment = void 0;
+const InputValidator_1 = require("../host/InputValidator");
 const authenticate_1 = require("../pac/auth/authenticate");
 const createPacRunner_1 = require("../pac/createPacRunner");
 function backupEnvironment(parameters, runnerParameters, host) {
     return __awaiter(this, void 0, void 0, function* () {
+        const logger = runnerParameters.logger;
         const pac = createPacRunner_1.default(runnerParameters);
-        yield authenticate_1.authenticateAdmin(pac, parameters.credentials);
-        // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
-        const pacArgs = ["admin", "backup", "--url", parameters.environmentUrl];
-        const backupLabel = host.getInput(parameters.backupLabel);
-        if (backupLabel === undefined) {
-            //This error should never occur
-            throw new Error("Label is undefined, it must always be set by host.");
+        try {
+            const authenticateResult = yield authenticate_1.authenticateAdmin(pac, parameters.credentials);
+            logger.log("The Authentication Result: " + authenticateResult);
+            // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
+            const pacArgs = ["admin", "backup", "--url", parameters.environmentUrl];
+            const validator = new InputValidator_1.InputValidator(host);
+            validator.pushInput(pacArgs, "--label", parameters.backupLabel);
+            logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
+            const pacResult = yield pac(...pacArgs);
+            logger.log("BackupEnvironment Action Result: " + pacResult);
         }
-        pacArgs.push("--label", backupLabel);
-        yield pac(...pacArgs);
+        catch (error) {
+            logger.error(`failed: ${error.message}`);
+            throw error;
+        }
+        finally {
+            const clearAuthResult = yield authenticate_1.clearAuthentication(pac);
+            logger.log("The Clear Authentication Result: " + clearAuthResult);
+        }
     });
 }
 exports.backupEnvironment = backupEnvironment;
