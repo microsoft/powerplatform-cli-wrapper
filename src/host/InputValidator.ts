@@ -32,4 +32,8 @@ export class InputValidator {
       }
     }
   }
+
+  public isHostParameterEntry(entry: HostParameterEntry | string): entry is HostParameterEntry {
+    return (entry as HostParameterEntry).name !== undefined && (entry as HostParameterEntry).required !== undefined;
+  }
 }

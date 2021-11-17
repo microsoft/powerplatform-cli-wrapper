@@ -7,7 +7,7 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface BackupEnvironmentParameters {
   credentials: AuthCredentials;
-  environmentUrl: string;
+  environmentUrl: string | HostParameterEntry;
   backupLabel: HostParameterEntry;
 }
 
@@ -20,9 +20,15 @@ export async function backupEnvironment(parameters: BackupEnvironmentParameters,
     logger.log("The Authentication Result: " + authenticateResult);
 
     // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
-    const pacArgs = ["admin", "backup", "--url", parameters.environmentUrl];
+    const pacArgs = ["admin", "backup"];
     const validator = new InputValidator(host);
 
+    if (validator.isHostParameterEntry(parameters.environmentUrl)) {
+      validator.pushInput(pacArgs, "--url", parameters.environmentUrl);
+    } else {
+      pacArgs.push("--url", parameters.environmentUrl)
+    }
+    
     validator.pushInput(pacArgs, "--label", parameters.backupLabel);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));

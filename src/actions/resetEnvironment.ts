@@ -7,7 +7,7 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface ResetEnvironmentParameters {
   credentials: AuthCredentials;
-  environmentUrl: string;
+  environmentUrl: string | HostParameterEntry;
   language: HostParameterEntry;
   overrideDomainName: HostParameterEntry;
   domainName?: HostParameterEntry;
@@ -24,10 +24,15 @@ export async function resetEnvironment(parameters: ResetEnvironmentParameters, r
     logger.log("The Authentication Result: " + authenticateResult);
 
     // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
-    const pacArgs = ["admin", "reset", "--url", parameters.environmentUrl];
-    logger.log("Url: " + parameters.environmentUrl);
-
+    const pacArgs = ["admin", "reset"];
     const validator = new InputValidator(host);
+
+    if (validator.isHostParameterEntry(parameters.environmentUrl)) {
+      validator.pushInput(pacArgs, "--url", parameters.environmentUrl);
+    } else {
+      pacArgs.push("--url", parameters.environmentUrl)
+    }
+
     validator.pushInput(pacArgs, "--language", parameters.language);
     if (validator.getInput(parameters.overrideDomainName) === 'true') {
       validator.pushInput(pacArgs, "--domain", parameters.domainName);

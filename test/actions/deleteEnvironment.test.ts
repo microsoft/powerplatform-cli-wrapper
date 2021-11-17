@@ -7,6 +7,7 @@ import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { DeleteEnvironmentParameters } from "../../src/actions";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { mockHost } from "./mock/mockHost";
 import Sinon = require("sinon");
 should();
 use(sinonChai);
@@ -16,6 +17,7 @@ describe("action: deleteEnvironment", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
+  const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
   let deleteEnvironmentParameters: DeleteEnvironmentParameters;
@@ -47,7 +49,7 @@ describe("action: deleteEnvironment", () => {
     authenticateAdminStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");  
-    await mockedActionModule.deleteEnvironment(deleteEnvironmentParameters, runnerParameters);
+    await mockedActionModule.deleteEnvironment(deleteEnvironmentParameters, runnerParameters, host);
   }
 
   it("with inputs, calls pac runner stub with correct arguments", async () => {

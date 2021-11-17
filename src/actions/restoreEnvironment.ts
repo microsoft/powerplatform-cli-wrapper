@@ -7,7 +7,7 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface RestoreEnvironmentParameters {
   credentials: AuthCredentials;
-  sourceEnvironmentUrl: string;
+  sourceEnvironmentUrl: string | HostParameterEntry;
   targetEnvironmentUrl: HostParameterEntry;
   restoreLatestBackup: HostParameterEntry;
   backupDateTime?: HostParameterEntry;
@@ -22,9 +22,14 @@ export async function restoreEnvironment(parameters: RestoreEnvironmentParameter
     const authenticateResult = await authenticateAdmin(pac, parameters.credentials);
     logger.log("The Authentication Result: " + authenticateResult);
 
-    const pacArgs = ["admin", "restore", "--source-url", parameters.sourceEnvironmentUrl];
-    logger.log("Source Url: " + parameters.sourceEnvironmentUrl);
+    const pacArgs = ["admin", "restore"];
     const validator = new InputValidator(host);
+
+    if (validator.isHostParameterEntry(parameters.sourceEnvironmentUrl)) {
+      validator.pushInput(pacArgs, "--source-url", parameters.sourceEnvironmentUrl);
+    } else {
+      pacArgs.push("--source-url", parameters.sourceEnvironmentUrl)
+    }
 
     validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl);
     validator.pushInput(pacArgs, "--name", parameters.targetEnvironmentName);
