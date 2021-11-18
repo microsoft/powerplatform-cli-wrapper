@@ -7,7 +7,7 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface CopyEnvironmentParameters {
   credentials: AuthCredentials;
-  sourceEnvironmentUrl: string | HostParameterEntry;
+  sourceEnvironmentUrl: HostParameterEntry;
   targetEnvironmentUrl: HostParameterEntry;
   overrideFriendlyName: HostParameterEntry;
   friendlyTargetEnvironmentName?: HostParameterEntry;
@@ -26,13 +26,9 @@ export async function copyEnvironment(parameters: CopyEnvironmentParameters, run
     const pacArgs = ["admin", "copy"];
     const validator = new InputValidator(host);
 
-    if (validator.isHostParameterEntry(parameters.sourceEnvironmentUrl)) {
-      validator.pushInput(pacArgs, "--source-url", parameters.sourceEnvironmentUrl);
-    } else {
-      pacArgs.push("--source-url", parameters.sourceEnvironmentUrl)
-    }
-
+    validator.pushInput(pacArgs, "--source-url", parameters.sourceEnvironmentUrl);
     validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl);
+    
     if (validator.getInput(parameters.overrideFriendlyName) === 'true') {
       validator.pushInput(pacArgs, "--name", parameters.friendlyTargetEnvironmentName);
     }

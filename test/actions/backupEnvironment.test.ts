@@ -6,7 +6,7 @@ import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { BackupEnvironmentParameters } from "../../src/actions";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials } from "./mock/mockData";
 import { mockHost } from "./mock/mockHost";
 import Sinon = require("sinon");
 should();
@@ -19,7 +19,6 @@ describe("action: backupEnvironment", () => {
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
-  const environmentUrl: string = mockEnvironmentUrl;
   let backupEnvironmentParameters: BackupEnvironmentParameters;
 
   beforeEach(() => {
@@ -28,7 +27,7 @@ describe("action: backupEnvironment", () => {
     clearAuthenticationStub = stub();
     backupEnvironmentParameters = {
       credentials: mockClientCredentials,
-      environmentUrl: environmentUrl,
+      environmentUrl: { name: "EnvironmentUrl", required: true },
       backupLabel: { name: 'BackupLabel', required: true },
     };
   });
@@ -57,7 +56,7 @@ describe("action: backupEnvironment", () => {
     await runActionWithMocks(backupEnvironmentParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("admin", "backup", "--url", environmentUrl, "--label", host.backupLabel);
+    pacStub.should.have.been.calledOnceWith("admin", "backup", "--url", host.environmentUrl, "--label", host.backupLabel);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

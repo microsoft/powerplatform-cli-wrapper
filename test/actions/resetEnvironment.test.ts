@@ -6,7 +6,7 @@ import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { ResetEnvironmentParameters } from "../../src/actions";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials } from "./mock/mockData";
 import { mockHost } from "./mock/mockHost";
 import Sinon = require("sinon");
 should();
@@ -19,7 +19,6 @@ describe("action: resetEnvironment", () => {
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
-  const sourceEnvironmentUrl: string = mockEnvironmentUrl;
   let resetEnvironmentParameters: ResetEnvironmentParameters;
 
   beforeEach(() => {
@@ -51,7 +50,7 @@ describe("action: resetEnvironment", () => {
 
   const createMinMockResetEnvironmentParameters = (): ResetEnvironmentParameters => ({
     credentials: mockClientCredentials,
-    environmentUrl: sourceEnvironmentUrl,
+    environmentUrl: { name: "EnvironmentUrl", required: true },
     language: { name: "Language", required: true },
     overrideFriendlyName: { name: "OverrideFriendlyName", required: false },
     overrideDomainName: { name: "OverrideDomainName", required: false }
@@ -61,7 +60,7 @@ describe("action: resetEnvironment", () => {
     await runActionWithMocks(resetEnvironmentParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("admin", "reset", "--url", sourceEnvironmentUrl, "--language", host.language);
+    pacStub.should.have.been.calledOnceWith("admin", "reset", "--url", host.environmentUrl, "--language", host.language);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 
@@ -73,7 +72,7 @@ describe("action: resetEnvironment", () => {
 
     await runActionWithMocks(resetEnvironmentParameters);
 
-    pacStub.should.have.been.calledOnceWith("admin", "reset", "--url", sourceEnvironmentUrl, "--language", host.language,
+    pacStub.should.have.been.calledOnceWith("admin", "reset", "--url", host.environmentUrl, "--language", host.language,
       "--domain", host.domainName, "--name", host.friendlyName);
   });
 });

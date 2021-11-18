@@ -7,7 +7,7 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface BackupEnvironmentParameters {
   credentials: AuthCredentials;
-  environmentUrl: string | HostParameterEntry;
+  environmentUrl: HostParameterEntry;
   backupLabel: HostParameterEntry;
 }
 
@@ -23,12 +23,7 @@ export async function backupEnvironment(parameters: BackupEnvironmentParameters,
     const pacArgs = ["admin", "backup"];
     const validator = new InputValidator(host);
 
-    if (validator.isHostParameterEntry(parameters.environmentUrl)) {
-      validator.pushInput(pacArgs, "--url", parameters.environmentUrl);
-    } else {
-      pacArgs.push("--url", parameters.environmentUrl)
-    }
-    
+    validator.pushInput(pacArgs, "--url", parameters.environmentUrl);
     validator.pushInput(pacArgs, "--label", parameters.backupLabel);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));

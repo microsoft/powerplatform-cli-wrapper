@@ -18,6 +18,7 @@ export class mockHost implements IHostAbstractions {
   region = 'United States';
   domainName = 'Contoso';
   templates = 'Customer Service, Sample App';
+  environmentUrl = 'https://contoso.crm.dynamics.com/';
   targetEnvironmentUrl = 'https://contoso2.crm.dynamics.com/';
   restoreTimeStamp = '01/01/2001 00:00';
   friendlyName = 'Mock-Friendly-Name';
@@ -42,6 +43,7 @@ export class mockHost implements IHostAbstractions {
         case 'LanguageName': return this.language;
         case 'LocationName': return this.region;
         case 'AppsTemplate': return this.templates;
+        case 'EnvironmentUrl': return this.environmentUrl;
         case 'TargetEnvironmentUrl': return this.targetEnvironmentUrl;
         case 'RestoreTimeStamp': return this.restoreTimeStamp;
         case 'FriendlyName': return this.friendlyName;

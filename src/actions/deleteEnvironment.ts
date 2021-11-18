@@ -7,7 +7,7 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface DeleteEnvironmentParameters {
   credentials: AuthCredentials;
-  environmentUrl: string | HostParameterEntry;
+  environmentUrl: HostParameterEntry;
 }
 
 export async function deleteEnvironment(parameters: DeleteEnvironmentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
@@ -22,11 +22,7 @@ export async function deleteEnvironment(parameters: DeleteEnvironmentParameters,
     const pacArgs = ["admin", "delete"];
     const validator = new InputValidator(host);
 
-    if (validator.isHostParameterEntry(parameters.environmentUrl)) {
-      validator.pushInput(pacArgs, "--url", parameters.environmentUrl);
-    } else {
-      pacArgs.push("--url", parameters.environmentUrl)
-    }
+    validator.pushInput(pacArgs, "--url", parameters.environmentUrl);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

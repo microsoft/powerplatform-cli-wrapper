@@ -6,7 +6,7 @@ import { expect, should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { RestoreEnvironmentParameters } from "../../src/actions";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials } from "./mock/mockData";
 import { mockHost } from "./mock/mockHost";
 import Sinon = require("sinon");
 should();
@@ -19,7 +19,6 @@ describe("action: restoreEnvironment", () => {
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
-  const environmentUrl: string = mockEnvironmentUrl;
   let restoreEnvironmentParameters: RestoreEnvironmentParameters;
 
   beforeEach(() => {
@@ -28,7 +27,7 @@ describe("action: restoreEnvironment", () => {
     clearAuthenticationStub = stub();
     restoreEnvironmentParameters = {
       credentials: mockClientCredentials,
-      sourceEnvironmentUrl: environmentUrl,
+      sourceEnvironmentUrl: { name: "EnvironmentUrl", required: true },
       targetEnvironmentUrl: { name: "TargetEnvironmentUrl", required: true },
       restoreLatestBackup: { name: "RestoreLatestBackup", required: false },
       targetEnvironmentName: { name: "FriendlyName", required: false },
@@ -67,7 +66,7 @@ describe("action: restoreEnvironment", () => {
     await runActionWithMocks(restoreEnvironmentParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("admin", "restore", "--source-url", environmentUrl, "--target-url", host.targetEnvironmentUrl,
+    pacStub.should.have.been.calledOnceWith("admin", "restore", "--source-url", host.environmentUrl, "--target-url", host.targetEnvironmentUrl,
       "--selected-backup", "latest");
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
@@ -78,7 +77,7 @@ describe("action: restoreEnvironment", () => {
 
     await runActionWithMocks(restoreEnvironmentParameters);
 
-    pacStub.should.have.been.calledOnceWith("admin", "restore", "--source-url", environmentUrl, "--target-url", host.targetEnvironmentUrl,
+    pacStub.should.have.been.calledOnceWith("admin", "restore", "--source-url", host.environmentUrl, "--target-url", host.targetEnvironmentUrl,
       "--name", host.friendlyName, "--selected-backup", "latest");
   });
 
@@ -89,7 +88,7 @@ describe("action: restoreEnvironment", () => {
 
     await runActionWithMocks(restoreEnvironmentParameters);
 
-    pacStub.should.have.been.calledOnceWith("admin", "restore", "--source-url", environmentUrl, "--target-url", host.targetEnvironmentUrl,
+    pacStub.should.have.been.calledOnceWith("admin", "restore", "--source-url", host.environmentUrl, "--target-url", host.targetEnvironmentUrl,
       "--name", host.friendlyName, "--selected-backup", host.restoreTimeStamp);
   });
 });
