@@ -3,10 +3,10 @@ import { should, use } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { restore, stub } from "sinon";
 import * as sinonChai from "sinon-chai";
-import { ClientCredentials, RunnerParameters } from "../../src";
+import { RunnerParameters } from "../../src";
 import { UnpackSolutionParameters } from "../../src/actions";
 import rewiremock from "../rewiremock";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { createDefaultMockRunnerParameters } from "./mock/mockData";
 import Sinon = require("sinon");
 import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import { platform } from "os";
@@ -16,10 +16,6 @@ use(chaiAsPromised);
 
 describe("action: unpack solution", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
-  let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
-  let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
-  const mockClientCredentials: ClientCredentials = createMockClientCredentials();
-  const environmentUrl: string = mockEnvironmentUrl;
   const zip = "./ContosoSolution.zip";
   const mockHost: IHostAbstractions = {
     name: "host",
@@ -31,8 +27,6 @@ describe("action: unpack solution", () => {
 
   beforeEach(() => {
     pacStub = stub();
-    authenticateEnvironmentStub = stub();
-    clearAuthenticationStub = stub();
   });
   afterEach(() => restore());
 
@@ -44,24 +38,18 @@ describe("action: unpack solution", () => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
         mock(() => import("../../src/pac/auth/authenticate")).with(
           {
-            authenticateEnvironment: authenticateEnvironmentStub,
-            clearAuthentication: clearAuthenticationStub
           });
       });
     const stubFnc = Sinon.stub(mockHost, "getInput");
     stubFnc.onCall(0).returns(zip);
     stubFnc.onCall(1).returns(folder);
 
-    authenticateEnvironmentStub.returns("Authentication successfully created.");
-    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
     await mockedActionModule.unpackSolution(unpackSolutionParameters, runnerParameters, mockHost);
   }
 
   it("calls pac runner with correct arguments", async () => {
     const unpackSolutionParameters: UnpackSolutionParameters = {
-      credentials: mockClientCredentials,
-      environmentUrl: environmentUrl,
       solutionZipFile: { name: 'SolutionInputFile', required: true },
       sourceFolder: { name: 'SolutionTargetFolder', required: true },
       solutionType: { name: 'SolutionType', required: false, defaultValue: "Unmanaged" },
@@ -70,9 +58,7 @@ describe("action: unpack solution", () => {
 
     await runActionWithMocks(unpackSolutionParameters);
 
-    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "unpack", "--zipFile", absoluteSolutionPath, "--folder", absoluteFolderPath,
         "--packageType", "Unmanaged", "--allowDelete", "yes", "--allowWrite", "true", "--clobber", "true");
-    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

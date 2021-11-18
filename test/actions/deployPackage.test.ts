@@ -9,7 +9,9 @@ import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnv
 import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import { DeployPackageParameters } from "src/actions/deployPackage";
 import Sinon = require("sinon");
-import { platform } from "os";
+import os = require('os');
+import path = require('path');
+
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -18,15 +20,16 @@ describe("action: deploy package", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
-  const zip = "./ContosoSolution.zip";
+
+  const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
+  const testPackagePath = path.join(runnerParameters.workingDir, 'ConstosoPackage.zip');
   const mockHost: IHostAbstractions = {
     name: "SolutionInputFile",
-    getInput: () => zip,
+    getInput: () => testPackagePath,
   }
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const envUrl: string = mockEnvironmentUrl;
   let deployPackageParameters: DeployPackageParameters;
-  const absoluteSolutionPath = (platform() === "win32") ? 'D:\\Test\\working\\ContosoSolution.zip' : '/Test/working/ContosoSolution.zip';
 
   beforeEach(() => {
     pacStub = stub();
@@ -37,7 +40,6 @@ describe("action: deploy package", () => {
   afterEach(() => restore())
 
   async function runActionWithMocks(deployPackageParameters: DeployPackageParameters) {
-    const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/deployPackage"),
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
@@ -48,7 +50,7 @@ describe("action: deploy package", () => {
           });
       });
     const stubFnc = Sinon.stub(mockHost, "getInput");
-    stubFnc.onCall(0).returns(zip);
+    stubFnc.onCall(0).returns(testPackagePath);
 
     authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
@@ -65,10 +67,14 @@ describe("action: deploy package", () => {
   });
 
   it("with required params, calls pac runner with correct args", async () => {
+    if (os.platform() !== 'win32') {
+      console.log(">> Skipping deploy-package test, only supported on Windows");
+      return;
+    }
     await runActionWithMocks(deployPackageParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
-    pacStub.should.have.been.calledOnceWith("package", "deploy", "--package", absoluteSolutionPath);
+    pacStub.should.have.been.calledOnceWith("package", "deploy", "--package", testPackagePath);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

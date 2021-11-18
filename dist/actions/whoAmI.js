@@ -16,9 +16,22 @@ const authenticate_1 = require("../pac/auth/authenticate");
 const createPacRunner_1 = require("../pac/createPacRunner");
 function whoAmI(parameters, runnerParameters) {
     return __awaiter(this, void 0, void 0, function* () {
+        const logger = runnerParameters.logger;
         const pac = createPacRunner_1.default(runnerParameters);
-        yield authenticate_1.authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-        yield pac("org", "who");
+        try {
+            const authenticateResult = yield authenticate_1.authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+            logger.log("The Authentication Result: " + authenticateResult);
+            const pacResult = yield pac("org", "who");
+            logger.log("WhoAmI Action Result: " + pacResult);
+        }
+        catch (error) {
+            logger.error(`failed: ${error.message}`);
+            throw error;
+        }
+        finally {
+            const clearAuthResult = yield authenticate_1.clearAuthentication(pac);
+            logger.log("The Clear Authentication Result: " + clearAuthResult);
+        }
     });
 }
 exports.whoAmI = whoAmI;

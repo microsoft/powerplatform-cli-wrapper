@@ -5,6 +5,7 @@ import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import path = require("path");
+import os = require("os");
 
 export interface DeployPackageParameters {
   credentials: AuthCredentials;
@@ -19,6 +20,10 @@ export async function deployPackage(parameters: DeployPackageParameters, runnerP
   const pac = createPacRunner(runnerParameters);
 
   try {
+    const platform = os.platform();
+    if (platform !== 'win32') {
+      throw new Error(`deploy package is only supported on Windows agents/runners (attempted run on ${platform})`);
+    }
     const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
     logger.log("The Authentication Result: " + authenticateResult);
 
