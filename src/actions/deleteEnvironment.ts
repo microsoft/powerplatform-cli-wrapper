@@ -1,3 +1,5 @@
+import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { InputValidator } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
@@ -5,10 +7,10 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface DeleteEnvironmentParameters {
   credentials: AuthCredentials;
-  environmentUrl: string;
+  environmentUrl: HostParameterEntry;
 }
 
-export async function deleteEnvironment(parameters: DeleteEnvironmentParameters, runnerParameters: RunnerParameters): Promise<void> {
+export async function deleteEnvironment(parameters: DeleteEnvironmentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
@@ -17,8 +19,10 @@ export async function deleteEnvironment(parameters: DeleteEnvironmentParameters,
     logger.log("The Authentication Result: " + authenticateResult);
 
     // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
-    const pacArgs = ["admin", "delete", "--url", parameters.environmentUrl];
-    logger.log("Url: " + parameters.environmentUrl);
+    const pacArgs = ["admin", "delete"];
+    const validator = new InputValidator(host);
+
+    validator.pushInput(pacArgs, "--url", parameters.environmentUrl);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

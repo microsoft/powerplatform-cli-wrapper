@@ -7,7 +7,7 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface CopyEnvironmentParameters {
   credentials: AuthCredentials;
-  sourceEnvironmentUrl: string;
+  sourceEnvironmentUrl: HostParameterEntry;
   targetEnvironmentUrl: HostParameterEntry;
   overrideFriendlyName: HostParameterEntry;
   friendlyTargetEnvironmentName?: HostParameterEntry;
@@ -23,11 +23,12 @@ export async function copyEnvironment(parameters: CopyEnvironmentParameters, run
     logger.log("The Authentication Result: " + authenticateResult);
 
     // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
-    const pacArgs = ["admin", "copy", "--source-url", parameters.sourceEnvironmentUrl];
-    logger.log("Source Url: " + parameters.sourceEnvironmentUrl);
+    const pacArgs = ["admin", "copy"];
     const validator = new InputValidator(host);
 
+    validator.pushInput(pacArgs, "--source-url", parameters.sourceEnvironmentUrl);
     validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl);
+    
     if (validator.getInput(parameters.overrideFriendlyName) === 'true') {
       validator.pushInput(pacArgs, "--name", parameters.friendlyTargetEnvironmentName);
     }
