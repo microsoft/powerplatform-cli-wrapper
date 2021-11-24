@@ -14,7 +14,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: restoreEnvironment", () => {
-  let pacStub: Sinon.SinonStub<any[],any>;
+  let pacStub: Sinon.SinonStub<any[], any>;
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
@@ -29,6 +29,8 @@ describe("action: restoreEnvironment", () => {
       credentials: mockClientCredentials,
       sourceEnvironmentUrl: { name: "EnvironmentUrl", required: true },
       targetEnvironmentUrl: { name: "TargetEnvironmentUrl", required: true },
+      sourceEnvironmentId: { name: "EnvironmentId", required: false },
+      targetEnvironmentId: { name: "TargetEnvironmentId", required: false },
       restoreLatestBackup: { name: "RestoreLatestBackup", required: false },
       targetEnvironmentName: { name: "FriendlyName", required: false },
     };
@@ -74,11 +76,13 @@ describe("action: restoreEnvironment", () => {
   it("with all inputs set by host, calls pac runner stub with correct arguments", async () => {
     restoreEnvironmentParameters.restoreLatestBackup = { name: "RestoreLatestBackup", required: false, defaultValue: true };
     restoreEnvironmentParameters.targetEnvironmentName = { name: "FriendlyName", required: true };
+    restoreEnvironmentParameters.sourceEnvironmentId = { name: "EnvironmentId", required: true };
+    restoreEnvironmentParameters.targetEnvironmentId = { name: "TargetEnvironmentId", required: true };
 
     await runActionWithMocks(restoreEnvironmentParameters);
 
     pacStub.should.have.been.calledOnceWith("admin", "restore", "--source-url", host.environmentUrl, "--target-url", host.targetEnvironmentUrl,
-      "--name", host.friendlyName, "--selected-backup", "latest");
+      "--source-id", host.environmentId, "--target-id", host.targetEnvironmentId, "--name", host.friendlyName, "--selected-backup", "latest");
   });
 
   it("With restore latest backup turned off and restore time stamp set, calls pac runner stub with correct arguments", async () => {

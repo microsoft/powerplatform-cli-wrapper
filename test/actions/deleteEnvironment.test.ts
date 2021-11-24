@@ -28,6 +28,7 @@ describe("action: deleteEnvironment", () => {
     deleteEnvironmentParameters = {
       credentials: mockClientCredentials,
       environmentUrl: { name: "EnvironmentUrl", required: true },
+      environmentId: { name: "EnvironmentId", required: true },
     };
   });
   afterEach(() => restore());
@@ -55,7 +56,7 @@ describe("action: deleteEnvironment", () => {
     await runActionWithMocks(deleteEnvironmentParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("admin", "delete", "--url", host.environmentUrl);
+    pacStub.should.have.been.calledOnceWith("admin", "delete", "--url", host.environmentUrl, "--environment-id", host.environmentId);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

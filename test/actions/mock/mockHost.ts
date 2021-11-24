@@ -20,6 +20,8 @@ export class mockHost implements IHostAbstractions {
   templates = 'Customer Service, Sample App';
   environmentUrl = 'https://contoso.crm.dynamics.com/';
   targetEnvironmentUrl = 'https://contoso2.crm.dynamics.com/';
+  environmentId = '0000000000';
+  targetEnvironmentId = '0000000001';
   restoreTimeStamp = '01/01/2001 00:00';
   friendlyName = 'Mock-Friendly-Name';
   copyType = 'Minimal Copy';
@@ -45,6 +47,8 @@ export class mockHost implements IHostAbstractions {
         case 'AppsTemplate': return this.templates;
         case 'EnvironmentUrl': return this.environmentUrl;
         case 'TargetEnvironmentUrl': return this.targetEnvironmentUrl;
+        case 'EnvironmentId': return this.environmentId;
+        case 'TargetEnvironmentId': return this.targetEnvironmentId;
         case 'RestoreTimeStamp': return this.restoreTimeStamp;
         case 'FriendlyName': return this.friendlyName;
         case 'CopyType': return this.copyType;

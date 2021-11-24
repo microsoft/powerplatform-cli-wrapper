@@ -7,7 +7,8 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface ResetEnvironmentParameters {
   credentials: AuthCredentials;
-  environmentUrl: HostParameterEntry;
+  environmentUrl?: HostParameterEntry;
+  environmentId?: HostParameterEntry;
   language: HostParameterEntry;
   overrideDomainName: HostParameterEntry;
   domainName?: HostParameterEntry;
@@ -28,6 +29,7 @@ export async function resetEnvironment(parameters: ResetEnvironmentParameters, r
     const validator = new InputValidator(host);
 
     validator.pushInput(pacArgs, "--url", parameters.environmentUrl);
+    validator.pushInput(pacArgs, "--environment-id", parameters.environmentId);
     validator.pushInput(pacArgs, "--language", parameters.language);
 
     if (validator.getInput(parameters.overrideDomainName) === 'true') {

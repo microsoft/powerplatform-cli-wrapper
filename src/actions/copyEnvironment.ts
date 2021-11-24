@@ -7,8 +7,10 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface CopyEnvironmentParameters {
   credentials: AuthCredentials;
-  sourceEnvironmentUrl: HostParameterEntry;
-  targetEnvironmentUrl: HostParameterEntry;
+  sourceEnvironmentUrl?: HostParameterEntry;
+  targetEnvironmentUrl?: HostParameterEntry;
+  sourceEnvironmentId?: HostParameterEntry;
+  targetEnvironmentId?: HostParameterEntry;
   overrideFriendlyName: HostParameterEntry;
   friendlyTargetEnvironmentName?: HostParameterEntry;
   copyType: HostParameterEntry;
@@ -28,6 +30,8 @@ export async function copyEnvironment(parameters: CopyEnvironmentParameters, run
 
     validator.pushInput(pacArgs, "--source-url", parameters.sourceEnvironmentUrl);
     validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl);
+    validator.pushInput(pacArgs, "--source-id", parameters.sourceEnvironmentId);
+    validator.pushInput(pacArgs, "--target-id", parameters.targetEnvironmentId);
     
     if (validator.getInput(parameters.overrideFriendlyName) === 'true') {
       validator.pushInput(pacArgs, "--name", parameters.friendlyTargetEnvironmentName);

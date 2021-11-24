@@ -14,7 +14,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: backupEnvironment", () => {
-  let pacStub: Sinon.SinonStub<any[],any>;
+  let pacStub: Sinon.SinonStub<any[], any>;
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
@@ -28,6 +28,7 @@ describe("action: backupEnvironment", () => {
     backupEnvironmentParameters = {
       credentials: mockClientCredentials,
       environmentUrl: { name: "EnvironmentUrl", required: true },
+      environmentId: { name: "EnvironmentId", required: true },
       backupLabel: { name: 'BackupLabel', required: true },
     };
   });
@@ -56,7 +57,8 @@ describe("action: backupEnvironment", () => {
     await runActionWithMocks(backupEnvironmentParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("admin", "backup", "--url", host.environmentUrl, "--label", host.backupLabel);
+    pacStub.should.have.been.calledOnceWith("admin", "backup", "--url", host.environmentUrl,
+      "--environment-id", host.environmentId, "--label", host.backupLabel);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

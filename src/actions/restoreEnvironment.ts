@@ -7,8 +7,10 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface RestoreEnvironmentParameters {
   credentials: AuthCredentials;
-  sourceEnvironmentUrl: HostParameterEntry;
-  targetEnvironmentUrl: HostParameterEntry;
+  sourceEnvironmentUrl?: HostParameterEntry;
+  targetEnvironmentUrl?: HostParameterEntry;
+  sourceEnvironmentId?: HostParameterEntry;
+  targetEnvironmentId?: HostParameterEntry;
   restoreLatestBackup: HostParameterEntry;
   backupDateTime?: HostParameterEntry;
   targetEnvironmentName: HostParameterEntry;
@@ -27,6 +29,8 @@ export async function restoreEnvironment(parameters: RestoreEnvironmentParameter
 
     validator.pushInput(pacArgs, "--source-url", parameters.sourceEnvironmentUrl);
     validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl);
+    validator.pushInput(pacArgs, "--source-id", parameters.sourceEnvironmentId);
+    validator.pushInput(pacArgs, "--target-id", parameters.targetEnvironmentId);
     validator.pushInput(pacArgs, "--name", parameters.targetEnvironmentName);
 
     if (validator.getInput(parameters.restoreLatestBackup) === 'true') {
