@@ -67,6 +67,8 @@ describe("action: copyEnvironment", () => {
   });
 
   it("with all optional inputs, calls pac runner with correct arguments", async () => {
+    copyEnvironmentParameters.sourceEnvironment = { name: "Environment", required: true };
+    copyEnvironmentParameters.targetEnvironment = { name: "TargetEnvironment", required: true };
     copyEnvironmentParameters.sourceEnvironmentId = { name: "EnvironmentId", required: true };
     copyEnvironmentParameters.targetEnvironmentId = { name: "TargetEnvironmentId", required: true };
     copyEnvironmentParameters.overrideFriendlyName = { name: "OverrideFriendlyName", required: true };
@@ -75,7 +77,8 @@ describe("action: copyEnvironment", () => {
 
     await runActionWithMocks(copyEnvironmentParameters);
 
-    pacStub.should.have.been.calledOnceWith("admin", "copy", "--source-url", host.environmentUrl, "--target-url", host.targetEnvironmentUrl,
-      "--source-id", host.environmentId, "--target-id", host.targetEnvironmentId, "--name", host.friendlyName, "--type", host.copyType);
+    pacStub.should.have.been.calledOnceWith("admin", "copy", "--source-env", host.environment, "--target-env", host.targetEnvironment,
+      "--source-url", host.environmentUrl, "--target-url", host.targetEnvironmentUrl, "--source-id", host.environmentId, "--target-id",
+      host.targetEnvironmentId, "--name", host.friendlyName, "--type", host.copyType);
   });
 });

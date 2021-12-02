@@ -7,6 +7,8 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface CopyEnvironmentParameters {
   credentials: AuthCredentials;
+  sourceEnvironment?: HostParameterEntry;
+  targetEnvironment?: HostParameterEntry;
   sourceEnvironmentUrl?: HostParameterEntry;
   targetEnvironmentUrl?: HostParameterEntry;
   sourceEnvironmentId?: HostParameterEntry;
@@ -28,6 +30,8 @@ export async function copyEnvironment(parameters: CopyEnvironmentParameters, run
     const pacArgs = ["admin", "copy"];
     const validator = new InputValidator(host);
 
+    validator.pushInput(pacArgs, "--source-env", parameters.sourceEnvironment);
+    validator.pushInput(pacArgs, "--target-env", parameters.targetEnvironment);
     validator.pushInput(pacArgs, "--source-url", parameters.sourceEnvironmentUrl);
     validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl);
     validator.pushInput(pacArgs, "--source-id", parameters.sourceEnvironmentId);

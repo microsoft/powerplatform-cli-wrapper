@@ -27,6 +27,8 @@ describe("action: restoreEnvironment", () => {
     clearAuthenticationStub = stub();
     restoreEnvironmentParameters = {
       credentials: mockClientCredentials,
+      sourceEnvironment: { name: "Environment", required: false },
+      targetEnvironment: { name: "TargetEnvironment", required: false },
       sourceEnvironmentUrl: { name: "EnvironmentUrl", required: true },
       targetEnvironmentUrl: { name: "TargetEnvironmentUrl", required: true },
       sourceEnvironmentId: { name: "EnvironmentId", required: false },
@@ -78,11 +80,14 @@ describe("action: restoreEnvironment", () => {
     restoreEnvironmentParameters.targetEnvironmentName = { name: "FriendlyName", required: true };
     restoreEnvironmentParameters.sourceEnvironmentId = { name: "EnvironmentId", required: true };
     restoreEnvironmentParameters.targetEnvironmentId = { name: "TargetEnvironmentId", required: true };
+    restoreEnvironmentParameters.sourceEnvironment = { name: "Environment", required: true };
+    restoreEnvironmentParameters.targetEnvironment = { name: "TargetEnvironment", required: true };
 
     await runActionWithMocks(restoreEnvironmentParameters);
 
-    pacStub.should.have.been.calledOnceWith("admin", "restore", "--source-url", host.environmentUrl, "--target-url", host.targetEnvironmentUrl,
-      "--source-id", host.environmentId, "--target-id", host.targetEnvironmentId, "--name", host.friendlyName, "--selected-backup", "latest");
+    pacStub.should.have.been.calledOnceWith("admin", "restore", "--source-env", host.environment, "--target-env", host.targetEnvironment,
+      "--source-url", host.environmentUrl, "--target-url", host.targetEnvironmentUrl, "--source-id", host.environmentId, "--target-id", host.targetEnvironmentId,
+      "--name", host.friendlyName, "--selected-backup", "latest");
   });
 
   it("With restore latest backup turned off and restore time stamp set, calls pac runner stub with correct arguments", async () => {

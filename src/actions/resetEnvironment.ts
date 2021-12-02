@@ -1,3 +1,4 @@
+
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
@@ -7,8 +8,12 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface ResetEnvironmentParameters {
   credentials: AuthCredentials;
+  environment?: HostParameterEntry;
   environmentUrl?: HostParameterEntry;
   environmentId?: HostParameterEntry;
+  currency: HostParameterEntry;
+  purpose: HostParameterEntry;
+  templates: HostParameterEntry;
   language: HostParameterEntry;
   overrideDomainName: HostParameterEntry;
   domainName?: HostParameterEntry;
@@ -28,9 +33,13 @@ export async function resetEnvironment(parameters: ResetEnvironmentParameters, r
     const pacArgs = ["admin", "reset"];
     const validator = new InputValidator(host);
 
+    validator.pushInput(pacArgs, "--environment", parameters.environment);
     validator.pushInput(pacArgs, "--url", parameters.environmentUrl);
     validator.pushInput(pacArgs, "--environment-id", parameters.environmentId);
     validator.pushInput(pacArgs, "--language", parameters.language);
+    validator.pushInput(pacArgs, "--currency", parameters.currency);
+    validator.pushInput(pacArgs, "--purpose", parameters.purpose);
+    validator.pushInput(pacArgs, "--templates", parameters.templates);
 
     if (validator.getInput(parameters.overrideDomainName) === 'true') {
       validator.pushInput(pacArgs, "--domain", parameters.domainName);

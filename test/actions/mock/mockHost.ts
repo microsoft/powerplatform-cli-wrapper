@@ -11,6 +11,7 @@ export class mockHost implements IHostAbstractions {
   maxAsyncWaitTime = '120';
   targetVersion = '0.0.0';
   backupLabel = 'Mock-Label';
+  environment = 'https://contoso3.crm.dynamics.com/';
   environmentName = 'Mock-Environment';
   environmentType = 'Sandbox';
   currency = 'USD';
@@ -19,12 +20,15 @@ export class mockHost implements IHostAbstractions {
   domainName = 'Contoso';
   templates = 'Customer Service, Sample App';
   environmentUrl = 'https://contoso.crm.dynamics.com/';
+  targetEnvironment = 'https://contoso4.crm.dynamics.com/';
   targetEnvironmentUrl = 'https://contoso2.crm.dynamics.com/';
   environmentId = '0000000000';
   targetEnvironmentId = '0000000001';
   restoreTimeStamp = '01/01/2001 00:00';
   friendlyName = 'Mock-Friendly-Name';
   copyType = 'Minimal Copy';
+  notes = 'Sample Notes';
+  purpose = 'Purpose';
 
   public getInput(entry: HostParameterEntry): string | undefined {
     if (entry.required) {
@@ -45,13 +49,17 @@ export class mockHost implements IHostAbstractions {
         case 'LanguageName': return this.language;
         case 'LocationName': return this.region;
         case 'AppsTemplate': return this.templates;
+        case 'Environment': return this.environment;
         case 'EnvironmentUrl': return this.environmentUrl;
         case 'TargetEnvironmentUrl': return this.targetEnvironmentUrl;
         case 'EnvironmentId': return this.environmentId;
+        case 'TargetEnvironment': return this.targetEnvironment;
         case 'TargetEnvironmentId': return this.targetEnvironmentId;
+        case 'Notes': return this.notes;
         case 'RestoreTimeStamp': return this.restoreTimeStamp;
         case 'FriendlyName': return this.friendlyName;
         case 'CopyType': return this.copyType;
+        case 'Purpose': return this.purpose;
         default: return 'true';
       }
     }
