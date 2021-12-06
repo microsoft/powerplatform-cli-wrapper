@@ -14,7 +14,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: restoreEnvironment", () => {
-  let pacStub: Sinon.SinonStub<any[],any>;
+  let pacStub: Sinon.SinonStub<any[], any>;
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
@@ -27,8 +27,12 @@ describe("action: restoreEnvironment", () => {
     clearAuthenticationStub = stub();
     restoreEnvironmentParameters = {
       credentials: mockClientCredentials,
+      sourceEnvironment: { name: "Environment", required: false },
+      targetEnvironment: { name: "TargetEnvironment", required: false },
       sourceEnvironmentUrl: { name: "EnvironmentUrl", required: true },
       targetEnvironmentUrl: { name: "TargetEnvironmentUrl", required: true },
+      sourceEnvironmentId: { name: "EnvironmentId", required: false },
+      targetEnvironmentId: { name: "TargetEnvironmentId", required: false },
       restoreLatestBackup: { name: "RestoreLatestBackup", required: false },
       targetEnvironmentName: { name: "FriendlyName", required: false },
     };
@@ -74,10 +78,15 @@ describe("action: restoreEnvironment", () => {
   it("with all inputs set by host, calls pac runner stub with correct arguments", async () => {
     restoreEnvironmentParameters.restoreLatestBackup = { name: "RestoreLatestBackup", required: false, defaultValue: true };
     restoreEnvironmentParameters.targetEnvironmentName = { name: "FriendlyName", required: true };
+    restoreEnvironmentParameters.sourceEnvironmentId = { name: "EnvironmentId", required: true };
+    restoreEnvironmentParameters.targetEnvironmentId = { name: "TargetEnvironmentId", required: true };
+    restoreEnvironmentParameters.sourceEnvironment = { name: "Environment", required: true };
+    restoreEnvironmentParameters.targetEnvironment = { name: "TargetEnvironment", required: true };
 
     await runActionWithMocks(restoreEnvironmentParameters);
 
-    pacStub.should.have.been.calledOnceWith("admin", "restore", "--source-url", host.environmentUrl, "--target-url", host.targetEnvironmentUrl,
+    pacStub.should.have.been.calledOnceWith("admin", "restore", "--source-env", host.environment, "--target-env", host.targetEnvironment,
+      "--source-url", host.environmentUrl, "--target-url", host.targetEnvironmentUrl, "--source-id", host.environmentId, "--target-id", host.targetEnvironmentId,
       "--name", host.friendlyName, "--selected-backup", "latest");
   });
 

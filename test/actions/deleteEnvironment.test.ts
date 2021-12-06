@@ -14,7 +14,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: deleteEnvironment", () => {
-  let pacStub: Sinon.SinonStub<any[],any>;
+  let pacStub: Sinon.SinonStub<any[], any>;
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
@@ -27,7 +27,9 @@ describe("action: deleteEnvironment", () => {
     clearAuthenticationStub = stub();
     deleteEnvironmentParameters = {
       credentials: mockClientCredentials,
+      environment: { name: "Environment", required: true },
       environmentUrl: { name: "EnvironmentUrl", required: true },
+      environmentId: { name: "EnvironmentId", required: true },
     };
   });
   afterEach(() => restore());
@@ -47,7 +49,7 @@ describe("action: deleteEnvironment", () => {
 
     authenticateAdminStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
-    pacStub.returns("");  
+    pacStub.returns("");
     await mockedActionModule.deleteEnvironment(deleteEnvironmentParameters, runnerParameters, host);
   }
 
@@ -55,7 +57,8 @@ describe("action: deleteEnvironment", () => {
     await runActionWithMocks(deleteEnvironmentParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("admin", "delete", "--url", host.environmentUrl);
+    pacStub.should.have.been.calledOnceWith("admin", "delete", "--environment", host.environment, "--url", host.environmentUrl,
+      "--environment-id", host.environmentId);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });
