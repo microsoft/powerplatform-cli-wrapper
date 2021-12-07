@@ -14,7 +14,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: copyEnvironment", () => {
-  let pacStub: Sinon.SinonStub<any[],any>;
+  let pacStub: Sinon.SinonStub<any[], any>;
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
@@ -52,6 +52,8 @@ describe("action: copyEnvironment", () => {
     credentials: mockClientCredentials,
     sourceEnvironmentUrl: { name: "EnvironmentUrl", required: true },
     targetEnvironmentUrl: { name: "TargetEnvironmentUrl", required: true },
+    sourceEnvironmentId: { name: "EnvironmentId", required: false },
+    targetEnvironmentId: { name: "TargetEnvironmentId", required: false },
     overrideFriendlyName: { name: "OverrideFriendlyName", required: false },
     copyType: { name: "CopyType", required: false }
   });
@@ -65,13 +67,18 @@ describe("action: copyEnvironment", () => {
   });
 
   it("with all optional inputs, calls pac runner with correct arguments", async () => {
+    copyEnvironmentParameters.sourceEnvironment = { name: "Environment", required: true };
+    copyEnvironmentParameters.targetEnvironment = { name: "TargetEnvironment", required: true };
+    copyEnvironmentParameters.sourceEnvironmentId = { name: "EnvironmentId", required: true };
+    copyEnvironmentParameters.targetEnvironmentId = { name: "TargetEnvironmentId", required: true };
     copyEnvironmentParameters.overrideFriendlyName = { name: "OverrideFriendlyName", required: true };
     copyEnvironmentParameters.friendlyTargetEnvironmentName = { name: "FriendlyName", required: true };
     copyEnvironmentParameters.copyType = { name: "CopyType", required: true };
 
     await runActionWithMocks(copyEnvironmentParameters);
 
-    pacStub.should.have.been.calledOnceWith("admin", "copy", "--source-url", host.environmentUrl, "--target-url", host.targetEnvironmentUrl,
-      "--name", host.friendlyName, "--type", host.copyType);
+    pacStub.should.have.been.calledOnceWith("admin", "copy", "--source-env", host.environment, "--target-env", host.targetEnvironment,
+      "--source-url", host.environmentUrl, "--target-url", host.targetEnvironmentUrl, "--source-id", host.environmentId, "--target-id",
+      host.targetEnvironmentId, "--name", host.friendlyName, "--type", host.copyType);
   });
 });
