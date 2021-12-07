@@ -21,8 +21,9 @@ function backupEnvironment(parameters, runnerParameters, host) {
             const authenticateResult = yield authenticate_1.authenticateAdmin(pac, parameters.credentials);
             logger.log("The Authentication Result: " + authenticateResult);
             // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
-            const pacArgs = ["admin", "backup", "--url", parameters.environmentUrl];
+            const pacArgs = ["admin", "backup"];
             const validator = new InputValidator_1.InputValidator(host);
+            validator.pushInput(pacArgs, "--url", parameters.environmentUrl);
             validator.pushInput(pacArgs, "--label", parameters.backupLabel);
             logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
             const pacResult = yield pac(...pacArgs);

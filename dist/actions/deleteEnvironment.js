@@ -10,9 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteEnvironment = void 0;
+const InputValidator_1 = require("../host/InputValidator");
 const authenticate_1 = require("../pac/auth/authenticate");
 const createPacRunner_1 = require("../pac/createPacRunner");
-function deleteEnvironment(parameters, runnerParameters) {
+function deleteEnvironment(parameters, runnerParameters, host) {
     return __awaiter(this, void 0, void 0, function* () {
         const logger = runnerParameters.logger;
         const pac = createPacRunner_1.default(runnerParameters);
@@ -20,8 +21,9 @@ function deleteEnvironment(parameters, runnerParameters) {
             const authenticateResult = yield authenticate_1.authenticateAdmin(pac, parameters.credentials);
             logger.log("The Authentication Result: " + authenticateResult);
             // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
-            const pacArgs = ["admin", "delete", "--url", parameters.environmentUrl];
-            logger.log("Url: " + parameters.environmentUrl);
+            const pacArgs = ["admin", "delete"];
+            const validator = new InputValidator_1.InputValidator(host);
+            validator.pushInput(pacArgs, "--url", parameters.environmentUrl);
             logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
             const pacResult = yield pac(...pacArgs);
             logger.log("DeleteEnvironment Action Result: " + pacResult);

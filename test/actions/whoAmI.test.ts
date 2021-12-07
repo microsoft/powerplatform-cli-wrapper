@@ -8,7 +8,7 @@ import { WhoAmIParameters, WhoAmIResult } from "../../src/actions";
 import rewiremock from "../rewiremock";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import Sinon = require("sinon");
-import assert = require('assert');;
+import assert = require('assert');
 
 should();
 use(sinonChai);

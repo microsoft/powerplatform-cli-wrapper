@@ -4,4 +4,7 @@ export interface WhoAmIParameters {
     credentials: AuthCredentials;
     environmentUrl: string;
 }
-export declare function whoAmI(parameters: WhoAmIParameters, runnerParameters: RunnerParameters): Promise<void>;
+export interface WhoAmIResult {
+    environmentId?: string;
+}
+export declare function whoAmI(parameters: WhoAmIParameters, runnerParameters: RunnerParameters): Promise<WhoAmIResult>;
