@@ -23,8 +23,11 @@ function backupEnvironment(parameters, runnerParameters, host) {
             // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
             const pacArgs = ["admin", "backup"];
             const validator = new InputValidator_1.InputValidator(host);
+            validator.pushInput(pacArgs, "--environment", parameters.environment);
             validator.pushInput(pacArgs, "--url", parameters.environmentUrl);
+            validator.pushInput(pacArgs, "--environment-id", parameters.environmentId);
             validator.pushInput(pacArgs, "--label", parameters.backupLabel);
+            validator.pushInput(pacArgs, "--notes", parameters.notes);
             logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
             const pacResult = yield pac(...pacArgs);
             logger.log("BackupEnvironment Action Result: " + pacResult);

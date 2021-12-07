@@ -3,6 +3,8 @@ import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 export interface DeleteEnvironmentParameters {
     credentials: AuthCredentials;
-    environmentUrl: HostParameterEntry;
+    environment?: HostParameterEntry;
+    environmentUrl?: HostParameterEntry;
+    environmentId?: HostParameterEntry;
 }
 export declare function deleteEnvironment(parameters: DeleteEnvironmentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void>;
