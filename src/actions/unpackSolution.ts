@@ -27,7 +27,7 @@ export async function unpackSolution(parameters: UnpackSolutionParameters, runne
     validator.pushInput(pacArgs, "--packageType", parameters.solutionType);
     if (validator.getInput(parameters.overwriteFiles) === "true") {
       pacArgs.push("--allowDelete");
-      pacArgs.push("yes");
+      pacArgs.push("true");
       pacArgs.push("--allowWrite");
       pacArgs.push("true");
       pacArgs.push("--clobber");
