@@ -59,6 +59,6 @@ describe("action: unpack solution", () => {
     await runActionWithMocks(unpackSolutionParameters);
 
     pacStub.should.have.been.calledOnceWith("solution", "unpack", "--zipFile", absoluteSolutionPath, "--folder", absoluteFolderPath,
-        "--packageType", "Unmanaged", "--allowDelete", "yes", "--allowWrite", "true", "--clobber", "true");
+        "--packageType", "Unmanaged", "--allowDelete", "true", "--allowWrite", "true", "--clobber", "true");
   });
 });
