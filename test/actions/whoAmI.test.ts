@@ -4,10 +4,12 @@ import * as chaiAsPromised from "chai-as-promised";
 import { restore, stub } from "sinon";
 import * as sinonChai from "sinon-chai";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { WhoAmIParameters } from "../../src/actions";
+import { WhoAmIParameters, WhoAmIResult } from "../../src/actions";
 import rewiremock from "../rewiremock";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import Sinon = require("sinon");
+import assert = require("assert");
+
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -26,7 +28,7 @@ describe("action: whoAmI", () => {
   });
   afterEach(() => restore());
 
-  async function runActionWithMocks(whoAmIParameters: WhoAmIParameters): Promise<void> {
+  async function runActionWithMocks(whoAmIParameters: WhoAmIParameters): Promise<WhoAmIResult> {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
 
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/whoAmI"),
@@ -41,8 +43,17 @@ describe("action: whoAmI", () => {
 
     authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
-    pacStub.returns("Connected to...");
-    await mockedActionModule.whoAmI(whoAmIParameters, runnerParameters);
+    pacStub.returns([
+      "Connected to...mock",
+      "Organization Information",
+      "  Org ID:                     0-0-0-0-0",
+      "  Unique Name:                00000",
+      "  Friendly Name:              mock",
+      "  Org URL:                    https://mock.crm.dynamics.com/",
+      "  User ID:                    mock@mock.onmicrosoft.com (0-0-0-0-0)",
+      "  Environment ID:             1-2-3-4-5"
+    ]);
+    return await mockedActionModule.whoAmI(whoAmIParameters, runnerParameters);
   }
 
   it("calls pac runner with correct arguments", async () => {
@@ -51,10 +62,12 @@ describe("action: whoAmI", () => {
       environmentUrl: environmentUrl
     };
 
-    await runActionWithMocks(whoAmIParameters);
+    const result = await runActionWithMocks(whoAmIParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("org", "who");
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
+    assert.strictEqual(result.environmentId, "1-2-3-4-5");
   });
+
 });

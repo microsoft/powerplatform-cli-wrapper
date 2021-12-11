@@ -11,7 +11,11 @@ export interface WhoAmIParameters {
   environmentUrl: string;
 }
 
-export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: RunnerParameters): Promise<void> {
+export interface WhoAmIResult {
+  environmentId?: string
+}
+
+export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: RunnerParameters): Promise<WhoAmIResult> {
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
@@ -21,6 +25,18 @@ export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: Run
 
     const pacResult = await pac("org", "who");
     logger.log("WhoAmI Action Result: " + pacResult);
+    const envIdLabel = "Environment ID:";
+
+    // HACK TODO: Need structured output from pac CLI to make parsing out of the resulting env id more robust
+    const envId = pacResult
+      .filter(l => l.length > 0)
+      .filter(l => l.includes(envIdLabel))?.[0]
+      .split(envIdLabel)[1]
+      .trim();
+
+    return {
+      environmentId: envId
+    }
   } catch (error) {
     logger.error(`failed: ${error.message}`);
     throw error;
