@@ -56,7 +56,7 @@ describe("action: check solution", () => {
     getInput: () => zip,
   }
   const samplejson = "samplejson";
-  const customEndpoint = "www.japan.com";
+  const customEndpoint = "www.contoso.com";
   const fileLocation = "localFiles";
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;

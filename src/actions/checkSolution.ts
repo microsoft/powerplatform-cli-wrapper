@@ -63,7 +63,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     const pacResult = await pac(...pacArgs);
     logger.log("CheckSolution Action Result: " + pacResult);
 
-    const status = pacResult[23].split(' ')[2];
+    const status = pacResult[pacResult.length-7].split(' ')[2];
     if (status === 'Failed' || status === 'FinishedWithErrors') {
       throw new Error("PowerApps Checker analysis results indicate a failure or error during the analysis process.");
     }
@@ -81,8 +81,8 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
 
 function errorCheck(pacResults: string[], errorLevel: string, errorThreshold: number): void {
   const errors: Record<string, number> = {};
-  const PAErrorLevels = pacResults[25].trim().split(/\s+/);
-  const PAErrorValues = pacResults[27].trim().split(/\s+/);
+  const PAErrorLevels = pacResults[pacResults.length-5].trim().split(/\s+/);
+  const PAErrorValues = pacResults[pacResults.length-3].trim().split(/\s+/);
 
   for (let i = 0; i < PAErrorLevels.length && i < PAErrorValues.length; i++) {
     errors[PAErrorLevels[i]] = parseInt(PAErrorValues[i]);
