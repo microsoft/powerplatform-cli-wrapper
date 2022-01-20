@@ -52,9 +52,7 @@ describe("action: updateVersion solution", () => {
   const createUpdateVersionSolutionParameters = (): UpdateVersionSolutionParameters => ({
     credentials: mockClientCredentials,
     environmentUrl: envUrl,
-    buildVersion: { name: 'BuildVersion', required: false },
-    revisionVersion: { name: 'RevisionVersion', required: false },
-    patchVersion: { name: 'PatchVersion', required: false },
+    buildVersion: { name: 'BuildVersion', required: true },
     strategy: { name: 'Strategy', required: false },
     fileName: { name: 'FileName', required: false },
   });
@@ -63,7 +61,7 @@ describe("action: updateVersion solution", () => {
     await runActionWithMocks(updateVersionSolutionParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "version", "--buildversion", host.buildVersion, "--revisionversion", host.revisionVersion, "--patchversion", host.patchVersion);
+    pacStub.should.have.been.calledOnceWith("solution", "version", "--buildversion", host.buildVersion);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });
