@@ -29,6 +29,9 @@ export class mockHost implements IHostAbstractions {
   copyType = 'Minimal Copy';
   notes = 'Sample Notes';
   purpose = 'Purpose';
+  buildVersion = '1';
+  revisionVersion = '1';
+  patchVersion = '1';
 
   public getInput(entry: HostParameterEntry): string | undefined {
     if (entry.required) {
@@ -60,6 +63,9 @@ export class mockHost implements IHostAbstractions {
         case 'FriendlyName': return this.friendlyName;
         case 'CopyType': return this.copyType;
         case 'Purpose': return this.purpose;
+        case 'BuildVersion': return this.buildVersion;
+        case 'RevisionVersion': return this.revisionVersion;
+        case 'PatchVersion': return this.patchVersion;
         default: return 'true';
       }
     }
