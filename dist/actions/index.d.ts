@@ -18,3 +18,4 @@ export * from "./uploadPaportal";
 export * from "./downloadPaportal";
 export * from "./cloneSolution";
 export * from "./updateVersionSolution";
+export * from "./onlineVersionSolution";
