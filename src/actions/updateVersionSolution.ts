@@ -8,7 +8,9 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 export interface UpdateVersionSolutionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
-  patchVersion: HostParameterEntry;
+  buildVersion?: HostParameterEntry;
+  revisionVersion?: HostParameterEntry;
+  patchVersion?: HostParameterEntry;
   strategy: HostParameterEntry;
   fileName: HostParameterEntry;
 }
@@ -24,6 +26,8 @@ export async function updateVersionSolution(parameters: UpdateVersionSolutionPar
     const pacArgs = ["solution", "version"]
     const validator = new InputValidator(host);
 
+    validator.pushInput(pacArgs, "--buildversion", parameters.buildVersion);
+    validator.pushInput(pacArgs, "--revisionversion", parameters.revisionVersion);
     validator.pushInput(pacArgs, "--patchversion", parameters.patchVersion);
     validator.pushInput(pacArgs, "--strategy", parameters.strategy);
     validator.pushInput(pacArgs, "--filename", parameters.fileName);
