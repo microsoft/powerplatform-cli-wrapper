@@ -109,7 +109,7 @@ describe("action: check solution", () => {
     
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "check", "--path", absoluteSolutionPath,
-    "--ruleLevelOverride", samplejson, "--customEndpoint", customEndpoint);
+    "--ruleLevelOverride", samplejson, "--customEndpoint", "https://contoso.crm.dynamics.com/");
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

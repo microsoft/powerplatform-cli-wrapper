@@ -53,7 +53,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     validator.pushInput(pacArgs, "--excludedFiles", parameters.filesExcluded);
 
     if (parameters.useDefaultPAEndpoint != undefined && validator.getInput(parameters.useDefaultPAEndpoint) === 'true') {
-      validator.pushInput(pacArgs, "--customEndpoint", parameters.useDefaultPAEndpoint);
+      pacArgs.push("--customEndpoint", parameters.environmentUrl);
     }
     else {
       validator.pushInput(pacArgs, "--customEndpoint", parameters.customPAEndpoint);
