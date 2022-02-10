@@ -48,7 +48,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     }
     validator.pushInput(pacArgs, "--geo", parameters.geoInstance);
     validator.pushInput(pacArgs, "--ruleSet", parameters.ruleSet);
-    validator.pushInput(pacArgs, "--ruleLevelOverride", parameters.ruleLevelOverride);
+    validator.pushInput(pacArgs, "--ruleLevelOverride", parameters.ruleLevelOverride, (value) => path.resolve(runnerParameters.workingDir, value));
     validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory);
     validator.pushInput(pacArgs, "--excludedFiles", parameters.filesExcluded);
 
@@ -60,6 +60,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     }
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
+    //pacResult is not in any contractual format. It is an array similar to the one in checkSolution.test.ts
     const pacResult = await pac(...pacArgs);
     logger.log("CheckSolution Action Result: " + pacResult);
 
