@@ -55,7 +55,7 @@ describe("action: check solution", () => {
     name: "host",
     getInput: () => zip,
   }
-  const samplejson = "samplejson";
+  const samplejson = (platform() === "win32") ? 'D:\\Test\\working\\samplejson' : '/Test/working/samplejson';
   const customEndpoint = "www.contoso.com";
   const fileLocation = "localFiles";
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
