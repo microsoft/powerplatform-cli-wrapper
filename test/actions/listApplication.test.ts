@@ -6,38 +6,37 @@ import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
-import { ApplicationInstallParameters } from "src/actions/applicationInstall";
+import { ListApplicationParameters } from "src/actions/listApplication";
 import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import Sinon = require("sinon");
 should();
 use(sinonChai);
 use(chaiAsPromised);
 
-describe("action: install applications", () => {
+describe("action: list applications", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const environmentId = "b0a04c95-570e-4bf2-8107-02a04f79a0bf";
-  const appName = "SharePointFormProcessing";
   const mockHost : IHostAbstractions = {
     name: "host",
     getInput: () => environmentId,
   }
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const envUrl: string = mockEnvironmentUrl;
-  let applicationInstallParameters: ApplicationInstallParameters;
+  let applicationListParameters: ListApplicationParameters;
 
   beforeEach(() => {
     pacStub = stub();
     authenticateEnvironmentStub = stub();
     clearAuthenticationStub = stub();
-    applicationInstallParameters = createApplicationInstallParameters();
+    applicationListParameters = createApplicationListParameters();
   })
   afterEach(() => restore())
 
-  async function runActionWithMocks(applicationInstallParameters: ApplicationInstallParameters) {
+  async function runActionWithMocks(applicationListParameters: ListApplicationParameters) {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
-    const mockedActionModule = await rewiremock.around(() => import("../../src/actions/applicationInstall"),
+    const mockedActionModule = await rewiremock.around(() => import("../../src/actions/listApplication"),
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
         mock(() => import("../../src/pac/auth/authenticate")).with(
@@ -46,28 +45,24 @@ describe("action: install applications", () => {
             clearAuthentication: clearAuthenticationStub
           });
       });
-    const stubFnc = Sinon.stub(mockHost, "getInput");
-    stubFnc.onCall(0).returns(environmentId);
-    stubFnc.onCall(1).returns(appName);
     authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
-    await mockedActionModule.instsallApplication(applicationInstallParameters, runnerParameters, mockHost);
+    await mockedActionModule.listApplication(applicationListParameters, runnerParameters, mockHost);
   }
 
-  const createApplicationInstallParameters = (): ApplicationInstallParameters => ({
+  const createApplicationListParameters = (): ListApplicationParameters => ({
     credentials: mockClientCredentials,
     environmentUrl: envUrl,
-    environmentId: { name: 'EnvironmentId', required: true },
-    applicationName: { name: 'ApplicationName', required: false },
-    applicationList: { name: 'ApplicationList', required: false },
+    environmentId: { name: 'EnvironmentId', required: false },
+    output: { name: 'Output', required: false },
   });
 
   it("with required params, calls pac runner with correct args", async () => {
-    await runActionWithMocks(applicationInstallParameters);
+    await runActionWithMocks(applicationListParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
-    pacStub.should.have.been.calledOnceWith("application", "install", "--environment-id", environmentId, "--application-name", appName);
+    pacStub.should.have.been.calledOnceWith("application", "list", "--environment-id", environmentId);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

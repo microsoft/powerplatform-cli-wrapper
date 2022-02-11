@@ -6,7 +6,7 @@ import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import path = require("path");
 
-export interface ApplicationInstallParameters {
+export interface InstallApplicationParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   environmentId: HostParameterEntry;
@@ -14,7 +14,7 @@ export interface ApplicationInstallParameters {
   applicationList: HostParameterEntry;
 }
 
-export async function instsallApplication(parameters: ApplicationInstallParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+export async function installApplication(parameters: InstallApplicationParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 

@@ -6,14 +6,14 @@ import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import path = require("path");
 
-export interface ApplicationListParameters {
+export interface ListApplicationParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   environmentId: HostParameterEntry;
   output: HostParameterEntry;
 }
 
-export async function listApplication(parameters: ApplicationListParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+export async function listApplication(parameters: ListApplicationParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 

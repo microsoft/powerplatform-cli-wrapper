@@ -22,5 +22,5 @@ export * from "./downloadPaportal";
 export * from "./cloneSolution";
 export * from "./updateVersionSolution";
 export * from "./onlineVersionSolution";
-export * from "./applicationInstall";
-export * from "./applicationList";
+export * from "./installApplication";
+export * from "./listApplication";
