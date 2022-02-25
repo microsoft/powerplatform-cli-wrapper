@@ -4,6 +4,7 @@ import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
+import { EnvironmentResult } from "../actions/createEnvironment";
 
 export interface CopyEnvironmentParameters {
   credentials: AuthCredentials;
@@ -18,7 +19,7 @@ export interface CopyEnvironmentParameters {
   copyType: HostParameterEntry;
 }
 
-export async function copyEnvironment(parameters: CopyEnvironmentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+export async function copyEnvironment(parameters: CopyEnvironmentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<EnvironmentResult> {
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
@@ -36,7 +37,7 @@ export async function copyEnvironment(parameters: CopyEnvironmentParameters, run
     validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl);
     validator.pushInput(pacArgs, "--source-id", parameters.sourceEnvironmentId);
     validator.pushInput(pacArgs, "--target-id", parameters.targetEnvironmentId);
-    
+
     if (validator.getInput(parameters.overrideFriendlyName) === 'true') {
       validator.pushInput(pacArgs, "--name", parameters.friendlyTargetEnvironmentName);
     }
@@ -45,6 +46,21 @@ export async function copyEnvironment(parameters: CopyEnvironmentParameters, run
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
     logger.log("CopyEnvironment Action Result: " + pacResult);
+
+    // HACK TODO: Need structured output from pac CLI to make parsing out of the resulting env URL more robust
+    const newEnvDetailColumns = pacResult
+      .filter(l => l.length > 0)
+      .pop()
+      ?.trim()
+      .split(/\s+/);
+
+    const envUrl = newEnvDetailColumns?.shift();
+    const envId = newEnvDetailColumns?.shift();
+
+    return {
+      environmentId: envId,
+      environmentUrl: envUrl
+    };
   } catch (error) {
     logger.error(`failed: ${error.message}`);
     throw error;
