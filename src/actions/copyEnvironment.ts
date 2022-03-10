@@ -4,7 +4,7 @@ import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
-import { EnvironmentResult } from "../actions/createEnvironment";
+import { EnvironmentResult, getEnvironmentDetails } from "../actions/createEnvironment";
 
 export interface CopyEnvironmentParameters {
   credentials: AuthCredentials;
@@ -48,19 +48,8 @@ export async function copyEnvironment(parameters: CopyEnvironmentParameters, run
     logger.log("CopyEnvironment Action Result: " + pacResult);
 
     // HACK TODO: Need structured output from pac CLI to make parsing out of the resulting env URL more robust
-    const newEnvDetailColumns = pacResult
-      .filter(l => l.length > 0)
-      .pop()
-      ?.trim()
-      .split(/\s+/);
-
-    const envUrl = newEnvDetailColumns?.shift();
-    const envId = newEnvDetailColumns?.shift();
-
-    return {
-      environmentId: envId,
-      environmentUrl: envUrl
-    };
+    const envResult = getEnvironmentDetails(pacResult);
+    return envResult;
   } catch (error) {
     logger.error(`failed: ${error.message}`);
     throw error;
