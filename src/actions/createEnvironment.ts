@@ -45,19 +45,8 @@ export async function createEnvironment(parameters: CreateEnvironmentParameters,
     logger.log("CreateEnvironment Action Result: " + pacResult);
 
     // HACK TODO: Need structured output from pac CLI to make parsing out of the resulting env URL more robust
-    const newEnvDetailColumns = pacResult
-      .filter(l => l.length > 0)
-      .pop()
-      ?.trim()
-      .split(/\s+/);
-
-    const envUrl = newEnvDetailColumns?.shift();
-    const envId = newEnvDetailColumns?.shift();
-
-    return {
-      environmentId: envId,
-      environmentUrl: envUrl
-    };
+    const envResult = getEnvironmentDetails(pacResult);
+    return envResult;
   } catch (error) {
     logger.error(`failed: ${error.message}`);
     throw error;
@@ -65,4 +54,20 @@ export async function createEnvironment(parameters: CreateEnvironmentParameters,
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
   }
+}
+
+export function getEnvironmentDetails(pacResult: string[]): EnvironmentResult {
+  const newEnvDetailColumns = pacResult
+    .filter(l => l.length > 0)
+    .pop()
+    ?.trim()
+    .split(/\s+/);
+
+  const envUrl = newEnvDetailColumns?.shift();
+  const envId = newEnvDetailColumns?.shift();
+
+  return {
+    environmentId: envId,
+    environmentUrl: envUrl
+  };
 }
