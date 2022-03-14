@@ -41,12 +41,13 @@ function checkSolution(parameters, runnerParameters, host) {
             validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory);
             validator.pushInput(pacArgs, "--excludedFiles", parameters.filesExcluded);
             if (parameters.useDefaultPAEndpoint != undefined && validator.getInput(parameters.useDefaultPAEndpoint) === 'true') {
-                validator.pushInput(pacArgs, "--customEndpoint", parameters.useDefaultPAEndpoint);
+                pacArgs.push("--customEndpoint", parameters.environmentUrl);
             }
             else {
                 validator.pushInput(pacArgs, "--customEndpoint", parameters.customPAEndpoint);
             }
             logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
+            //pacResult is not in any contractual format. It is an array similar to the one in checkSolution.test.ts
             const pacResult = yield pac(...pacArgs);
             logger.log("CheckSolution Action Result: " + pacResult);
             const status = pacResult[pacResult.length - 7].split(' ')[2];
