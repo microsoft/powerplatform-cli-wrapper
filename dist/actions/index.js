@@ -33,5 +33,7 @@ __exportStar(require("./downloadPaportal"), exports);
 __exportStar(require("./cloneSolution"), exports);
 __exportStar(require("./updateVersionSolution"), exports);
 __exportStar(require("./onlineVersionSolution"), exports);
+__exportStar(require("./installApplication"), exports);
+__exportStar(require("./listApplication"), exports);
 
 //# sourceMappingURL=index.js.map
