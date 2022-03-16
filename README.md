@@ -1,11 +1,9 @@
 # Project
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
-
-Please check the design for better understanding - ![Architecture](/images/Architecture.PNG)
+This repo acts as the intermediate layer between different hosts (Power Platform Build Tools, GitHub Actions) and PAC CLI.
 
 Cli-Wrapper by itself doesn't call a specific version of PAC CLI, it lets the individual host to decide which version of PAC CLI to be used. Although, it is recommened if all hosts use the latest version of PAC CLI. Whenever a latest version of PAC CLI is released, each host needs to update it and make new releases.(https://github.com/microsoft/powerplatform-build-tools/blob/main/nuget.json#:~:text=%22packages%22%3A%20%5B-,%7B,%7D,-%5D and https://github.com/microsoft/powerplatform-actions/blob/main/gulpfile.js#:~:text=const%20cliVersion%20%3D%20%271.11.8%27%3B)
+Please check the design for better understanding - ![Architecture](/images/Architecture.PNG)
 
 ## Contributing
 
