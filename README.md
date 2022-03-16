@@ -2,9 +2,8 @@
 
 This repo acts as the intermediate layer between different hosts (Power Platform Build Tools, GitHub Actions) and PAC CLI.
 
-Please check the design for better understanding - ![Architecture](/images/Architecture.png)
-
-Cli-Wrapper by itself doesn't call a specific version of PAC CLI, it lets the individual host to decide which version of PAC CLI to be used. Although, it is recommened if all hosts use the latest version of PAC CLI. Whenever a latest version of PAC CLI is released, each host needs to update it nad make new releases.(https://github.com/microsoft/powerplatform-build-tools/blob/main/nuget.json#:~:text=%22packages%22%3A%20%5B-,%7B,%7D,-%5D and https://github.com/microsoft/powerplatform-actions/blob/main/gulpfile.js#:~:text=const%20cliVersion%20%3D%20%271.11.8%27%3B)
+Cli-Wrapper by itself doesn't call a specific version of PAC CLI, it lets the individual host to decide which version of PAC CLI to be used. Although, it is recommened if all hosts use the latest version of PAC CLI. Whenever a latest version of PAC CLI is released, each host needs to update it and make new releases.(https://github.com/microsoft/powerplatform-build-tools/blob/main/nuget.json#:~:text=%22packages%22%3A%20%5B-,%7B,%7D,-%5D and https://github.com/microsoft/powerplatform-actions/blob/main/gulpfile.js#:~:text=const%20cliVersion%20%3D%20%271.11.8%27%3B)
+Please check the design for better understanding - ![Architecture](/images/Architecture.PNG)
 
 ## Contributing
 
@@ -47,7 +46,7 @@ Windows, macOS or Linux:
   ```Powershell
   [Environment]::SetEnvironmentVariable('AZ_DevOps_Read_PAT', '<yourPAT>', [EnvironmentVariableTarget]::User)
   ```
-  - Create a PAT in GitHub to read packages, and enable SSO for the microsoft organization. Then run 'npm login --scope=@microsoft --registry=https://npm.pkg.github.com' and provide the PAT as password. This will only be needed until the `@microsoft/powerplatform-cli-wrapper` repo is made public.
+  - Create a PAT in GitHub to read packages, and enable SSO for the microsoft organization. Then run 'npm login --scope=@microsoft --registry=https://npm.pkg.github.com' and provide the PAT as password. This will only be needed until this repo is made public.
 
 If developing on Linux or macOS, you will also need to install `git-lfs`.  (It is prepackaged with the Git installer for Windows.)  Follow the [instructions here](https://docs.github.com/en/github/managing-large-files/installing-git-large-file-storage) for your environment.
 
@@ -99,15 +98,15 @@ Now update the unit test accordingly (mock the input by using test/actions/mock/
 
 As a new parameter/action in cli-wrapper is added and merged, update the dist folder by running "npm run dist" and merge it, then run “npm run trigger-pkg-release” which will generate a new version (say 0.1.45) with latest changes and consume it in both PP-BT and GitHub Actions.
 
-Similar changes need to be done in both Build Tools and GitHub Actions now to consume new parameter 'foo'
+Similar changes need to be done in both Build Tools and GitHub Actions to consume the new parameter 'foo'.
 
-Let's take pp-actions, Go to package.json and update cli-wrapper version in line 65
+Let's take pp-actions, Go to package.json and update cli-wrapper version in line 65.
 
 ```bash
 "@microsoft/powerplatform-cli-wrapper": "^0.1.45"
 ```
 
-Run 'npm install'
+Run 'npm install'.
 
 Now go to 'src/actions/backup-environment/index.ts' and add foo parameter:
 
@@ -130,9 +129,9 @@ foo:
   required: false
 ```
 
-Now update the unit test test/bacupEnvironment.test.ts
+Now update the unit test test/bacupEnvironment.test.ts.
 
-Do the same changes also in Build Tools in files -> src/tasks/backup-environment/backup-environment-v0/index.ts, src/tasks/backup-environment/backup-environment-v0/task.json and test/actions/backup-environment.test.ts and nuget.json (line 18, 23).
+Do similar changes also in Build Tools in the specified files -> src/tasks/backup-environment/backup-environment-v0/index.ts, src/tasks/backup-environment/backup-environment-v0/task.json and test/actions/backup-environment.test.ts and nuget.json (line 18, 23).
 
 In pp-actions, After creating a PR with changes in your commit, please update dist folder in a separate commit by running “npm run update-dist” in "./<pp-actions>/"
 
@@ -142,4 +141,4 @@ Note:
 
 1) If you are getting an E401 error then it is likely that your PAT in GitHub expired, if it didn't then try to login again by running 'npm login --scope=@microsoft --registry=https://npm.pkg.github.com' and provide the PAT as password.
 
-2) For Testing before releasing a package: you can run gulp ci in cli-wrapper after making changes and copy the generated dist folder into ".\<pp-build-tools (or) pp-actions>\node_modules\@microsoft\powerplatform-cli-wrapper"
+2) For Testing before releasing a package on local machine: you can run 'gulp ci' in cli-wrapper after making changes and copy the generated dist folder into ".\<pp-build-tools (or) pp-actions>\node_modules\@microsoft\powerplatform-cli-wrapper"
