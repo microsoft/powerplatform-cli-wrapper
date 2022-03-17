@@ -19,7 +19,7 @@ export async function publishSolution(parameters: PublishSolutionParameters, run
     const pacResult = await pac("solution", "publish");
     logger.log("PublishSolution Action Result: " + pacResult);
   } catch (error) {
-    logger.error(`failed: ${error.message}`);
+    logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
   } finally {
     const clearAuthResult = await clearAuthentication(pac);

@@ -36,7 +36,7 @@ export async function backupEnvironment(parameters: BackupEnvironmentParameters,
     const pacResult = await pac(...pacArgs);
     logger.log("BackupEnvironment Action Result: " + pacResult);
   } catch (error) {
-    logger.error(`failed: ${error.message}`);
+    logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
   } finally {
     const clearAuthResult = await clearAuthentication(pac);

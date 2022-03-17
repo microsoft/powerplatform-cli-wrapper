@@ -64,7 +64,7 @@ export async function exportSolution(parameters: ExportSolutionParameters, runne
     const pacResult = await pac(...pacArgs);
     logger.log("ExportSolution Action Result: " + pacResult);
   } catch (error) {
-    logger.error(`failed: ${error.message}`);
+    logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
   } finally {
     const clearAuthResult = await clearAuthentication(pac);

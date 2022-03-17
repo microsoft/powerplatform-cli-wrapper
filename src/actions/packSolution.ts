@@ -29,7 +29,7 @@ export async function packSolution(parameters: PackSolutionParameters, runnerPar
     const pacResult = await pac(...pacArgs);
     logger.log("PackSolution Action Result: " + pacResult);
   } catch (error) {
-    logger.error(`failed: ${error.message}`);
+    logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
   }
 }
