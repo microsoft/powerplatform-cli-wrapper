@@ -38,7 +38,7 @@ export async function unpackSolution(parameters: UnpackSolutionParameters, runne
     const pacResult = await pac(...pacArgs);
     logger.log("UnpackSolution Action Result: " + pacResult);
   } catch (error) {
-    logger.error(`failed: ${error.message}`);
+    logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
   } 
 }

@@ -38,7 +38,7 @@ export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: Run
       environmentId: envId
     }
   } catch (error) {
-    logger.error(`failed: ${error.message}`);
+    logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
   } finally {
     const clearAuthResult = await clearAuthentication(pac);

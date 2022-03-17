@@ -32,7 +32,7 @@ export async function installApplication(parameters: InstallApplicationParameter
     const pacResult = await pac(...pacArgs);
     logger.log("Application Install Action Result: " + pacResult);
   } catch (error) {
-    logger.error(`failed: ${error.message}`);
+    logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
   } finally {
     const clearAuthResult = await clearAuthentication(pac);
