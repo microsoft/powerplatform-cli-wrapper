@@ -1,5 +1,6 @@
 import { spawn, SpawnOptionsWithoutStdio } from "child_process";
 import { env } from "process";
+import * as readline from "readline";
 import { EOL } from "os";
 import { Logger } from "./Logger";
 import process = require("process");
@@ -25,18 +26,11 @@ export function createCommandRunner(
         ...options,
       });
 
-      cp.stdout.on("data", logData(logger.log));
-      cp.stderr.on("data", logData(logger.error));
-
-      function logData(logFunction: (...args: string[]) => void) {
-        return (data: string) => {
-          `${data}`.split(EOL).forEach((line) => {
-            allOutput.push(line);
-            logFunction(line);
-          });
-        };
-      }
-
+      const outputLineReader = readline.createInterface({ input: cp.stdout });
+      outputLineReader.on('line', (line: string) => { allOutput.push(line); logger.log(line); });
+      const errorLineReader = readline.createInterface({ input: cp.stderr });
+      errorLineReader.on('line', (line: string) => { allOutput.push(line); logger.error(line); });
+      
       cp.on("exit", (code: number) => {
         if (code === 0) {
           resolve(allOutput);
@@ -47,6 +41,8 @@ export function createCommandRunner(
 
         /* Close out handles to the output streams so that we don't wait on
             grandchild processes like pacTelemetryUpload */
+        outputLineReader.close();
+        errorLineReader.close();
         cp.stdout.destroy();
         cp.stderr.destroy();
       });
