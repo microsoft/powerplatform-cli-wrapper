@@ -6,8 +6,8 @@ import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
-import { CloneSolutionParameters } from "src/actions/cloneSolution";
-import { IHostAbstractions } from "../../src/host/IHostAbstractions";
+import { CloneSolutionParameters } from "src/actions";
+import { mockHost } from "./mock/mockHost";
 import Sinon = require("sinon");
 should();
 use(sinonChai);
@@ -17,14 +17,9 @@ describe("action: clone solution", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
-  const mockHost : IHostAbstractions = {
-    name: "host",
-    getInput: () => "test",
-  }
-  const name = "sampleSolution";
-  const version = "1.0.0.2";
+  const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
-  const envUrl: string = mockEnvironmentUrl;
+  const environmentUrl: string = mockEnvironmentUrl;
   let cloneSolutionParameters: CloneSolutionParameters;
 
   beforeEach(() => {
@@ -46,40 +41,26 @@ describe("action: clone solution", () => {
             clearAuthentication: clearAuthenticationStub
           });
       });
-    const stubFnc = Sinon.stub(mockHost, "getInput");
-    stubFnc.onCall(0).returns(name);
-    stubFnc.onCall(1).returns(version);
 
     authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
-    await mockedActionModule.cloneSolution(cloneSolutionParameters, runnerParameters, mockHost);
+    await mockedActionModule.cloneSolution(cloneSolutionParameters, runnerParameters, host);
   }
 
   const createCloneSolutionParameters = (): CloneSolutionParameters => ({
     credentials: mockClientCredentials,
-    environmentUrl: envUrl,
+    environmentUrl: environmentUrl,
     name: { name: 'SolutionName', required: true },
     targetVersion: { name: 'TargetVersion', required: false },
     outputDirectory: { name: 'OutputDirectory', required: false },
-    autoNumberSettings: { name: 'ExportAutoNumberingSettings', required: false },
-    calenderSettings: { name: 'ExportCalendarSettings', required: false },
-    customizationSettings: { name: 'ExportCustomizationSettings', required: false },
-    emailTrackingSettings: { name: 'ExportEmailTrackingSettings', required: false },
-    externalApplicationSettings: { name: 'ExportExternalApplicationSettings', required: false },
-    generalSettings: { name: 'ExportGeneralSettings', required: false },
-    isvConfig: { name: 'ExportIsvConfig', required: false },
-    marketingSettings: { name: 'ExportMarketingSettings', required: false },
-    outlookSynchronizationSettings: { name: 'ExportOutlookSynchronizationSettings', required: false },
-    relationshipRoles: { name: 'ExportRelationshipRoles', required: false },
-    sales: { name: 'ExportSales', required: false }
   });
 
   it("with required params, calls pac runner with correct args", async () => {
     await runActionWithMocks(cloneSolutionParameters);
 
-    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
-    pacStub.should.have.been.calledOnceWith("solution", "clone", "--name", name, "--targetversion", version);
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
+    pacStub.should.have.been.calledOnceWith("solution", "clone", "--name", host.solutionName);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });
