@@ -32,7 +32,7 @@ function updateVersionSolution(parameters, runnerParameters, host) {
             logger.log("UpdateVersionSolution Action Result: " + pacResult);
         }
         catch (error) {
-            logger.error(`failed: ${error.message}`);
+            logger.error(`failed: ${error instanceof Error ? error.message : error}`);
             throw error;
         }
         finally {
