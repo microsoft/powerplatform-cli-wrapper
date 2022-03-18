@@ -30,6 +30,7 @@ jobs:
 
       - name: Build
         run: |
+          npm i -g npm
           npm ci
           npm run set-version
           npm run dist

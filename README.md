@@ -2,7 +2,9 @@
 
 This repo acts as the intermediate layer between different hosts (Power Platform Build Tools, GitHub Actions) and PAC CLI.
 
-Cli-Wrapper by itself doesn't call a specific version of PAC CLI, it lets the individual host to decide which version of PAC CLI to be used. Although, it is recommened if all hosts use the latest version of PAC CLI. Whenever a latest version of PAC CLI is released, each host needs to update it and make new releases.(https://github.com/microsoft/powerplatform-build-tools/blob/main/nuget.json#:~:text=%22packages%22%3A%20%5B-,%7B,%7D,-%5D and https://github.com/microsoft/powerplatform-actions/blob/main/gulpfile.js#:~:text=const%20cliVersion%20%3D%20%271.11.8%27%3B)
+Cli-Wrapper by itself doesn't call a specific version of PAC CLI, it lets the individual hosts decide which version of PAC CLI to be used.
+Although, it is recommended that all hosts use the latest version of PAC CLI.
+Whenever a newer version of PAC CLI is released, each host needs to update it and make new releases.
 Please check the design for better understanding - ![Architecture](/images/Architecture.PNG)
 
 ## Contributing
@@ -96,14 +98,17 @@ validator.pushInput(pacArgs, "--foo", parameters.foo);
 
 Now update the unit test accordingly (mock the input by using test/actions/mock/mockHost.ts)
 
-As a new parameter/action in cli-wrapper is added and merged, update the dist folder by running "npm run dist" and merge it, then run “npm run trigger-pkg-release” which will generate a new version (say 0.1.45) with latest changes and consume it in both PP-BT and GitHub Actions.
+Once a new parameter/action in cli-wrapper is added and merged to main,
+then run `npm run trigger-pkg-release` which will generate a new version (say 0.1.45) of the cli-wrapper npm package,
+publishes the npm package to this repo's package feed.
+The new version of that `@microsoft/powerplatform-cli-wrapper` package can then be consumed in both PP-BT and GitHub Actions repos.
 
 Similar changes need to be done in both Build Tools and GitHub Actions to consume the new parameter 'foo'.
 
-Let's take pp-actions, Go to package.json and update cli-wrapper version in line 65.
+Let's take pp-actions, Go to package.json and update cli-wrapper version (as a pinned version, don't use `^0.1.45` to avoid breaks):
 
 ```bash
-"@microsoft/powerplatform-cli-wrapper": "^0.1.45"
+"@microsoft/powerplatform-cli-wrapper": "0.1.45"
 ```
 
 Run 'npm install'.
