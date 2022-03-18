@@ -30,7 +30,7 @@ function packSolution(parameters, runnerParameters, host) {
             logger.log("PackSolution Action Result: " + pacResult);
         }
         catch (error) {
-            logger.error(`failed: ${error.message}`);
+            logger.error(`failed: ${error instanceof Error ? error.message : error}`);
             throw error;
         }
     });

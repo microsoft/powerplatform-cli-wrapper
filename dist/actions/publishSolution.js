@@ -23,7 +23,7 @@ function publishSolution(parameters, runnerParameters) {
             logger.log("PublishSolution Action Result: " + pacResult);
         }
         catch (error) {
-            logger.error(`failed: ${error.message}`);
+            logger.error(`failed: ${error instanceof Error ? error.message : error}`);
             throw error;
         }
         finally {
