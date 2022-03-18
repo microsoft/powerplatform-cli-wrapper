@@ -2,11 +2,11 @@ import { CommandRunner } from "../../CommandRunner";
 import { ClientCredentials, AuthCredentials, UsernamePassword } from "./authParameters";
 
 export function authenticateAdmin(pac: CommandRunner, credentials: AuthCredentials): Promise<string[]> {
-  return pac("auth", "create", "--kind", "ADMIN", ...addCredentials(credentials));
+  return pac("auth", "create", "--kind", "ADMIN", ...addCredentials(credentials), ...addCloudInstance(credentials));
 }
 
 export function authenticateEnvironment(pac: CommandRunner, credentials: AuthCredentials, environmentUrl: string): Promise<string[]> {
-  return pac("auth", "create", ...addUrl(environmentUrl), ...addCredentials(credentials));
+  return pac("auth", "create", ...addUrl(environmentUrl), ...addCredentials(credentials), ...addCloudInstance(credentials));
 }
 
 export function clearAuthentication(pac: CommandRunner): Promise<string[]> {
@@ -31,4 +31,9 @@ function addClientCredentials(parameters: ClientCredentials) {
 
 function addUsernamePassword(parameters: UsernamePassword) {
   return ["--username", parameters.username, "--password", parameters.password];
+}
+
+function addCloudInstance(parameters: AuthCredentials) {
+  const cloudInstance = parameters.cloudInstance || 'Public';
+  return [ "--cloud", cloudInstance ];
 }
