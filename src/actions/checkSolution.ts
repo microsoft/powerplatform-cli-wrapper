@@ -72,7 +72,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
       errorCheck(pacResult, level, parseInt(threshold));
     }
   } catch (error) {
-    logger.error(`failed: ${error.message}`);
+    logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
   } finally {
     const clearAuthResult = await clearAuthentication(pac);

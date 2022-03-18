@@ -32,7 +32,7 @@ export async function deleteEnvironment(parameters: DeleteEnvironmentParameters,
     const pacResult = await pac(...pacArgs);
     logger.log("DeleteEnvironment Action Result: " + pacResult);
   } catch (error) {
-    logger.error(`failed: ${error.message}`);
+    logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
   } finally {
     const clearAuthResult = await clearAuthentication(pac);

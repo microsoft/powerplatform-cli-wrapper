@@ -44,7 +44,16 @@ describe("action: copyEnvironment", () => {
 
     authenticateAdminStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
-    pacStub.returns("");
+    pacStub.returns(["Creating Dataverse Environment with name mock in your tenant.",
+        "Polling to check the status of your Environment... Execution time: 00:00:05.2471936",
+        "Polling to check the status of your Environment... Execution time: 00:00:10.4768377",
+        "Polling to check the status of your Environment... Execution time: 00:00:15.6820813",
+        "Polling to check the status of your Environment... Execution time: 00:00:20.8943171",
+        "Polling to check the status of your Environment... Execution time: 00:00:26.1020621",
+        "Polling to check the status of your Environment... Execution time: 00:00:31.3363596",
+        "Polling completed with status code : OK",
+        "Environment Url Environment Id Friendly Name Domain Name Organization Id Version",
+        "https://mocktest.crm.dynamics.com/ 0-0-0-0-0 mock sampletest 0-0-0-0 0.0.0.0"]);
     await mockedActionModule.copyEnvironment(copyEnvironmentParameters, runnerParameters, host);
   }
 
