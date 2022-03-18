@@ -27,9 +27,16 @@ export function createCommandRunner(
       });
 
       const outputLineReader = readline.createInterface({ input: cp.stdout });
-      outputLineReader.on('line', (line: string) => { allOutput.push(line); logger.log(line); });
+      outputLineReader.on('line', logOutputFactory(logger.log));
       const errorLineReader = readline.createInterface({ input: cp.stderr });
-      errorLineReader.on('line', (line: string) => { allOutput.push(line); logger.error(line); });
+      errorLineReader.on('line', logOutputFactory(logger.error));
+
+      function logOutputFactory(logFunction: (...args: string[]) => void) {
+        return (line: string) => { 
+          allOutput.push(line); 
+          logFunction(line); 
+        }        
+      }
       
       cp.on("exit", (code: number) => {
         if (code === 0) {
