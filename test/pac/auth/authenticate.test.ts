@@ -2,7 +2,7 @@ import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
-import { authenticateAdmin } from "../../../src/pac/auth/authenticate";
+import { authenticateAdmin, authenticateEnvironment } from "../../../src/pac/auth/authenticate";
 import { CommandRunner } from "../../../src/CommandRunner";
 should();
 use(sinonChai);
@@ -10,7 +10,19 @@ use(chaiAsPromised);
 
 describe("pac", () => {
   describe("auth", () => {
-    describe("authenticateAdmin", () => {
+    const spnCreds = {
+      appId: "APP_ID",
+      clientSecret: "CLIENT_SECRET",
+      tenantId: "TENANT_ID",
+      cloudInstance: ""   // should be resolved to its default: Public
+    };
+    const userCreds = {
+      username: "USERNAME",
+      password: "PASSWORD",
+      cloudInstance: "UsGov",
+    };
+
+    describe("kind#admin", () => {
       let pac: CommandRunner;
       beforeEach(() => {
         pac = stub();
@@ -18,43 +30,83 @@ describe("pac", () => {
       afterEach(() => restore());
 
       it("uses SPN authentication when provided client credentials", () => {
-        authenticateAdmin(pac,
-          {
-            appId: "APP_ID",
-            clientSecret: "CLIENT_SECRET",
-            tenantId: "TENANT_ID",
-          }
-        );
+        authenticateAdmin(pac, spnCreds);
+
         pac.should.have.been.calledOnceWith(
           "auth",
           "create",
           "--kind",
           "ADMIN",
           "--tenant",
-          "TENANT_ID",
+          spnCreds.tenantId,
           "--applicationId",
-          "APP_ID",
+          spnCreds.appId,
           "--clientSecret",
-          "CLIENT_SECRET"
+          spnCreds.clientSecret,
+          "--cloud",
+          "Public"
         );
       });
 
       it("uses basic authentication when provided username / password", () => {
-        authenticateAdmin(pac,
-          {
-            username: "USERNAME",
-            password: "PASSWORD",
-          }
-        );
+        authenticateAdmin(pac, userCreds);
+
         pac.should.have.been.calledOnceWith(
           "auth",
           "create",
           "--kind",
           "ADMIN",
           "--username",
-          "USERNAME",
+          userCreds.username,
           "--password",
-          "PASSWORD"
+          userCreds.password,
+          "--cloud",
+          userCreds.cloudInstance
+        );
+      });
+    });
+
+    describe("kind#Dataverse", () => {
+      const envUrl = "https://ppdevtools.crm.dynamics.com";
+      let pac: CommandRunner;
+      beforeEach(() => {
+        pac = stub();
+      });
+      afterEach(() => restore());
+
+      it("uses SPN authentication when provided client credentials", () => {
+        authenticateEnvironment(pac, spnCreds, envUrl);
+
+        pac.should.have.been.calledOnceWith(
+          "auth",
+          "create",
+          "--url",
+          envUrl,
+          "--tenant",
+          spnCreds.tenantId,
+          "--applicationId",
+          spnCreds.appId,
+          "--clientSecret",
+          spnCreds.clientSecret,
+          "--cloud",
+          "Public"
+        );
+      });
+
+      it("uses basic authentication when provided username / password", () => {
+        authenticateEnvironment(pac, userCreds, envUrl);
+
+        pac.should.have.been.calledOnceWith(
+          "auth",
+          "create",
+          "--url",
+          envUrl,
+          "--username",
+          userCreds.username,
+          "--password",
+          userCreds.password,
+          "--cloud",
+          userCreds.cloudInstance
         );
       });
     });
