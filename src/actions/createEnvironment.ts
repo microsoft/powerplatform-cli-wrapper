@@ -14,6 +14,7 @@ export interface CreateEnvironmentParameters {
   language: HostParameterEntry;
   templates: HostParameterEntry;
   domainName: HostParameterEntry;
+  teamId: HostParameterEntry;
 }
 
 export interface EnvironmentResult {
@@ -39,6 +40,7 @@ export async function createEnvironment(parameters: CreateEnvironmentParameters,
     validator.pushInput(pacArgs, "--currency", parameters.currency);
     validator.pushInput(pacArgs, "--language", parameters.language);
     validator.pushInput(pacArgs, "--domain", parameters.domainName);
+    validator.pushInput(pacArgs, "--team-id", parameters.teamId);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
