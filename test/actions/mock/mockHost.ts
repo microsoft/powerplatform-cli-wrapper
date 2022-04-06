@@ -31,6 +31,8 @@ export class mockHost implements IHostAbstractions {
   purpose = 'Purpose';
   buildVersion = '1';
   teamId = '00000000-0000-0000-0000-000000000001';
+  objectId = '00000000-0000-0000-0000-000000000003';
+  role = '00000000-0000-0000-0000-000000000004';
 
   public getInput(entry: HostParameterEntry): string | undefined {
     if (entry.required) {
@@ -64,6 +66,8 @@ export class mockHost implements IHostAbstractions {
         case 'Purpose': return this.purpose;
         case 'BuildVersion': return this.buildVersion;
         case 'TeamId': return this.teamId;
+        case "ObjectId": return this.objectId;
+        case "Role": return this.role;
         default: return 'true';
       }
     }
