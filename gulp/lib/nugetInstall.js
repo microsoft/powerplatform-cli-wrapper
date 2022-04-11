@@ -22,7 +22,7 @@ module.exports = async function nugetInstall(feed, package) {
   };
     if (feed.authenticated) {
         if (!feedPAT) {
-            throw new Error(`nuget feed ${feed.name} requires authN but neither '--feedPAT' argument nor env var 'AZ_DevOps_Read_PAT' was defined!`);
+            throw new Error(`nuget feed ${feed.name} requires authN but neither '--feedPAT' argument nor env var '${feed.patEnvironmentVariable}' was defined!`);
         }
         reqInit.headers['Authorization'] = `Basic ${Buffer.from(
           'PAT:' + feedPAT
