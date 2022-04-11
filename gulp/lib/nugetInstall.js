@@ -4,11 +4,13 @@ const fetch = require("node-fetch");
 const path = require("path");
 const unzip = require("unzip-stream");
 const binDir = require("./binDir");
+const argv = require('yargs').argv;
 
 module.exports = async function nugetInstall(feed, package) {
   const packageName = package.name.toLowerCase();
   const version = package.version.toLowerCase();
   const packagePath = `${packageName}/${version}/${packageName}.${version}.nupkg`;
+  const feedPAT = argv.feedPAT || process.env['AZ_DevOps_Read_PAT'];
 
   const nupkgUrl = new URL(packagePath, feed.url);
   const reqInit = {
@@ -18,17 +20,14 @@ module.exports = async function nugetInstall(feed, package) {
     },
     redirect: "manual",
   };
-  if (feed.authenticated) {
-    const readPAT = process.env[feed.patEnvironmentVariable];
-    if (!readPAT) {
-      throw new Error(
-        `nuget feed ${feed.name} requires authN but env var '${feed.patEnvironmentVariable}' was not defined!`
-      );
+    if (feed.authenticated) {
+        if (!feedPAT) {
+            throw new Error(`nuget feed ${feed.name} requires authN but neither '--feedPAT' argument nor env var 'AZ_DevOps_Read_PAT' was defined!`);
+        }
+        reqInit.headers['Authorization'] = `Basic ${Buffer.from(
+          'PAT:' + feedPAT
+          ).toString('base64')}`;
     }
-    reqInit.headers["Authorization"] = `Basic ${Buffer.from(
-      "PAT:" + readPAT
-    ).toString("base64")}`;
-  }
 
   log.info(`Downloading package: ${nupkgUrl}...`);
   let res = await fetch(nupkgUrl, reqInit);
