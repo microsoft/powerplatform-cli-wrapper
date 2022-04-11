@@ -20,14 +20,14 @@ module.exports = async function nugetInstall(feed, package) {
     },
     redirect: "manual",
   };
-    if (feed.authenticated) {
-        if (!feedPAT) {
-            throw new Error(`nuget feed ${feed.name} requires authN but neither '--feedPAT' argument nor env var '${feed.patEnvironmentVariable}' was defined!`);
-        }
-        reqInit.headers['Authorization'] = `Basic ${Buffer.from(
-          'PAT:' + feedPAT
-          ).toString('base64')}`;
+  if (feed.authenticated) {
+    if (!feedPAT) {
+      throw new Error(`nuget feed ${feed.name} requires authN but neither '--feedPAT' argument nor env var '${feed.patEnvironmentVariable}' was defined!`);
     }
+    reqInit.headers['Authorization'] = `Basic ${Buffer.from(
+      'PAT:' + feedPAT
+    ).toString('base64')}`;
+  }
 
   log.info(`Downloading package: ${nupkgUrl}...`);
   let res = await fetch(nupkgUrl, reqInit);
