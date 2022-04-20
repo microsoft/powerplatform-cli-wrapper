@@ -4,7 +4,7 @@ import * as chaiAsPromised from "chai-as-promised";
 import { restore, stub } from "sinon";
 import * as sinonChai from "sinon-chai";
 import { RunnerParameters } from "../../src";
-import { PackSolutionParameters } from "../../src/actions";
+import { SolutionPackUnpackParameters } from "../../src/actions/actionParameters";
 import rewiremock from "../rewiremock";
 import { createDefaultMockRunnerParameters } from "./mock/mockData";
 import Sinon = require("sinon");
@@ -30,7 +30,7 @@ describe("action: pack solution", () => {
   });
   afterEach(() => restore());
 
-  async function runActionWithMocks(packSolutionParameters: PackSolutionParameters): Promise<void> {
+  async function runActionWithMocks(packSolutionParameters: SolutionPackUnpackParameters): Promise<void> {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
 
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/packSolution"),
@@ -46,7 +46,7 @@ describe("action: pack solution", () => {
   }
 
   it("calls pac runner with correct arguments", async () => {
-    const packSolutionParameters: PackSolutionParameters = {
+    const packSolutionParameters: SolutionPackUnpackParameters = {
       solutionZipFile: { name: 'SolutionInputFile', required: true },
       sourceFolder: { name: 'SolutionTargetFolder', required: true },
       solutionType: { name: 'SolutionType', required: false, defaultValue: "Unmanaged" },
@@ -56,5 +56,40 @@ describe("action: pack solution", () => {
 
     pacStub.should.have.been.calledOnceWith("solution", "pack", "--zipFile", absoluteSolutionPath, "--folder", absoluteFolderPath,
       "--packageType", "Unmanaged");
+  });
+
+  it("calls pac runner with all arguments", async () => {
+    const packSolutionParameters: SolutionPackUnpackParameters = {
+      solutionZipFile: { name: 'SolutionInputFile', required: true },
+      sourceFolder: { name: 'SolutionTargetFolder', required: true },
+      solutionType: { name: 'SolutionType', required: false, defaultValue: "Unmanaged" },
+      logFile: { name: 'LogFile', required: false, defaultValue: "log.txt" },
+      errorLevel: { name: 'ErrorLevel', required: false, defaultValue: "Error" },
+      singleComponent: { name: 'SingleComponent', required: false, defaultValue: "none" },
+      mapFile: { name: 'MapFile', required: false, defaultValue: "map.txt" },
+      localize: { name: 'Localize', required: false, defaultValue: "false" },
+      localeTemplate: { name: 'LocaleTemplate', required: false, defaultValue: "en-US" },
+      useLcid: { name: 'UseLcid', required: false, defaultValue: "false" },
+      useUnmanagedFileForManaged: { name: 'UseUnmanagedFileForManaged', required: false, defaultValue: "false" },
+      disablePluginRemap: { name: 'DisablePluginRemap', required: false, defaultValue: "false" },
+      processCanvasApps: { name: 'ProcessCanvasApps', required: false, defaultValue: "false" },
+    };
+
+    await runActionWithMocks(packSolutionParameters);
+
+    pacStub.should.have.been.calledOnceWith("solution", "pack",
+      "--zipFile", absoluteSolutionPath,
+      "--folder", absoluteFolderPath,
+      "--packageType", "Unmanaged",
+      "--localize", "false",
+      "--log", "log.txt",
+      "--errorlevel", "Error",
+      "--singleComponent", "none",
+      "--map", "map.txt",
+      "--sourceLoc", "en-US",
+      "--useLcid", "false",
+      "--useUnmanagedFileForMissingManaged", "false",
+      "--disablePluginRemap", "false",
+      "--processCanvasApps", "false");
   });
 });
