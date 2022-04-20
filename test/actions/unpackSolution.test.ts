@@ -4,7 +4,7 @@ import * as chaiAsPromised from "chai-as-promised";
 import { restore, stub } from "sinon";
 import * as sinonChai from "sinon-chai";
 import { RunnerParameters } from "../../src";
-import { UnpackSolutionParameters } from "../../src/actions";
+import { SolutionPackUnpackParameters } from "../../src/actions/actionParameters";
 import rewiremock from "../rewiremock";
 import { createDefaultMockRunnerParameters } from "./mock/mockData";
 import Sinon = require("sinon");
@@ -15,7 +15,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: unpack solution", () => {
-  let pacStub: Sinon.SinonStub<any[],any>;
+  let pacStub: Sinon.SinonStub<any[], any>;
   const zip = "./ContosoSolution.zip";
   const mockHost: IHostAbstractions = {
     name: "host",
@@ -30,7 +30,7 @@ describe("action: unpack solution", () => {
   });
   afterEach(() => restore());
 
-  async function runActionWithMocks(unpackSolutionParameters: UnpackSolutionParameters): Promise<void> {
+  async function runActionWithMocks(unpackSolutionParameters: SolutionPackUnpackParameters): Promise<void> {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
 
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/unpackSolution"),
@@ -48,17 +48,56 @@ describe("action: unpack solution", () => {
     await mockedActionModule.unpackSolution(unpackSolutionParameters, runnerParameters, mockHost);
   }
 
-  it("calls pac runner with correct arguments", async () => {
-    const unpackSolutionParameters: UnpackSolutionParameters = {
+  it("calls pac runner with minimal set of arguments", async () => {
+    const unpackSolutionParameters: SolutionPackUnpackParameters = {
       solutionZipFile: { name: 'SolutionInputFile', required: true },
       sourceFolder: { name: 'SolutionTargetFolder', required: true },
       solutionType: { name: 'SolutionType', required: false, defaultValue: "Unmanaged" },
-      overwriteFiles: { name: 'OverwriteFiles', required: false, defaultValue: "true" },
     };
 
     await runActionWithMocks(unpackSolutionParameters);
 
     pacStub.should.have.been.calledOnceWith("solution", "unpack", "--zipFile", absoluteSolutionPath, "--folder", absoluteFolderPath,
-        "--packageType", "Unmanaged", "--allowDelete", "true", "--allowWrite", "true", "--clobber", "true");
+      "--packageType", "Unmanaged");
+  });
+
+  it("calls pac runner with all arguments", async () => {
+    const unpackSolutionParameters: SolutionPackUnpackParameters = {
+      solutionZipFile: { name: 'SolutionInputFile', required: true },
+      sourceFolder: { name: 'SolutionTargetFolder', required: true },
+      solutionType: { name: 'SolutionType', required: false, defaultValue: "Unmanaged" },
+      overwriteFiles: { name: 'OverwriteFiles', required: false, defaultValue: "true" },
+      logFile: { name: 'LogFile', required: false, defaultValue: "log.txt" },
+      errorLevel: { name: 'ErrorLevel', required: false, defaultValue: "Error" },
+      singleComponent: { name: 'SingleComponent', required: false, defaultValue: "none" },
+      mapFile: { name: 'MapFile', required: false, defaultValue: "map.txt" },
+      localize: { name: 'Localize', required: false, defaultValue: "false" },
+      localeTemplate: { name: 'LocaleTemplate', required: false, defaultValue: "en-US" },
+      useLcid: { name: 'UseLcid', required: false, defaultValue: "false" },
+      useUnmanagedFileForManaged: { name: 'UseUnmanagedFileForManaged', required: false, defaultValue: "false" },
+      disablePluginRemap: { name: 'DisablePluginRemap', required: false, defaultValue: "false" },
+      processCanvasApps: { name: 'ProcessCanvasApps', required: false, defaultValue: "false" },
+    };
+
+    await runActionWithMocks(unpackSolutionParameters);
+
+    pacStub.should.have.been.calledOnceWith("solution", "unpack",
+      "--zipFile", absoluteSolutionPath,
+      "--folder", absoluteFolderPath,
+      "--packageType", "Unmanaged",
+      "--localize", "false",
+      "--log", "log.txt",
+      "--errorlevel", "Error",
+      "--singleComponent", "none",
+      "--map", "map.txt",
+      "--sourceLoc", "en-US",
+      "--useLcid", "false",
+      "--useUnmanagedFileForMissingManaged", "false",
+      "--disablePluginRemap", "false",
+      "--processCanvasApps", "false",
+      "--allowDelete", "true",
+      "--allowWrite", "true",
+      "--clobber", "true"
+      );
   });
 });

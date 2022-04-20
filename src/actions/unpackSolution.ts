@@ -1,20 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
-import path = require("path");
+import { SolutionPackUnpackParameters } from "./actionParameters/solutionPackUnpackParameters";
+import { setSolutionPackagingCommonArgs } from "./solutionPackagingBase";
 
-export interface UnpackSolutionParameters {
-  solutionZipFile: HostParameterEntry;
-  sourceFolder: HostParameterEntry;
-  solutionType: HostParameterEntry;
-  overwriteFiles: HostParameterEntry;
-}
-
-export async function unpackSolution(parameters: UnpackSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+export async function unpackSolution(parameters: SolutionPackUnpackParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
@@ -22,10 +16,9 @@ export async function unpackSolution(parameters: UnpackSolutionParameters, runne
     const pacArgs = ["solution", "unpack"];
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--zipFile", parameters.solutionZipFile, (value) => path.resolve(runnerParameters.workingDir, value));
-    validator.pushInput(pacArgs, "--folder", parameters.sourceFolder, (value) => path.resolve(runnerParameters.workingDir, value));
-    validator.pushInput(pacArgs, "--packageType", parameters.solutionType);
-    if (validator.getInput(parameters.overwriteFiles) === "true") {
+    setSolutionPackagingCommonArgs(parameters, runnerParameters, validator, pacArgs);
+
+    if (parameters.overwriteFiles && validator.getInput(parameters.overwriteFiles) === "true") {
       pacArgs.push("--allowDelete");
       pacArgs.push("true");
       pacArgs.push("--allowWrite");
@@ -40,5 +33,5 @@ export async function unpackSolution(parameters: UnpackSolutionParameters, runne
   } catch (error) {
     logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
-  } 
+  }
 }
