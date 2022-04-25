@@ -31,7 +31,6 @@ describe("action: backupEnvironment", () => {
       environmentUrl: { name: "EnvironmentUrl", required: true },
       environmentId: { name: "EnvironmentId", required: true },
       backupLabel: { name: 'BackupLabel', required: true },
-      notes: { name: 'Notes', required: true }
     };
   });
   afterEach(() => restore());
@@ -60,7 +59,7 @@ describe("action: backupEnvironment", () => {
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
     pacStub.should.have.been.calledOnceWith("admin", "backup", "--environment", host.environment,"--url", host.environmentUrl,
-      "--environment-id", host.environmentId, "--label", host.backupLabel, "--notes", host.notes);
+      "--environment-id", host.environmentId, "--label", host.backupLabel);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });
