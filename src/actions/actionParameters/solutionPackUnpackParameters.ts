@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { HostParameterEntry } from "../../host/IHostAbstractions";
+import { HostParameterEntry, HostTraceLevelParameterEntry } from "../../host/IHostAbstractions";
 
 export interface SolutionPackUnpackParameters {
   solutionZipFile: HostParameterEntry;
@@ -11,7 +11,7 @@ export interface SolutionPackUnpackParameters {
   localize?: HostParameterEntry;
   localeTemplate?: HostParameterEntry;
   logFile?: HostParameterEntry;
-  errorLevel?: HostParameterEntry;
+  errorLevel?: HostTraceLevelParameterEntry;
   singleComponent?: HostParameterEntry;
   mapFile?: HostParameterEntry;
   useLcid?: HostParameterEntry;

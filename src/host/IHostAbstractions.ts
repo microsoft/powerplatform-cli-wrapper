@@ -11,3 +11,7 @@ export interface HostParameterEntry {
   readonly required: boolean;
   readonly defaultValue?: boolean | string;
 }
+
+export interface HostTraceLevelParameterEntry extends HostParameterEntry {
+  readonly defaultValue: "Off" | "Error" | "Warning" | "Info" | "Verbose";
+}
