@@ -9,7 +9,6 @@ export class mockHost implements IHostAbstractions {
   deploymentSettingsFile = '/Test/deploymentSettings.txt';
   logDataFile = 'c:\\samplelogdata'
   maxAsyncWaitTime = '120';
-  targetVersion = '0.0.0';
   backupLabel = 'Mock-Label';
   environment = 'https://contoso3.crm.dynamics.com/';
   environmentName = 'Mock-Environment';
@@ -42,7 +41,6 @@ export class mockHost implements IHostAbstractions {
         case 'SolutionName': return this.solutionName;
         case 'MaxAsyncWaitTime': return this.maxAsyncWaitTime;
         case 'DeploymentSettingsFile': return this.deploymentSettingsFile;
-        case 'TargetVersion': return this.targetVersion;
         case 'BackupLabel': return this.backupLabel;
         case 'LogDataFile': return this.logDataFile;
         case 'DisplayName': return this.environmentName;

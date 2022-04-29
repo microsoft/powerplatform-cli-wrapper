@@ -12,7 +12,6 @@ export interface ExportSolutionParameters {
   name: HostParameterEntry;
   path: HostParameterEntry;
   managed: HostParameterEntry;
-  targetVersion: HostParameterEntry;
   async: HostParameterEntry;
   maxAsyncWaitTimeInMin: HostParameterEntry;
   autoNumberSettings: HostParameterEntry;
@@ -44,7 +43,6 @@ export async function exportSolution(parameters: ExportSolutionParameters, runne
     validator.pushInput(pacArgs, "--managed", parameters.managed);
     validator.pushInput(pacArgs, "--async", parameters.async);
     validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
-    validator.pushInput(pacArgs, "--targetversion", parameters.targetVersion);
 
     const includeArgs = [];
     if (validator.getInput(parameters.autoNumberSettings) === 'true') { includeArgs.push("autonumbering"); }

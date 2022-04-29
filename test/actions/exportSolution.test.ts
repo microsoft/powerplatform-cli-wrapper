@@ -55,7 +55,6 @@ describe("action: exportSolution", () => {
     name: { name: "SolutionName", required: true },
     path: { name: "SolutionOutputFile", required: true },
     managed: { name: 'Managed', required: false },
-    targetVersion: { name: 'TargetVersion', required: false },
     async: { name: 'AsyncOperation', required: false },
     maxAsyncWaitTimeInMin: { name: 'MaxAsyncWaitTime', required: false },
     autoNumberSettings: { name: 'ExportAutoNumberingSettings', required: false },
@@ -83,7 +82,6 @@ describe("action: exportSolution", () => {
     exportSolutionParameters.managed = { name: 'Managed', required: true },
       exportSolutionParameters.async = { name: 'AsyncOperation', required: true },
       exportSolutionParameters.maxAsyncWaitTimeInMin = { name: 'MaxAsyncWaitTime', required: true },
-      exportSolutionParameters.targetVersion = { name: 'TargetVersion', required: true },
       exportSolutionParameters.autoNumberSettings = { name: 'ExportAutoNumberingSettings', required: true },
       exportSolutionParameters.calenderSettings = { name: 'ExportCalendarSettings', required: true },
       exportSolutionParameters.customizationSettings = { name: 'ExportCustomizationSettings', required: true },
@@ -99,7 +97,7 @@ describe("action: exportSolution", () => {
     await runActionWithMocks(exportSolutionParameters);
 
     pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath,
-      "--managed", "true", "--async", "true", "--max-async-wait-time", "120", "--targetversion", host.targetVersion, "--include",
+      "--managed", "true", "--async", "true", "--max-async-wait-time", "120", "--include",
       "autonumbering,calendar,customization,emailtracking,externalapplications,general,isvconfig,marketing,outlooksynchronization,relationshiproles,sales");
   });
 
@@ -107,7 +105,6 @@ describe("action: exportSolution", () => {
     exportSolutionParameters.managed = { name: 'Managed', required: true, defaultValue: true },
       exportSolutionParameters.async = { name: 'AsyncOperation', required: true },
       exportSolutionParameters.maxAsyncWaitTimeInMin = { name: 'MaxAsyncWaitTime', required: true },
-      exportSolutionParameters.targetVersion = { name: 'TargetVersion', required: true },
       exportSolutionParameters.autoNumberSettings = { name: 'ExportAutoNumberingSettings', required: false, defaultValue: true },
       exportSolutionParameters.calenderSettings = { name: 'ExportCalendarSettings', required: false, defaultValue: true },
       exportSolutionParameters.customizationSettings = { name: 'ExportCustomizationSettings', required: false, defaultValue: false },
@@ -123,7 +120,7 @@ describe("action: exportSolution", () => {
     await runActionWithMocks(exportSolutionParameters);
 
     pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath,
-      "--managed", "true", "--async", "true", "--max-async-wait-time", "120", "--targetversion", host.targetVersion, "--include",
+      "--managed", "true", "--async", "true", "--max-async-wait-time", "120", "--include",
       "autonumbering,calendar,emailtracking,externalapplications,marketing,relationshiproles");
   });
 });
