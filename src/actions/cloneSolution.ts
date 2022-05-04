@@ -9,7 +9,6 @@ export interface CloneSolutionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   name: HostParameterEntry;
-  targetVersion: HostParameterEntry;
   outputDirectory: HostParameterEntry;
   async?: HostParameterEntry;
   maxAsyncWaitTimeInMin?: HostParameterEntry;
@@ -27,7 +26,6 @@ export async function cloneSolution(parameters: CloneSolutionParameters, runnerP
     const validator = new InputValidator(host);
 
     validator.pushInput(pacArgs, "--name", parameters.name);
-    validator.pushInput(pacArgs, "--targetversion", parameters.targetVersion);
     validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory);
     validator.pushInput(pacArgs, "--async", parameters.async);
     validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);

@@ -52,7 +52,6 @@ describe("action: clone solution", () => {
     credentials: mockClientCredentials,
     environmentUrl: environmentUrl,
     name: { name: 'SolutionName', required: true },
-    targetVersion: { name: 'TargetVersion', required: false },
     outputDirectory: { name: 'OutputDirectory', required: false },
   });
 
