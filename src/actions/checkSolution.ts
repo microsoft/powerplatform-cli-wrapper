@@ -1,6 +1,5 @@
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
-import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
@@ -8,7 +7,6 @@ import path = require("path");
 
 export interface CheckSolutionParameters {
   credentials: AuthCredentials;
-  environmentUrl: string;
   fileLocation?: HostParameterEntry;
   solutionPath: HostParameterEntry;
   solutionUrl?: HostParameterEntry;
@@ -16,8 +14,7 @@ export interface CheckSolutionParameters {
   ruleSet?: HostParameterEntry;
   ruleLevelOverride: HostParameterEntry;
   outputDirectory: HostParameterEntry;
-  useDefaultPAEndpoint?: HostParameterEntry;
-  customPAEndpoint?: HostParameterEntry;
+  customPAEndpoint: HostParameterEntry;
   filesExcluded?: HostParameterEntry;
   errorLevel?: HostParameterEntry;
   errorThreshold?: HostParameterEntry;
@@ -35,9 +32,6 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     threshold = validator.getInput(parameters.errorThreshold);
   }
   try {
-    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
-    logger.log("The Authentication Result: " + authenticateResult);
-
     const pacArgs = ["solution", "check"]
 
     if (parameters.fileLocation != undefined && validator.getInput(parameters.fileLocation) === 'sasUriFile') {
@@ -49,15 +43,9 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     validator.pushInput(pacArgs, "--geo", parameters.geoInstance);
     validator.pushInput(pacArgs, "--ruleSet", parameters.ruleSet);
     validator.pushInput(pacArgs, "--ruleLevelOverride", parameters.ruleLevelOverride);
+    validator.pushInput(pacArgs, "--customEndpoint", parameters.customPAEndpoint);
     validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory);
     validator.pushInput(pacArgs, "--excludedFiles", parameters.filesExcluded);
-
-    if (parameters.useDefaultPAEndpoint != undefined && validator.getInput(parameters.useDefaultPAEndpoint) === 'true') {
-      pacArgs.push("--customEndpoint", parameters.environmentUrl);
-    }
-    else {
-      validator.pushInput(pacArgs, "--customEndpoint", parameters.customPAEndpoint);
-    }
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     //pacResult is not in any contractual format. It is an array similar to the one in checkSolution.test.ts
@@ -74,9 +62,6 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
   } catch (error) {
     logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
-  } finally {
-    const clearAuthResult = await clearAuthentication(pac);
-    logger.log("The Clear Authentication Result: " + clearAuthResult);
   }
 }
 
