@@ -80,61 +80,39 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
   }
 }
 
+//If checker endpoint is not explicity specified, environment url would be used to map to default endpoints
 function getPACheckerEndpoint(environmentUrl: string): string {
+  const defaultCheckerEndPoint = 'https://unitedstates.api.advisor.powerapps.com/';
+  if (!environmentUrl)
+    return defaultCheckerEndPoint;
+
   const url = new URL(environmentUrl);
   const domainName = url.hostname.split(".").splice(1, 3).join(".");
-  let paCheckerEndPoint = 'https://unitedstates.api.advisor.powerapps.com/';
-  
-  switch (domainName) {
-    case 'crm2.dynamics.com':
-      paCheckerEndPoint = 'https://southamerica.api.advisor.powerapps.com/';
-      break;
-    case 'crm3.dynamics.com':
-      paCheckerEndPoint = 'https://canada.api.advisor.powerapps.com/';
-      break;
-    case 'crm4.dynamics.com':
-      paCheckerEndPoint = 'https://europe.api.advisor.powerapps.com/';
-      break;
-    case 'crm5.dynamics.com':
-      paCheckerEndPoint = 'https://asia.api.advisor.powerapps.com/';
-      break;
-    case 'crm6.dynamics.com':
-      paCheckerEndPoint = 'https://australia.api.advisor.powerapps.com/';
-      break;
-    case 'crm7.dynamics.com':
-      paCheckerEndPoint = 'https://japan.api.advisor.powerapps.com/';
-      break;
-    case 'crm8.dynamics.com':
-      paCheckerEndPoint = 'https://india.api.advisor.powerapps.com/';
-      break;
-    case 'crm9.dynamics.com':
-      paCheckerEndPoint = 'https://gov.api.advisor.powerapps.us/';
-      break;
-    case 'crm11.dynamics.com':
-      paCheckerEndPoint = 'https://unitedkingdom.api.advisor.powerapps.com/';
-      break;
-    case 'crm12.dynamics.com':
-      paCheckerEndPoint = 'https://france.api.advisor.powerapps.com/';
-      break;
-    case 'crm15.dynamics.com':
-      paCheckerEndPoint = 'https://unitedarabemirates.api.advisor.powerapps.com/';
-      break;
-    case 'crm16.dynamics.com':
-      paCheckerEndPoint = 'https://germany.api.advisor.powerapps.com/';
-      break;
-    case 'crm17.dynamics.com':
-      paCheckerEndPoint = 'https://switzerland.api.advisor.powerapps.com/';
-      break;
-    case 'crm.dynamics.cn':
-      paCheckerEndPoint = 'https://china.api.advisor.powerapps.cn/';
-      break;
-    case 'crm.microsoftdynamics.us':
-      paCheckerEndPoint = 'https://high.api.advisor.powerapps.us/';
-      break;
-    case 'crm.appsplatforms.us':
-      paCheckerEndPoint = 'https://mil.api.advisor.appsplatform.us/';
-      break;
+
+  const endPointMap: { [key: string]: string } = {
+    'crm.dynamics.com': 'https://unitedstates.api.advisor.powerapps.com/',
+    'crm2.dynamics.com': 'https://southamerica.api.advisor.powerapps.com/',
+    'crm3.dynamics.com': 'https://canada.api.advisor.powerapps.com/',
+    'crm4.dynamics.com': 'https://europe.api.advisor.powerapps.com/',
+    'crm5.dynamics.com': 'https://asia.api.advisor.powerapps.com/',
+    'crm6.dynamics.com': 'https://australia.api.advisor.powerapps.com/',
+    'crm7.dynamics.com': 'https://japan.api.advisor.powerapps.com/',
+    'crm8.dynamics.com': 'https://india.api.advisor.powerapps.com/',
+    'crm9.dynamics.com': 'https://gov.api.advisor.powerapps.us/',
+    'crm11.dynamics.com': 'https://unitedkingdom.api.advisor.powerapps.com/',
+    'crm12.dynamics.com': 'https://france.api.advisor.powerapps.com/',
+    'crm15.dynamics.com': 'https://unitedarabemirates.api.advisor.powerapps.com/',
+    'crm16.dynamics.com': 'https://germany.api.advisor.powerapps.com/',
+    'crm17.dynamics.com': 'https://switzerland.api.advisor.powerapps.com/',
+    'crm.dynamics.cn': 'https://china.api.advisor.powerapps.cn/',
+    'crm.microsoftdynamics.us': 'https://high.api.advisor.powerapps.us/',
+    'crm.appsplatforms.us': 'https://mil.api.advisor.appsplatform.us/'
   }
+
+  const paCheckerEndPoint = endPointMap[domainName];
+  if (!paCheckerEndPoint)
+    return defaultCheckerEndPoint;
+
   return paCheckerEndPoint;
 }
 
