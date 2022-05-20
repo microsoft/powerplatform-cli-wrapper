@@ -1,7 +1,7 @@
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
-import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
+import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import path = require("path");
@@ -35,7 +35,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     threshold = validator.getInput(parameters.errorThreshold);
   }
   try {
-    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const authenticateResult = await authenticateAdmin(pac, parameters.credentials);
     logger.log("The Authentication Result: " + authenticateResult);
 
     const pacArgs = ["solution", "check"]
@@ -53,7 +53,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     validator.pushInput(pacArgs, "--excludedFiles", parameters.filesExcluded);
 
     if (parameters.useDefaultPAEndpoint != undefined && validator.getInput(parameters.useDefaultPAEndpoint) === 'true') {
-      pacArgs.push("--customEndpoint", parameters.environmentUrl);
+      pacArgs.push("--customEndpoint", getPACheckerEndpoint(parameters.environmentUrl));
     }
     else {
       validator.pushInput(pacArgs, "--customEndpoint", parameters.customPAEndpoint);
@@ -64,7 +64,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     const pacResult = await pac(...pacArgs);
     logger.log("CheckSolution Action Result: " + pacResult);
 
-    const status = pacResult[pacResult.length-7].split(' ')[2];
+    const status = pacResult[pacResult.length - 7].split(' ')[2];
     if (status === 'Failed' || status === 'FinishedWithErrors') {
       throw new Error("PowerApps Checker analysis results indicate a failure or error during the analysis process.");
     }
@@ -80,10 +80,46 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
   }
 }
 
+//If checker endpoint is not explicity specified, environment url would be used to map to default endpoints
+function getPACheckerEndpoint(environmentUrl: string): string {
+  const defaultCheckerEndPoint = 'https://unitedstates.api.advisor.powerapps.com/';
+  if (!environmentUrl)
+    return defaultCheckerEndPoint;
+
+  const url = new URL(environmentUrl);
+  const domainName = url.hostname.split(".").splice(1, 3).join(".");
+
+  const endPointMap: { [key: string]: string } = {
+    'crm.dynamics.com': 'https://unitedstates.api.advisor.powerapps.com/',
+    'crm2.dynamics.com': 'https://southamerica.api.advisor.powerapps.com/',
+    'crm3.dynamics.com': 'https://canada.api.advisor.powerapps.com/',
+    'crm4.dynamics.com': 'https://europe.api.advisor.powerapps.com/',
+    'crm5.dynamics.com': 'https://asia.api.advisor.powerapps.com/',
+    'crm6.dynamics.com': 'https://australia.api.advisor.powerapps.com/',
+    'crm7.dynamics.com': 'https://japan.api.advisor.powerapps.com/',
+    'crm8.dynamics.com': 'https://india.api.advisor.powerapps.com/',
+    'crm9.dynamics.com': 'https://gov.api.advisor.powerapps.us/',
+    'crm11.dynamics.com': 'https://unitedkingdom.api.advisor.powerapps.com/',
+    'crm12.dynamics.com': 'https://france.api.advisor.powerapps.com/',
+    'crm15.dynamics.com': 'https://unitedarabemirates.api.advisor.powerapps.com/',
+    'crm16.dynamics.com': 'https://germany.api.advisor.powerapps.com/',
+    'crm17.dynamics.com': 'https://switzerland.api.advisor.powerapps.com/',
+    'crm.dynamics.cn': 'https://china.api.advisor.powerapps.cn/',
+    'crm.microsoftdynamics.us': 'https://high.api.advisor.powerapps.us/',
+    'crm.appsplatforms.us': 'https://mil.api.advisor.appsplatform.us/'
+  }
+
+  const paCheckerEndPoint = endPointMap[domainName];
+  if (!paCheckerEndPoint)
+    return defaultCheckerEndPoint;
+
+  return paCheckerEndPoint;
+}
+
 function errorCheck(pacResults: string[], errorLevel: string, errorThreshold: number): void {
   const errors: Record<string, number> = {};
-  const PAErrorLevels = pacResults[pacResults.length-5].trim().split(/\s+/);
-  const PAErrorValues = pacResults[pacResults.length-3].trim().split(/\s+/);
+  const PAErrorLevels = pacResults[pacResults.length - 5].trim().split(/\s+/);
+  const PAErrorValues = pacResults[pacResults.length - 3].trim().split(/\s+/);
 
   for (let i = 0; i < PAErrorLevels.length && i < PAErrorValues.length; i++) {
     errors[PAErrorLevels[i]] = parseInt(PAErrorValues[i]);
@@ -95,7 +131,7 @@ function errorCheck(pacResults: string[], errorLevel: string, errorThreshold: nu
     "LowIssueCount": "Low",
     "InformationalIssueCount": "Informational"
   };
-  
+
   if (errors[issueCount[errorLevel]] > errorThreshold) {
     throw new Error("Analysis results do not pass with selected error level and threshold choices.  Please review detailed results in SARIF file for more information.");
   }
