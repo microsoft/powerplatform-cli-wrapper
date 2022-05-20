@@ -3,9 +3,9 @@ import rewiremock from "../rewiremock";
 import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
-import { stub } from "sinon";
+import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { createDefaultMockRunnerParameters, createMockClientCredentials } from "./mock/mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import { CheckSolutionParameters } from "../../src/actions";
 import Sinon = require("sinon");
@@ -15,7 +15,10 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("action: check solution", () => {
-  const pacStub: Sinon.SinonStub<any[],any> = stub();
+  let pacStub: Sinon.SinonStub<any[],any>;
+  let authenticateAdminStub: Sinon.SinonStub<any[], any>;
+  let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
+  let checkSolutionParameters: CheckSolutionParameters;
   const pacResults:string[] = [
     "Entering InvokePowerAppsChecker - EndProcessing",
     "Executing InvokePowerAppsChecker",
@@ -57,13 +60,40 @@ describe("action: check solution", () => {
   const customEndpoint = "www.contoso.com";
   const fileLocation = "localFiles";
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
+  const environmentUrl: string = mockEnvironmentUrl;
   const absoluteSolutionPath = (platform() === "win32") ? 'D:\\Test\\working\\ContosoSolution.zip' : '/Test/working/ContosoSolution.zip';
+
+  beforeEach(() => {
+    pacStub = stub();
+    authenticateAdminStub = stub();
+    clearAuthenticationStub = stub();
+    checkSolutionParameters = {
+      credentials: mockClientCredentials,
+      environmentUrl: environmentUrl,
+      fileLocation: { name: "FileLocation", required: false, defaultValue: "localFiles" },
+      solutionPath: { name: "FilesToAnalyze", required: false },
+      solutionUrl: { name: "FilesToAnalyzeSasUri", required: false },
+      ruleLevelOverride: { name: "RuleLevelOverride", required: false },
+      outputDirectory: { name: "OutputDirectory", required: false },
+      useDefaultPAEndpoint: { name: "UseDefaultPACheckerEndpoint", required: false, defaultValue: true },
+      customPAEndpoint: { name: "CustomPACheckerEndpoint", required: false, defaultValue: "" },
+      errorLevel: { name: "ErrorLevel", required: false, defaultValue: "HighIssueCount" },
+      errorThreshold: { name: "ErrorThreshold", required: false, defaultValue: "0" },
+      failOnAnalysisError: { name: "FailOnPowerAppsCheckerAnalysisError", required: false, defaultValue: true },
+    };
+  });
+  afterEach(() => restore());
 
   async function runActionWithMocks(checkSolutionParameters: CheckSolutionParameters): Promise<void> {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/checkSolution"),
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
+        mock(() => import("../../src/pac/auth/authenticate")).with(
+          {
+            authenticateAdmin: authenticateAdminStub,
+            clearAuthentication: clearAuthenticationStub
+          });
       });
   
     const stubFnc = Sinon.stub(mockHost, "getInput");
@@ -72,31 +102,30 @@ describe("action: check solution", () => {
     stubFnc.onCall(2).returns(fileLocation);
     stubFnc.onCall(3).returns(zip);
     stubFnc.onCall(4).returns(samplejson);
-    stubFnc.onCall(5).returns(customEndpoint);
+    stubFnc.onCall(5).returns(undefined);
     stubFnc.onCall(6).returns(undefined);
-    stubFnc.onCall(7).returns(undefined);
+    stubFnc.onCall(7).returns(customEndpoint);
 
+    authenticateAdminStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns(pacResults);
     await mockedActionModule.checkSolution(checkSolutionParameters, runnerParameters, mockHost);
   }
 
-  const createCheckSolutionParametersForTask = (): CheckSolutionParameters => ({
-    credentials: mockClientCredentials,
-    fileLocation: { name: "FileLocation", required: false, defaultValue: "localFiles" },
-    solutionPath: { name: "FilesToAnalyze", required: false },
-    solutionUrl: { name: "FilesToAnalyzeSasUri", required: false },
-    ruleLevelOverride: { name: "RuleLevelOverride", required: false },
-    outputDirectory: { name: "OutputDirectory", required: false },
-    customPAEndpoint: { name: "CustomPACheckerEndpoint", required: true, defaultValue: "" },
-    errorLevel: { name: "ErrorLevel", required: false, defaultValue: "HighIssueCount" },
-    errorThreshold: { name: "ErrorThreshold", required: false, defaultValue: "0" },
-    failOnAnalysisError: { name: "FailOnPowerAppsCheckerAnalysisError", required: false, defaultValue: true },
+  it("required, optional, and not required input types calls pac runner stub with correct arguments", async () => {
+    await runActionWithMocks(checkSolutionParameters);
+    
+    authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
+    pacStub.should.have.been.calledOnceWith("solution", "check", "--path", absoluteSolutionPath,
+    "--ruleLevelOverride", samplejson, "--customEndpoint", "https://unitedstates.api.advisor.powerapps.com/");
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 
-  it("required, optional, and not required input types calls pac runner stub with correct arguments", async () => {
-    await runActionWithMocks(createCheckSolutionParametersForTask());
+  it("verify checker endpoint with japan domain name", async () => {
+    checkSolutionParameters.environmentUrl = 'https://contoso.crm7.dynamics.com';
+    await runActionWithMocks(checkSolutionParameters);
     
-    pacStub.should.have.been.calledWith("solution", "check", "--path", absoluteSolutionPath,
-    "--ruleLevelOverride", samplejson, "--customEndpoint", customEndpoint);
+    pacStub.should.have.been.calledOnceWith("solution", "check", "--path", absoluteSolutionPath,
+    "--ruleLevelOverride", samplejson, "--customEndpoint", 'https://japan.api.advisor.powerapps.com/');
   });
 });
