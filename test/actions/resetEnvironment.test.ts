@@ -8,6 +8,7 @@ import { ClientCredentials, RunnerParameters } from "../../src";
 import { ResetEnvironmentParameters } from "../../src/actions";
 import { createDefaultMockRunnerParameters, createMockClientCredentials } from "./mock/mockData";
 import { mockHost } from "./mock/mockHost";
+import { IHostAbstractions } from "src/host/IHostAbstractions";
 import Sinon = require("sinon");
 should();
 use(sinonChai);
@@ -17,7 +18,6 @@ describe("action: resetEnvironment", () => {
   let pacStub: Sinon.SinonStub<any[], any>;
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
-  const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   let resetEnvironmentParameters: ResetEnvironmentParameters;
 
@@ -29,7 +29,7 @@ describe("action: resetEnvironment", () => {
   });
   afterEach(() => restore());
 
-  async function runActionWithMocks(resetEnvironmentParameters: ResetEnvironmentParameters): Promise<void> {
+  async function runActionWithMocks(resetEnvironmentParameters: ResetEnvironmentParameters, host: IHostAbstractions): Promise<void> {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
 
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/resetEnvironment"),
@@ -71,7 +71,8 @@ describe("action: resetEnvironment", () => {
   });
 
   it("with minimal inputs, calls pac runner with correct arguments", async () => {
-    await runActionWithMocks(resetEnvironmentParameters);
+    const host = new mockHost();
+    await runActionWithMocks(resetEnvironmentParameters, host);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
     pacStub.should.have.been.calledOnceWith("admin", "reset", "--url", host.environmentUrl, "--language", host.language,
@@ -87,7 +88,24 @@ describe("action: resetEnvironment", () => {
     resetEnvironmentParameters.overrideDomainName = { name: "OverrideDomainName", required: true };
     resetEnvironmentParameters.domainName = { name: "DomainName", required: true };
 
-    await runActionWithMocks(resetEnvironmentParameters);
+    const defaultHost = new mockHost();
+    const host = new mockHost((entry) => {
+      switch (entry.name) {
+        case "Environment":
+          return defaultHost.environment;
+        case "EnvironmentId":
+          return defaultHost.environmentId;
+        case "OverrideDomainName":
+        case "OverrideFriendlyName":
+          return "true";
+        case "FriendlyName":
+          return defaultHost.friendlyName;
+        case "DomainName":
+          return defaultHost.domainName;
+        default: return undefined;
+      }
+    });
+    await runActionWithMocks(resetEnvironmentParameters, host);
 
     pacStub.should.have.been.calledOnceWith("admin", "reset", "--environment", host.environment, "--url", host.environmentUrl, "--environment-id", host.environmentId,
       "--language", host.language, "--currency", host.currency, "--purpose", host.purpose, "--templates", host.templates, "--domain", host.domainName, "--name", host.friendlyName);

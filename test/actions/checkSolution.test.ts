@@ -5,11 +5,12 @@ import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import { CheckSolutionParameters } from "../../src/actions";
 import Sinon = require("sinon");
 import { platform } from "os";
+import { IArtifactStore } from "src/host/IArtifactStore";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -52,10 +53,19 @@ describe("action: check solution", () => {
     "",
   ]
   const zip = "./ContosoSolution.zip";
+
+  const spyArtifacts : IArtifactStore = {
+    getTempFolder: () => '',
+    upload: (artifactName, files) => console.log(`name = ${artifactName}, files = ${files.join(', ')}`)
+  }
+
   const mockHost : IHostAbstractions = {
     name: "host",
     getInput: () => zip,
+    getArtifactStore: () => spyArtifacts,
   }
+
+
   const samplejson = "samplejson";
   const customEndpoint = "www.contoso.com";
   const fileLocation = "localFiles";
@@ -74,7 +84,7 @@ describe("action: check solution", () => {
       solutionPath: { name: "FilesToAnalyze", required: false },
       solutionUrl: { name: "FilesToAnalyzeSasUri", required: false },
       ruleLevelOverride: { name: "RuleLevelOverride", required: false },
-      outputDirectory: { name: "OutputDirectory", required: false },
+      artifactStoreName: { name: "OutputDirectory", required: false },
       useDefaultPAEndpoint: { name: "UseDefaultPACheckerEndpoint", required: false, defaultValue: true },
       customPAEndpoint: { name: "CustomPACheckerEndpoint", required: false, defaultValue: "" },
       errorLevel: { name: "ErrorLevel", required: false, defaultValue: "HighIssueCount" },
@@ -95,7 +105,7 @@ describe("action: check solution", () => {
             clearAuthentication: clearAuthenticationStub
           });
       });
-  
+
     const stubFnc = Sinon.stub(mockHost, "getInput");
     stubFnc.onCall(0).returns(undefined);
     stubFnc.onCall(1).returns(undefined);
@@ -114,7 +124,7 @@ describe("action: check solution", () => {
 
   it("required, optional, and not required input types calls pac runner stub with correct arguments", async () => {
     await runActionWithMocks(checkSolutionParameters);
-    
+
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
     pacStub.should.have.been.calledOnceWith("solution", "check", "--path", absoluteSolutionPath,
     "--ruleLevelOverride", samplejson, "--customEndpoint", "https://unitedstates.api.advisor.powerapps.com/");
@@ -124,7 +134,7 @@ describe("action: check solution", () => {
   it("verify checker endpoint with japan domain name", async () => {
     checkSolutionParameters.environmentUrl = 'https://contoso.crm7.dynamics.com';
     await runActionWithMocks(checkSolutionParameters);
-    
+
     pacStub.should.have.been.calledOnceWith("solution", "check", "--path", absoluteSolutionPath,
     "--ruleLevelOverride", samplejson, "--customEndpoint", 'https://japan.api.advisor.powerapps.com/');
   });

@@ -5,10 +5,10 @@ import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { DeleteSolutionParameters } from "src/actions/deleteSolution";
-import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import Sinon = require("sinon");
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { mockHost } from "./mock/mockHost";
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -18,10 +18,9 @@ describe("action: delete solution", () => {
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const name = "test";
-  const mockHost: IHostAbstractions = {
-    name: "host",
-    getInput: () => name,
-  }
+  const mockedHost = new mockHost((entry) => {
+    return entry.name === 'SolutionName' ? name : undefined;
+  });
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const envUrl: string = mockEnvironmentUrl;
   let deleteSolutionParameters: DeleteSolutionParameters;
@@ -49,7 +48,7 @@ describe("action: delete solution", () => {
     authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
-    await mockedActionModule.deleteSolution(deleteSolutionParameters, runnerParameters, mockHost);
+    await mockedActionModule.deleteSolution(deleteSolutionParameters, runnerParameters, mockedHost);
   }
 
   const createDeleteSolutionParameters = (): DeleteSolutionParameters => ({

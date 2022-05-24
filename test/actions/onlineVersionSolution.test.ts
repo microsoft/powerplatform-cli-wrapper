@@ -5,10 +5,10 @@ import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { OnlineVersionSolutionParameters } from "src/actions/onlineVersionSolution";
-import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import Sinon = require("sinon");
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { mockHost } from "./mock/mockHost";
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -17,10 +17,7 @@ describe("action: set online version solution", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
-  const mockHost : IHostAbstractions = {
-    name: "host",
-    getInput: () => "test",
-  }
+  const mockedHost = new mockHost();
   const name = "test";
   const version = "1.0";
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
@@ -46,14 +43,14 @@ describe("action: set online version solution", () => {
             clearAuthentication: clearAuthenticationStub
           });
       });
-    const stubFnc = Sinon.stub(mockHost, "getInput");
+    const stubFnc = Sinon.stub(mockedHost, "getInput");
     stubFnc.onCall(0).returns(name);
     stubFnc.onCall(1).returns(version);
 
     authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
-    await mockedActionModule.onlineVersionSolution(onlineVersionSolutionParameters, runnerParameters, mockHost);
+    await mockedActionModule.onlineVersionSolution(onlineVersionSolutionParameters, runnerParameters, mockedHost);
   }
 
   const createOnlineVersionSolutionParameters = (): OnlineVersionSolutionParameters => ({

@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Sinon = require("sinon");
+import os = require('os');
+import path = require('path');
 import rewiremock from "../rewiremock";
 import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
-import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import { DeployPackageParameters } from "src/actions/deployPackage";
-import Sinon = require("sinon");
-import os = require('os');
-import path = require('path');
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { mockHost } from "./mock/mockHost";
 
 should();
 use(sinonChai);
@@ -23,10 +23,7 @@ describe("action: deploy package", () => {
 
   const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
   const testPackagePath = path.join(runnerParameters.workingDir, 'ConstosoPackage.zip');
-  const mockHost: IHostAbstractions = {
-    name: "SolutionInputFile",
-    getInput: () => testPackagePath,
-  }
+  const mockedHost = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const envUrl: string = mockEnvironmentUrl;
   let deployPackageParameters: DeployPackageParameters;
@@ -49,13 +46,13 @@ describe("action: deploy package", () => {
             clearAuthentication: clearAuthenticationStub
           });
       });
-    const stubFnc = Sinon.stub(mockHost, "getInput");
+    const stubFnc = Sinon.stub(mockedHost, "getInput");
     stubFnc.onCall(0).returns(testPackagePath);
 
     authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
-    await mockedActionModule.deployPackage(deployPackageParameters, runnerParameters, mockHost);
+    await mockedActionModule.deployPackage(deployPackageParameters, runnerParameters, mockedHost);
   }
 
   const createDeployPackageParameters = (): DeployPackageParameters => ({

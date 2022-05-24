@@ -1,11 +1,20 @@
-import { HostParameterEntry, IHostAbstractions } from "../../../src/host/IHostAbstractions";
-import { platform } from "os";
+import path = require("path");
+import os = require("os");
+import { IArtifactStore } from "src/host/IArtifactStore";
+import { GetInputSignature, HostParameterEntry, IHostAbstractions } from "../../../src/host/IHostAbstractions";
 
 export class mockHost implements IHostAbstractions {
+  private readonly _spy: GetInputSignature | undefined;
+
+  // public constructor(customEntry?: HostParameterEntry, customValue?: string) {
+  public constructor(spy?: GetInputSignature) {
+    this._spy = spy;
+  }
+
   name = 'Mock-Host';
   solutionName = 'Mock-Solution';
   relativeSolutionPath = './ContosoSolution.zip';
-  absoluteSolutionPath = (platform() === "win32") ? 'D:\\Test\\working\\ContosoSolution.zip' : '/Test/working/ContosoSolution.zip';
+  absoluteSolutionPath = (os.platform() === "win32") ? 'D:\\Test\\working\\ContosoSolution.zip' : '/Test/working/ContosoSolution.zip';
   deploymentSettingsFile = '/Test/deploymentSettings.txt';
   logDataFile = 'c:\\samplelogdata'
   maxAsyncWaitTime = '120';
@@ -34,9 +43,12 @@ export class mockHost implements IHostAbstractions {
   role = '00000000-0000-0000-0000-000000000004';
 
   public getInput(entry: HostParameterEntry): string | undefined {
+    const candidateValue = this._spy ? this._spy(entry) : undefined;
+    if (candidateValue) return candidateValue;
+
     if (entry.required) {
       switch (entry.name) {
-        case 'SolutionInputFile': 
+        case 'SolutionInputFile':
         case 'SolutionOutputFile': return this.relativeSolutionPath;
         case 'SolutionName': return this.solutionName;
         case 'MaxAsyncWaitTime': return this.maxAsyncWaitTime;
@@ -59,6 +71,7 @@ export class mockHost implements IHostAbstractions {
         case 'TargetEnvironmentId': return this.targetEnvironmentId;
         case 'Notes': return this.notes;
         case 'RestoreTimeStamp': return this.restoreTimeStamp;
+        case 'OverrideFriendlyName': return 'true';
         case 'FriendlyName': return this.friendlyName;
         case 'CopyType': return this.copyType;
         case 'Purpose': return this.purpose;
@@ -66,13 +79,28 @@ export class mockHost implements IHostAbstractions {
         case 'TeamId': return this.teamId;
         case "ObjectId": return this.objectId;
         case "Role": return this.role;
-        default: return 'true';
+        default: {
+          return candidateValue || `<<input param '${entry.name}' is required but undefined>>`;
+        }
       }
+    } else {
+      return candidateValue;
     }
+
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public getInputValue(entry: HostParameterEntry, isRequired: boolean): string | undefined {
-    return;
+  public getArtifactStore(): IArtifactStore {
+    return new MockArtifactStore();
   }
+}
+
+export class MockArtifactStore implements IArtifactStore {
+
+  public getTempFolder(): string {
+    return path.join(os.tmpdir(), 'test');
+  }
+
+  upload(artifactName: string, files: string[]): void {
+    console.log(`MockArtifactStore: name = ${artifactName}, files = ${files.join(', ')}`);
+   }
 }

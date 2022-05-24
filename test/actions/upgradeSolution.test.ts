@@ -5,10 +5,10 @@ import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { UpgradeSolutionParameters } from "src/actions/upgradeSolution";
-import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import Sinon = require("sinon");
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { mockHost } from "./mock/mockHost";
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -17,10 +17,7 @@ describe("action: upgrade solution", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
-  const mockHost : IHostAbstractions = {
-    name: "SolutionInputFile",
-    getInput: () => "test",
-  }
+  const mockedHost = new mockHost();
   const name = "test";
   const asyncValue = "true";
   const asyncTime = "60";
@@ -47,7 +44,7 @@ describe("action: upgrade solution", () => {
             clearAuthentication: clearAuthenticationStub
           });
       });
-    const stubFnc = Sinon.stub(mockHost, "getInput");
+    const stubFnc = Sinon.stub(mockedHost, "getInput");
     stubFnc.onCall(0).returns(name);
     stubFnc.onCall(1).returns(asyncValue);
     stubFnc.onCall(2).returns(asyncTime);
@@ -55,7 +52,7 @@ describe("action: upgrade solution", () => {
     authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
-    await mockedActionModule.upgradeSolution(upgradeSolutionParameters, runnerParameters, mockHost);
+    await mockedActionModule.upgradeSolution(upgradeSolutionParameters, runnerParameters, mockedHost);
   }
 
   const createUpgradeSolutionParameters = (): UpgradeSolutionParameters => ({

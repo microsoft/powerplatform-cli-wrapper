@@ -5,10 +5,10 @@ import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
-import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import { DownloadPaportalParameters } from "src/actions/downloadPaportal";
 import Sinon = require("sinon");
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { mockHost } from "./mock/mockHost";
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -19,10 +19,8 @@ describe("action: download paportal", () => {
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const path = "C:\\portals";
   const websiteId = "f88b70cc-580b-4f1a-87c3-41debefeb902";
-  const mockHost: IHostAbstractions = {
-    name: "host",
-    getInput: () => path,
-  }
+  const mockedHost = new mockHost();
+
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const envUrl: string = mockEnvironmentUrl;
   let downloadPaportalParameters: DownloadPaportalParameters;
@@ -46,14 +44,14 @@ describe("action: download paportal", () => {
             clearAuthentication: clearAuthenticationStub
           });
       });
-    const stubFnc = Sinon.stub(mockHost, "getInput");
+    const stubFnc = Sinon.stub(mockedHost, "getInput");
     stubFnc.onCall(0).returns(path);
     stubFnc.onCall(1).returns(websiteId);
 
     authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
-    await mockedActionModule.downloadPaportal(downloadPaportalParameters, runnerParameters, mockHost);
+    await mockedActionModule.downloadPaportal(downloadPaportalParameters, runnerParameters, mockedHost);
   }
 
   const createDownloadPaportalParameters = (): DownloadPaportalParameters => ({

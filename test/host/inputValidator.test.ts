@@ -2,6 +2,7 @@ import { IHostAbstractions, HostParameterEntry } from "../../src/host/IHostAbstr
 import { InputValidator } from "../../src/host/InputValidator"
 import { assert } from "chai";
 import { restore } from "sinon";
+import { MockArtifactStore } from "../actions/mock/mockHost";
 
 describe("input validator test", () => {
   let validator: InputValidator;
@@ -13,10 +14,12 @@ describe("input validator test", () => {
   const mockHostReturnUndefined : IHostAbstractions = {
     name: hostName,
     getInput: () => undefined,
+    getArtifactStore: () => new MockArtifactStore()
   }
   const mockHostReturnInput : IHostAbstractions = {
     name: hostName,
     getInput: () => inputValue,
+    getArtifactStore: () => new MockArtifactStore()
   }
   const hostParameterEntryRequired : HostParameterEntry = {
     name: hostName,

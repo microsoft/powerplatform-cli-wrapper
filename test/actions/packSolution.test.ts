@@ -6,10 +6,10 @@ import * as sinonChai from "sinon-chai";
 import { RunnerParameters } from "../../src";
 import { SolutionPackUnpackParameters } from "../../src/actions/actionParameters";
 import rewiremock from "../rewiremock";
-import { createDefaultMockRunnerParameters } from "./mock/mockData";
 import Sinon = require("sinon");
-import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import { platform } from "os";
+import { createDefaultMockRunnerParameters } from "./mock/mockData";
+import { mockHost } from "./mock/mockHost";
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -17,10 +17,7 @@ use(chaiAsPromised);
 describe("action: pack solution", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
   const zip = "./ContosoSolution.zip";
-  const mockHost: IHostAbstractions = {
-    name: "host",
-    getInput: () => zip,
-  }
+  const mockedHost = new mockHost();
   const folder = "./folder";
   const absoluteSolutionPath = (platform() === "win32") ? 'D:\\Test\\working\\ContosoSolution.zip' : '/Test/working/ContosoSolution.zip';
   const absoluteFolderPath = (platform() === "win32") ? 'D:\\Test\\working\\folder' : '/Test/working/folder';
@@ -37,12 +34,12 @@ describe("action: pack solution", () => {
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
       });
-    const stubFnc = Sinon.stub(mockHost, "getInput");
+    const stubFnc = Sinon.stub(mockedHost, "getInput");
     stubFnc.onCall(0).returns(zip);
     stubFnc.onCall(1).returns(folder);
 
     pacStub.returns("");
-    await mockedActionModule.packSolution(packSolutionParameters, runnerParameters, mockHost);
+    await mockedActionModule.packSolution(packSolutionParameters, runnerParameters, mockedHost);
   }
 
   it("calls pac runner with correct arguments", async () => {

@@ -1,9 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import { IArtifactStore } from "./IArtifactStore";
+
+export type GetInputSignature = (entry: HostParameterEntry) => string | undefined;
+
 export interface IHostAbstractions {
   name: string;
-  getInput: (entry: HostParameterEntry) => string | undefined;
+  getInput: GetInputSignature;
+  getArtifactStore(): IArtifactStore;
 }
 
 export interface HostParameterEntry {
