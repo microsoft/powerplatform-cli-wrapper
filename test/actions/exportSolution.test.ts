@@ -9,6 +9,7 @@ import rewiremock from "../rewiremock";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { mockHost } from "./mock/mockHost";
 import Sinon = require("sinon");
+import { IHostAbstractions } from "src/host/IHostAbstractions";
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -17,7 +18,6 @@ describe("action: exportSolution", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
-  const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
   let exportSolutionParameters: ExportSolutionParameters;
@@ -30,7 +30,7 @@ describe("action: exportSolution", () => {
   });
   afterEach(() => restore());
 
-  async function runActionWithMocks(exportSolutionParameters: ExportSolutionParameters): Promise<void> {
+  async function runActionWithMocks(exportSolutionParameters: ExportSolutionParameters, host: IHostAbstractions): Promise<void> {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
 
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/exportSolution"),
@@ -71,7 +71,8 @@ describe("action: exportSolution", () => {
   });
 
   it("with minimal inputs set by host, calls pac runner stub with correct arguments", async () => {
-    await runActionWithMocks(exportSolutionParameters);
+    const host = new mockHost();
+    await runActionWithMocks(exportSolutionParameters, host);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath);
@@ -79,22 +80,28 @@ describe("action: exportSolution", () => {
   });
 
   it("with all inputs set by host, calls pac runner stub with correct arguments", async () => {
-    exportSolutionParameters.managed = { name: 'Managed', required: true },
-      exportSolutionParameters.async = { name: 'AsyncOperation', required: true },
-      exportSolutionParameters.maxAsyncWaitTimeInMin = { name: 'MaxAsyncWaitTime', required: true },
-      exportSolutionParameters.autoNumberSettings = { name: 'ExportAutoNumberingSettings', required: true },
-      exportSolutionParameters.calenderSettings = { name: 'ExportCalendarSettings', required: true },
-      exportSolutionParameters.customizationSettings = { name: 'ExportCustomizationSettings', required: true },
-      exportSolutionParameters.emailTrackingSettings = { name: 'ExportEmailTrackingSettings', required: true },
-      exportSolutionParameters.externalApplicationSettings = { name: 'ExportExternalApplicationSettings', required: true },
-      exportSolutionParameters.generalSettings = { name: 'ExportGeneralSettings', required: true },
-      exportSolutionParameters.isvConfig = { name: 'ExportIsvConfig', required: true },
-      exportSolutionParameters.marketingSettings = { name: 'ExportMarketingSettings', required: true },
-      exportSolutionParameters.outlookSynchronizationSettings = { name: 'ExportOutlookSynchronizationSettings', required: true },
-      exportSolutionParameters.relationshipRoles = { name: 'ExportRelationshipRoles', required: true },
-      exportSolutionParameters.sales = { name: 'ExportSales', required: true }
-
-    await runActionWithMocks(exportSolutionParameters);
+    const host = new mockHost((entry) => {
+      switch (entry.name) {
+        case "Managed":
+        case "AsyncOperation":
+        case "ExportAutoNumberingSettings":
+        case "ExportCalendarSettings":
+        case "ExportCustomizationSettings":
+        case "ExportEmailTrackingSettings":
+        case "ExportExternalApplicationSettings":
+        case "ExportGeneralSettings":
+        case "ExportIsvConfig":
+        case "ExportMarketingSettings":
+        case "ExportOutlookSynchronizationSettings":
+        case "ExportRelationshipRoles":
+        case "ExportSales":
+          return "true";
+        case "MaxAsyncWaitTime":
+          return "120"
+        default: return undefined;
+      }
+    });
+    await runActionWithMocks(exportSolutionParameters, host);
 
     pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath,
       "--managed", "true", "--async", "true", "--max-async-wait-time", "120", "--include",
@@ -102,22 +109,29 @@ describe("action: exportSolution", () => {
   });
 
   it("with optional inputs set to default values, calls pac runner stub with correct arguments", async () => {
-    exportSolutionParameters.managed = { name: 'Managed', required: true, defaultValue: true },
-      exportSolutionParameters.async = { name: 'AsyncOperation', required: true },
-      exportSolutionParameters.maxAsyncWaitTimeInMin = { name: 'MaxAsyncWaitTime', required: true },
-      exportSolutionParameters.autoNumberSettings = { name: 'ExportAutoNumberingSettings', required: false, defaultValue: true },
-      exportSolutionParameters.calenderSettings = { name: 'ExportCalendarSettings', required: false, defaultValue: true },
-      exportSolutionParameters.customizationSettings = { name: 'ExportCustomizationSettings', required: false, defaultValue: false },
-      exportSolutionParameters.emailTrackingSettings = { name: 'ExportEmailTrackingSettings', required: false, defaultValue: true },
-      exportSolutionParameters.externalApplicationSettings = { name: 'ExportExternalApplicationSettings', required: false, defaultValue: true },
-      exportSolutionParameters.generalSettings = { name: 'ExportGeneralSettings', required: false, defaultValue: false },
-      exportSolutionParameters.isvConfig = { name: 'ExportIsvConfig', required: false, defaultValue: false },
-      exportSolutionParameters.marketingSettings = { name: 'ExportMarketingSettings', required: false, defaultValue: true },
-      exportSolutionParameters.outlookSynchronizationSettings = { name: 'ExportOutlookSynchronizationSettings', required: false, defaultValue: false },
-      exportSolutionParameters.relationshipRoles = { name: 'ExportRelationshipRoles', required: false, defaultValue: true },
-      exportSolutionParameters.sales = { name: 'ExportSales', required: false, defaultValue: false }
-
-    await runActionWithMocks(exportSolutionParameters);
+    const host = new mockHost((entry) => {
+      switch (entry.name) {
+        case "Managed":
+        case "AsyncOperation":
+        case "ExportAutoNumberingSettings":
+        case "ExportCalendarSettings":
+        case "ExportEmailTrackingSettings":
+        case "ExportExternalApplicationSettings":
+        case "ExportMarketingSettings":
+        case "ExportRelationshipRoles":
+          return "true";
+        case "ExportCustomizationSettings":
+        case "ExportGeneralSettings":
+        case "ExportIsvConfig":
+        case "ExportOutlookSynchronizationSettings":
+        case "ExportSales":
+          return "false";
+        case "MaxAsyncWaitTime":
+          return "120"
+        default: return undefined;
+      }
+    });
+    await runActionWithMocks(exportSolutionParameters, host);
 
     pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath,
       "--managed", "true", "--async", "true", "--max-async-wait-time", "120", "--include",

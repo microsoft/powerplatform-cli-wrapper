@@ -5,10 +5,10 @@ import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
-import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import { UploadPaportalParameters } from "src/actions/uploadPaportal";
 import Sinon = require("sinon");
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { mockHost } from "./mock/mockHost";
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -18,10 +18,10 @@ describe("action: upload paportal", () => {
   let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const path = "C:\\portals\\starter-portal";
-  const mockHost : IHostAbstractions = {
-    name: "host",
-    getInput: () => path,
-  }
+  const mockedHost = new mockHost((entry) => {
+    return entry.name === 'uploadPath' ? path : undefined;
+  });
+
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const envUrl: string = mockEnvironmentUrl;
   let uploadPaportalParameters: UploadPaportalParameters;
@@ -49,7 +49,7 @@ describe("action: upload paportal", () => {
     authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
-    await mockedActionModule.uploadPaportal(uploadPaportalParameters, runnerParameters, mockHost);
+    await mockedActionModule.uploadPaportal(uploadPaportalParameters, runnerParameters, mockedHost);
   }
 
   const createUploadPaportalParameters = (): UploadPaportalParameters => ({

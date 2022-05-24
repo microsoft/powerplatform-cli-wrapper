@@ -9,6 +9,7 @@ import rewiremock from "../rewiremock";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { mockHost } from "./mock/mockHost";
 import Sinon = require("sinon");
+import { IHostAbstractions } from "src/host/IHostAbstractions";
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -17,7 +18,6 @@ describe("action: importSolution", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
-  const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
   let importSolutionParameters: ImportSolutionParameters;
@@ -30,7 +30,7 @@ describe("action: importSolution", () => {
   });
   afterEach(() => restore());
 
-  async function runActionWithMocks(importSolutionParameters: ImportSolutionParameters): Promise<void> {
+  async function runActionWithMocks(importSolutionParameters: ImportSolutionParameters, host: IHostAbstractions): Promise<void> {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
 
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/importSolution"),
@@ -54,6 +54,7 @@ describe("action: importSolution", () => {
     environmentUrl: environmentUrl,
     path: { name: "SolutionInputFile", required: true },
     useDeploymentSettingsFile: { name: 'UseDeploymentSettingsFile', required: false },
+    deploymentSettingsFile: { name: 'DeploymentSettingsFile', required: false },
     async: { name: 'AsyncOperation', required: false },
     maxAsyncWaitTimeInMin: { name: 'MaxAsyncWaitTime', required: false },
     importAsHolding: { name: 'HoldingSolution', required: false },
@@ -65,7 +66,8 @@ describe("action: importSolution", () => {
   });
 
   it("with minimal inputs set by host, calls pac runner stub with correct arguments", async () => {
-    await runActionWithMocks(importSolutionParameters);
+    const host = new mockHost();
+    await runActionWithMocks(importSolutionParameters, host);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath);
@@ -73,18 +75,35 @@ describe("action: importSolution", () => {
   });
 
   it("with all inputs set by host, calls pac runner stub with correct arguments", async () => {
-    importSolutionParameters.useDeploymentSettingsFile = { name: 'UseDeploymentSettingsFile', required: true, defaultValue: true };
-    importSolutionParameters.deploymentSettingsFile = { name: 'DeploymentSettingsFile', required: true, defaultValue: true };
-    importSolutionParameters.async = { name: 'AsyncOperation', required: true, defaultValue: true };
-    importSolutionParameters.maxAsyncWaitTimeInMin = { name: 'MaxAsyncWaitTime', required: true, defaultValue: '180' };
-    importSolutionParameters.importAsHolding = { name: 'HoldingSolution', required: true, defaultValue: true };
-    importSolutionParameters.forceOverwrite = { name: 'OverwriteUnmanagedCustomizations', required: true, defaultValue: true };
-    importSolutionParameters.publishChanges = { name: 'PublishWorkflows', required: true, defaultValue: true };
-    importSolutionParameters.skipDependencyCheck = { name: 'SkipProductUpdateDependencies', required: true, defaultValue: true };
-    importSolutionParameters.convertToManaged = { name: 'ConvertToManaged', required: true, defaultValue: true };
-    importSolutionParameters.activatePlugins = { name: 'ActivatePlugins', required: true, defaultValue: true };
+    // importSolutionParameters.useDeploymentSettingsFile = { name: 'UseDeploymentSettingsFile', required: true, defaultValue: true };
+    // importSolutionParameters.deploymentSettingsFile = { name: 'DeploymentSettingsFile', required: true, defaultValue: true };
+    // importSolutionParameters.async = { name: 'AsyncOperation', required: true, defaultValue: true };
+    // importSolutionParameters.importAsHolding = { name: 'HoldingSolution', required: true, defaultValue: true };
+    // importSolutionParameters.forceOverwrite = { name: 'OverwriteUnmanagedCustomizations', required: true, defaultValue: true };
+    // importSolutionParameters.publishChanges = { name: 'PublishWorkflows', required: true, defaultValue: true };
+    // importSolutionParameters.skipDependencyCheck = { name: 'SkipProductUpdateDependencies', required: true, defaultValue: true };
+    // importSolutionParameters.convertToManaged = { name: 'ConvertToManaged', required: true, defaultValue: true };
+    // importSolutionParameters.activatePlugins = { name: 'ActivatePlugins', required: true, defaultValue: true };
 
-    await runActionWithMocks(importSolutionParameters);
+    const host = new mockHost((entry) => {
+      switch (entry.name) {
+        case "AsyncOperation":
+        case "UseDeploymentSettingsFile":
+        case "HoldingSolution":
+        case "OverwriteUnmanagedCustomizations":
+        case "PublishWorkflows":
+        case "SkipProductUpdateDependencies":
+        case "ConvertToManaged":
+        case "ActivatePlugins":
+            return 'true';
+        case "DeploymentSettingsFile":
+          return '/Test/deploymentSettings.txt';
+        case "MaxAsyncWaitTime":
+          return '120'
+        default: return undefined;
+      }
+    });
+    await runActionWithMocks(importSolutionParameters, host);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath,
@@ -94,7 +113,7 @@ describe("action: importSolution", () => {
   });
 
   it("with optional inputs set to default values, calls pac runner stub with correct arguments", async () => {
-    importSolutionParameters.useDeploymentSettingsFile = { name: 'UseDeploymentSettingsFile', required: false, defaultValue: true };
+    // importSolutionParameters.useDeploymentSettingsFile = { name: 'UseDeploymentSettingsFile', required: false, defaultValue: true };
     importSolutionParameters.async = { name: 'AsyncOperation', required: false, defaultValue: true };
     importSolutionParameters.maxAsyncWaitTimeInMin = { name: 'MaxAsyncWaitTime', required: false, defaultValue: '180' };
     importSolutionParameters.importAsHolding = { name: 'HoldingSolution', required: false, defaultValue: false };
@@ -104,7 +123,10 @@ describe("action: importSolution", () => {
     importSolutionParameters.convertToManaged = { name: 'ConvertToManaged', required: false, defaultValue: false };
     importSolutionParameters.activatePlugins = { name: 'ActivatePlugins', required: false, defaultValue: true };
 
-    await runActionWithMocks(importSolutionParameters);
+    const host = new mockHost((entry) =>
+    !entry.required ?
+      entry.defaultValue?.toString() : undefined);
+    await runActionWithMocks(importSolutionParameters, host);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath,

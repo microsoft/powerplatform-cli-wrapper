@@ -1,10 +1,12 @@
+import glob = require("glob");
+import path = require("path");
+
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import createPacRunner from "../pac/createPacRunner";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
-import path = require("path");
 
 export interface CheckSolutionParameters {
   credentials: AuthCredentials;
@@ -15,7 +17,7 @@ export interface CheckSolutionParameters {
   geoInstance?: HostParameterEntry;
   ruleSet?: HostParameterEntry;
   ruleLevelOverride: HostParameterEntry;
-  outputDirectory: HostParameterEntry;
+  artifactStoreName: HostParameterEntry;
   useDefaultPAEndpoint?: HostParameterEntry;
   customPAEndpoint?: HostParameterEntry;
   filesExcluded?: HostParameterEntry;
@@ -28,12 +30,15 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
   const validator = new InputValidator(host);
+  const artifactStore = host.getArtifactStore();
+
   let level: string | undefined;
   let threshold: string | undefined;
   if (parameters.errorLevel != undefined && parameters.errorThreshold != undefined) {
     level = validator.getInput(parameters.errorLevel);
     threshold = validator.getInput(parameters.errorThreshold);
   }
+
   try {
     const authenticateResult = await authenticateAdmin(pac, parameters.credentials);
     logger.log("The Authentication Result: " + authenticateResult);
@@ -49,7 +54,6 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     validator.pushInput(pacArgs, "--geo", parameters.geoInstance);
     validator.pushInput(pacArgs, "--ruleSet", parameters.ruleSet);
     validator.pushInput(pacArgs, "--ruleLevelOverride", parameters.ruleLevelOverride);
-    validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory);
     validator.pushInput(pacArgs, "--excludedFiles", parameters.filesExcluded);
 
     if (parameters.useDefaultPAEndpoint != undefined && validator.getInput(parameters.useDefaultPAEndpoint) === 'true') {
@@ -58,11 +62,18 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     else {
       validator.pushInput(pacArgs, "--customEndpoint", parameters.customPAEndpoint);
     }
+    const outputDirectory = path.join(artifactStore.getTempFolder(), 'checker-output');
+    logger.debug(`checker-output folder: ${outputDirectory}`);
+    pacArgs.push("--outputDirectory", outputDirectory);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     //pacResult is not in any contractual format. It is an array similar to the one in checkSolution.test.ts
     const pacResult = await pac(...pacArgs);
     logger.log("CheckSolution Action Result: " + pacResult);
+
+    const files = glob.sync('**/*', { cwd: outputDirectory, absolute: true });
+    const artifactStoreName = validator.getInput(parameters.artifactStoreName) || 'CheckSolutionLogs';
+    artifactStore.upload(artifactStoreName, files);
 
     const status = pacResult[pacResult.length - 7].split(' ')[2];
     if (status === 'Failed' || status === 'FinishedWithErrors') {
