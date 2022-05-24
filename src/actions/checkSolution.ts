@@ -73,7 +73,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
 
     const files = glob.sync('**/*', { cwd: outputDirectory, absolute: true });
     const artifactStoreName = validator.getInput(parameters.artifactStoreName) || 'CheckSolutionLogs';
-    artifactStore.upload(artifactStoreName, files);
+    await artifactStore.upload(artifactStoreName, files);
 
     const status = pacResult[pacResult.length - 7].split(' ')[2];
     if (status === 'Failed' || status === 'FinishedWithErrors') {
