@@ -56,7 +56,10 @@ describe("action: check solution", () => {
 
   const spyArtifacts : IArtifactStore = {
     getTempFolder: () => '',
-    upload: (artifactName, files) => console.log(`name = ${artifactName}, files = ${files.join(', ')}`)
+    upload: (artifactName, files) => {
+      console.log(`name = ${artifactName}, files = ${files.join(', ')}`);
+      return Promise.resolve();
+    }
   }
 
   const mockHost : IHostAbstractions = {

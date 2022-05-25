@@ -100,7 +100,8 @@ export class MockArtifactStore implements IArtifactStore {
     return path.join(os.tmpdir(), 'test');
   }
 
-  upload(artifactName: string, files: string[]): void {
+  public upload(artifactName: string, files: string[]): Promise<void> {
     console.log(`MockArtifactStore: name = ${artifactName}, files = ${files.join(', ')}`);
+    return Promise.resolve();
    }
 }
