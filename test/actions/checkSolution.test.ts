@@ -11,6 +11,7 @@ import Sinon = require("sinon");
 import { platform } from "os";
 import { IArtifactStore } from "src/host/IArtifactStore";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -69,13 +70,13 @@ describe("action: check solution", () => {
   }
 
 
-  const samplejson = "samplejson";
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
   const absoluteSolutionPath = (platform() === "win32") ? 'D:\\Test\\working\\ContosoSolution.zip' : '/Test/working/ContosoSolution.zip';
   const ruleSet = "SolutionChecker";
 
   let customEndpoint = "";
+  let samplejson = "";
 
   beforeEach(() => {
     pacStub = stub();
@@ -88,7 +89,7 @@ describe("action: check solution", () => {
       solutionPath: { name: "FilesToAnalyze", required: false },
       solutionUrl: { name: "FilesToAnalyzeSasUri", required: false },
       ruleSet: { name: "RuleSet", required: false, defaultValue: ruleSet},
-      ruleLevelOverride: { name: "RuleLevelOverride", required: false, defaultValue: "override" },
+      ruleLevelOverride: { name: "RuleLevelOverride", required: false },
       artifactStoreName: { name: "ArtifactStoreName", required: false },
       useDefaultPAEndpoint: { name: "UseDefaultPACheckerEndpoint", required: true, defaultValue: true },
       customPAEndpoint: { name: "CustomPACheckerEndpoint", required: false, defaultValue: "" },
@@ -146,7 +147,6 @@ describe("action: check solution", () => {
     pacStub.should.have.been.calledOnceWith("solution", "check",
     "--path", absoluteSolutionPath,
     "--ruleSet", "SolutionChecker",
-    "--ruleLevelOverride", samplejson,
     "--geo", "unitedstates",
     "--outputDirectory", "checker-output"
     );
@@ -161,13 +161,12 @@ describe("action: check solution", () => {
     pacStub.should.have.been.calledOnceWith("solution", "check",
     "--path", absoluteSolutionPath,
     "--ruleSet", "SolutionChecker",
-    "--ruleLevelOverride", samplejson,
     "--customEndpoint", customEndpoint,
     "--outputDirectory", "checker-output"
     );
   });
 
-  it("verify checker with no custom endpoint; fallback to environemt url", async () => {
+  it("verify checker with no custom endpoint; fallback to environment url", async () => {
     customEndpoint = "";
     checkSolutionParameters.geoInstance =  { name: "GeoInstance", required: false, defaultValue: "" };
     checkSolutionParameters.environmentUrl = environmentUrl;
@@ -177,9 +176,24 @@ describe("action: check solution", () => {
     pacStub.should.have.been.calledOnceWith("solution", "check",
     "--path", absoluteSolutionPath,
     "--ruleSet", "SolutionChecker",
-    "--ruleLevelOverride", samplejson,
     "--customEndpoint", environmentUrl,
     "--outputDirectory", "checker-output"
     );
   });
+
+  it("verify checker with rule override that needs to be passed as file to pac CLI", async () => {
+    customEndpoint = "";
+    samplejson = '{ "rule": "sample" }';
+
+    await runActionWithMocks(checkSolutionParameters);
+
+    pacStub.should.have.been.calledOnceWith("solution", "check",
+    "--path", absoluteSolutionPath,
+    "--ruleSet", "SolutionChecker",
+    "--ruleLevelOverride", Sinon.match(/overrideRule.json$/),
+    "--geo", "unitedstates",
+    "--outputDirectory", "checker-output"
+    );
+  });
+
 });

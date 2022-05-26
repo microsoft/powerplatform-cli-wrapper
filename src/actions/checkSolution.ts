@@ -1,4 +1,5 @@
 import glob = require("glob");
+import os = require("os");
 import path = require("path");
 
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
@@ -7,6 +8,7 @@ import createPacRunner from "../pac/createPacRunner";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
+import { promises, rmdirSync, rmSync, writeFile } from "fs-extra";
 
 export interface CheckSolutionParameters {
   credentials: AuthCredentials;
@@ -39,6 +41,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     threshold = validator.getInput(parameters.errorThreshold);
   }
 
+  let ruleLevelOverrideFile: string | undefined;
   try {
     const authenticateResult = await authenticateAdmin(pac, parameters.credentials);
     logger.log("The Authentication Result: " + authenticateResult);
@@ -52,7 +55,10 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
       validator.pushInput(pacArgs, "--path", parameters.solutionPath, (value) => path.resolve(runnerParameters.workingDir, value));
     }
     validator.pushInput(pacArgs, "--ruleSet", parameters.ruleSet);
-    validator.pushInput(pacArgs, "--ruleLevelOverride", parameters.ruleLevelOverride);
+    ruleLevelOverrideFile = await createRuleOverrideFile(validator.getInput(parameters.ruleLevelOverride));
+    if (ruleLevelOverrideFile) {
+      pacArgs.push( "--ruleLevelOverride", ruleLevelOverrideFile);
+    }
     validator.pushInput(pacArgs, "--excludedFiles", parameters.filesExcluded);
 
     if (validator.getInput(parameters.useDefaultPAEndpoint) !== 'true') {
@@ -98,6 +104,12 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
   } finally {
+    if (ruleLevelOverrideFile) {
+      try {
+        rmSync(ruleLevelOverrideFile);
+        rmdirSync(path.dirname(ruleLevelOverrideFile));
+      } catch { /*  graceful failure if temporary file/dir cleanup fails */ }
+    }
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
   }
@@ -122,4 +134,13 @@ function errorCheck(pacResults: string[], errorLevel: string, errorThreshold: nu
   if (errors[issueCount[errorLevel]] > errorThreshold) {
     throw new Error("Analysis results do not pass with selected error level and threshold choices.  Please review detailed results in SARIF file for more information.");
   }
+}
+
+async function createRuleOverrideFile(ruleOverrideJson: string | undefined): Promise<string | undefined> {
+  if (ruleOverrideJson) {
+    const overrideFile = path.join(await promises.mkdtemp(path.join(os.tmpdir(), 'checker-')), "overrideRule.json");
+    await writeFile(overrideFile, ruleOverrideJson);
+    return overrideFile;
+  }
+  return undefined;
 }
