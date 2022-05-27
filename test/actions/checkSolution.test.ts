@@ -11,6 +11,7 @@ import Sinon = require("sinon");
 import { platform } from "os";
 import { IArtifactStore } from "src/host/IArtifactStore";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -69,12 +70,13 @@ describe("action: check solution", () => {
   }
 
 
-  const samplejson = "samplejson";
-  const customEndpoint = "www.contoso.com";
-  const fileLocation = "localFiles";
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
   const absoluteSolutionPath = (platform() === "win32") ? 'D:\\Test\\working\\ContosoSolution.zip' : '/Test/working/ContosoSolution.zip';
+  const ruleSet = "SolutionChecker";
+
+  let customEndpoint = "";
+  let samplejson = "";
 
   beforeEach(() => {
     pacStub = stub();
@@ -83,16 +85,19 @@ describe("action: check solution", () => {
     checkSolutionParameters = {
       credentials: mockClientCredentials,
       environmentUrl: environmentUrl,
-      fileLocation: { name: "FileLocation", required: false, defaultValue: "localFiles" },
+      fileLocation: { name: "FileLocation", required: true },
       solutionPath: { name: "FilesToAnalyze", required: false },
       solutionUrl: { name: "FilesToAnalyzeSasUri", required: false },
+      ruleSet: { name: "RuleSet", required: false, defaultValue: ruleSet},
       ruleLevelOverride: { name: "RuleLevelOverride", required: false },
-      artifactStoreName: { name: "OutputDirectory", required: false },
-      useDefaultPAEndpoint: { name: "UseDefaultPACheckerEndpoint", required: false, defaultValue: true },
+      artifactStoreName: { name: "ArtifactStoreName", required: false },
+      useDefaultPAEndpoint: { name: "UseDefaultPACheckerEndpoint", required: true, defaultValue: true },
       customPAEndpoint: { name: "CustomPACheckerEndpoint", required: false, defaultValue: "" },
       errorLevel: { name: "ErrorLevel", required: false, defaultValue: "HighIssueCount" },
       errorThreshold: { name: "ErrorThreshold", required: false, defaultValue: "0" },
       failOnAnalysisError: { name: "FailOnPowerAppsCheckerAnalysisError", required: false, defaultValue: true },
+      geoInstance: { name: "GeoInstance", required: false, defaultValue: "unitedstates" },
+      filesExcluded: { name: "FilesToExclude", required: false, defaultValue: "" },
     };
   });
   afterEach(() => restore());
@@ -109,15 +114,25 @@ describe("action: check solution", () => {
           });
       });
 
-    const stubFnc = Sinon.stub(mockHost, "getInput");
-    stubFnc.onCall(0).returns(undefined);
-    stubFnc.onCall(1).returns(undefined);
-    stubFnc.onCall(2).returns(fileLocation);
-    stubFnc.onCall(3).returns(zip);
-    stubFnc.onCall(4).returns(samplejson);
-    stubFnc.onCall(5).returns(undefined);
-    stubFnc.onCall(6).returns(undefined);
-    stubFnc.onCall(7).returns(customEndpoint);
+    // const stubFnc = Sinon.stub(mockHost, "getInput").callsFake(entry => {
+    Sinon.stub(mockHost, "getInput").callsFake(entry => {
+      switch (entry.name) {
+        case "FileLocation":
+          return "localFiles";
+        case "FilesToAnalyze":
+          return zip;
+        case "RuleSet":
+          return ruleSet;
+        case "RuleLevelOverride":
+          return samplejson;
+        case "UseDefaultPACheckerEndpoint":
+          return !customEndpoint ? "true" : "false";
+        case "CustomPACheckerEndpoint":
+          return customEndpoint;
+        default:
+          return undefined;
+      }
+  });
 
     authenticateAdminStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
@@ -129,16 +144,56 @@ describe("action: check solution", () => {
     await runActionWithMocks(checkSolutionParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("solution", "check", "--path", absoluteSolutionPath,
-    "--ruleLevelOverride", samplejson, "--customEndpoint", "https://unitedstates.api.advisor.powerapps.com/");
+    pacStub.should.have.been.calledOnceWith("solution", "check",
+    "--path", absoluteSolutionPath,
+    "--ruleSet", "SolutionChecker",
+    "--geo", "unitedstates",
+    "--outputDirectory", "checker-output"
+    );
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 
-  it("verify checker endpoint with japan domain name", async () => {
-    checkSolutionParameters.environmentUrl = 'https://contoso.crm7.dynamics.com';
+  it("verify checker with custom endpoint", async () => {
+    customEndpoint = "https://msit.api.advisor.powerapps.com/";
+
     await runActionWithMocks(checkSolutionParameters);
 
-    pacStub.should.have.been.calledOnceWith("solution", "check", "--path", absoluteSolutionPath,
-    "--ruleLevelOverride", samplejson, "--customEndpoint", 'https://japan.api.advisor.powerapps.com/');
+    pacStub.should.have.been.calledOnceWith("solution", "check",
+    "--path", absoluteSolutionPath,
+    "--ruleSet", "SolutionChecker",
+    "--customEndpoint", customEndpoint,
+    "--outputDirectory", "checker-output"
+    );
   });
+
+  it("verify checker with no custom endpoint; fallback to environment url", async () => {
+    customEndpoint = "";
+    checkSolutionParameters.geoInstance =  { name: "GeoInstance", required: false, defaultValue: "" };
+    checkSolutionParameters.environmentUrl = environmentUrl;
+
+    await runActionWithMocks(checkSolutionParameters);
+
+    pacStub.should.have.been.calledOnceWith("solution", "check",
+    "--path", absoluteSolutionPath,
+    "--ruleSet", "SolutionChecker",
+    "--customEndpoint", environmentUrl,
+    "--outputDirectory", "checker-output"
+    );
+  });
+
+  it("verify checker with rule override that needs to be passed as file to pac CLI", async () => {
+    customEndpoint = "";
+    samplejson = '{ "rule": "sample" }';
+
+    await runActionWithMocks(checkSolutionParameters);
+
+    pacStub.should.have.been.calledOnceWith("solution", "check",
+    "--path", absoluteSolutionPath,
+    "--ruleSet", "SolutionChecker",
+    "--ruleLevelOverride", Sinon.match(/overrideRule.json$/),
+    "--geo", "unitedstates",
+    "--outputDirectory", "checker-output"
+    );
+  });
+
 });

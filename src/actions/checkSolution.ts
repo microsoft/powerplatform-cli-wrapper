@@ -1,4 +1,5 @@
 import glob = require("glob");
+import os = require("os");
 import path = require("path");
 
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
@@ -7,23 +8,24 @@ import createPacRunner from "../pac/createPacRunner";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
+import { promises, rmdirSync, rmSync, writeFile } from "fs-extra";
 
 export interface CheckSolutionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
-  fileLocation?: HostParameterEntry;
+  fileLocation: HostParameterEntry;
   solutionPath: HostParameterEntry;
-  solutionUrl?: HostParameterEntry;
-  geoInstance?: HostParameterEntry;
-  ruleSet?: HostParameterEntry;
+  solutionUrl: HostParameterEntry;
+  geoInstance: HostParameterEntry;
+  ruleSet: HostParameterEntry;
   ruleLevelOverride: HostParameterEntry;
   artifactStoreName: HostParameterEntry;
-  useDefaultPAEndpoint?: HostParameterEntry;
-  customPAEndpoint?: HostParameterEntry;
-  filesExcluded?: HostParameterEntry;
-  errorLevel?: HostParameterEntry;
-  errorThreshold?: HostParameterEntry;
-  failOnAnalysisError?: HostParameterEntry;
+  useDefaultPAEndpoint: HostParameterEntry;
+  customPAEndpoint: HostParameterEntry;
+  filesExcluded: HostParameterEntry;
+  errorLevel: HostParameterEntry;
+  errorThreshold: HostParameterEntry;
+  failOnAnalysisError: HostParameterEntry;
 }
 
 export async function checkSolution(parameters: CheckSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
@@ -34,33 +36,49 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
 
   let level: string | undefined;
   let threshold: string | undefined;
-  if (parameters.errorLevel != undefined && parameters.errorThreshold != undefined) {
+  if (parameters.errorThreshold != undefined) {
     level = validator.getInput(parameters.errorLevel);
     threshold = validator.getInput(parameters.errorThreshold);
   }
 
+  let ruleLevelOverrideFile: string | undefined;
   try {
     const authenticateResult = await authenticateAdmin(pac, parameters.credentials);
     logger.log("The Authentication Result: " + authenticateResult);
 
     const pacArgs = ["solution", "check"]
 
-    if (parameters.fileLocation != undefined && validator.getInput(parameters.fileLocation) === 'sasUriFile') {
+    if (validator.getInput(parameters.fileLocation) === 'sasUriFile') {
       validator.pushInput(pacArgs, "--solutionUrl", parameters.solutionUrl);
     }
     else {
       validator.pushInput(pacArgs, "--path", parameters.solutionPath, (value) => path.resolve(runnerParameters.workingDir, value));
     }
-    validator.pushInput(pacArgs, "--geo", parameters.geoInstance);
     validator.pushInput(pacArgs, "--ruleSet", parameters.ruleSet);
-    validator.pushInput(pacArgs, "--ruleLevelOverride", parameters.ruleLevelOverride);
+    ruleLevelOverrideFile = await createRuleOverrideFile(validator.getInput(parameters.ruleLevelOverride));
+    if (ruleLevelOverrideFile) {
+      pacArgs.push( "--ruleLevelOverride", ruleLevelOverrideFile);
+    }
     validator.pushInput(pacArgs, "--excludedFiles", parameters.filesExcluded);
 
-    if (parameters.useDefaultPAEndpoint != undefined && validator.getInput(parameters.useDefaultPAEndpoint) === 'true') {
-      pacArgs.push("--customEndpoint", getPACheckerEndpoint(parameters.environmentUrl));
+    if (validator.getInput(parameters.useDefaultPAEndpoint) !== 'true') {
+      // if a custom endpoint is specified, ignore geo to avoid conflict
+      // customEndpoint param becomes required if !useDefautlPAEndpoint
+      const customEndpoint = validator.getInput(parameters.customPAEndpoint);
+      if (!customEndpoint) {
+        throw new Error(`Required ${parameters.customPAEndpoint.name} not set`);
+      }
+      pacArgs.push("--customEndpoint", customEndpoint);
     }
     else {
-      validator.pushInput(pacArgs, "--customEndpoint", parameters.customPAEndpoint);
+      // using default endpoint, determine geo instance, either explicitly or infered:
+      const geo = validator.getInput(parameters.geoInstance);
+      if (geo) {
+        pacArgs.push("--geo", geo);
+      } else {
+        // fallback to infer geo from environment url (will be handled by pac's SolutionCheckVerb)
+        pacArgs.push("--customEndpoint", parameters.environmentUrl);
+      }
     }
     const outputDirectory = path.join(artifactStore.getTempFolder(), 'checker-output');
     logger.debug(`checker-output folder: ${outputDirectory}`);
@@ -86,45 +104,15 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
   } finally {
+    if (ruleLevelOverrideFile) {
+      try {
+        rmSync(ruleLevelOverrideFile);
+        rmdirSync(path.dirname(ruleLevelOverrideFile));
+      } catch { /*  graceful failure if temporary file/dir cleanup fails */ }
+    }
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
   }
-}
-
-//If checker endpoint is not explicity specified, environment url would be used to map to default endpoints
-function getPACheckerEndpoint(environmentUrl: string): string {
-  const defaultCheckerEndPoint = 'https://unitedstates.api.advisor.powerapps.com/';
-  if (!environmentUrl)
-    return defaultCheckerEndPoint;
-
-  const url = new URL(environmentUrl);
-  const domainName = url.hostname.split(".").splice(1, 3).join(".");
-
-  const endPointMap: { [key: string]: string } = {
-    'crm.dynamics.com': 'https://unitedstates.api.advisor.powerapps.com/',
-    'crm2.dynamics.com': 'https://southamerica.api.advisor.powerapps.com/',
-    'crm3.dynamics.com': 'https://canada.api.advisor.powerapps.com/',
-    'crm4.dynamics.com': 'https://europe.api.advisor.powerapps.com/',
-    'crm5.dynamics.com': 'https://asia.api.advisor.powerapps.com/',
-    'crm6.dynamics.com': 'https://australia.api.advisor.powerapps.com/',
-    'crm7.dynamics.com': 'https://japan.api.advisor.powerapps.com/',
-    'crm8.dynamics.com': 'https://india.api.advisor.powerapps.com/',
-    'crm9.dynamics.com': 'https://gov.api.advisor.powerapps.us/',
-    'crm11.dynamics.com': 'https://unitedkingdom.api.advisor.powerapps.com/',
-    'crm12.dynamics.com': 'https://france.api.advisor.powerapps.com/',
-    'crm15.dynamics.com': 'https://unitedarabemirates.api.advisor.powerapps.com/',
-    'crm16.dynamics.com': 'https://germany.api.advisor.powerapps.com/',
-    'crm17.dynamics.com': 'https://switzerland.api.advisor.powerapps.com/',
-    'crm.dynamics.cn': 'https://china.api.advisor.powerapps.cn/',
-    'crm.microsoftdynamics.us': 'https://high.api.advisor.powerapps.us/',
-    'crm.appsplatforms.us': 'https://mil.api.advisor.appsplatform.us/'
-  }
-
-  const paCheckerEndPoint = endPointMap[domainName];
-  if (!paCheckerEndPoint)
-    return defaultCheckerEndPoint;
-
-  return paCheckerEndPoint;
 }
 
 function errorCheck(pacResults: string[], errorLevel: string, errorThreshold: number): void {
@@ -146,4 +134,13 @@ function errorCheck(pacResults: string[], errorLevel: string, errorThreshold: nu
   if (errors[issueCount[errorLevel]] > errorThreshold) {
     throw new Error("Analysis results do not pass with selected error level and threshold choices.  Please review detailed results in SARIF file for more information.");
   }
+}
+
+async function createRuleOverrideFile(ruleOverrideJson: string | undefined): Promise<string | undefined> {
+  if (ruleOverrideJson) {
+    const overrideFile = path.join(await promises.mkdtemp(path.join(os.tmpdir(), 'checker-')), "overrideRule.json");
+    await writeFile(overrideFile, ruleOverrideJson);
+    return overrideFile;
+  }
+  return undefined;
 }
