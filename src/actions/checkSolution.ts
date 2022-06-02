@@ -40,6 +40,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     level = validator.getInput(parameters.errorLevel);
     threshold = validator.getInput(parameters.errorThreshold);
   }
+  const failOnAnalysisError = validator.getInput(parameters.failOnAnalysisError) === 'true';
 
   let ruleLevelOverrideFile: string | undefined;
   try {
@@ -93,10 +94,16 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     const artifactStoreName = validator.getInput(parameters.artifactStoreName) || 'CheckSolutionLogs';
     await artifactStore.upload(artifactStoreName, files);
 
-    const status = pacResult[pacResult.length - 7].split(' ')[2];
+    const status = isolateStatus(pacResult);
     if (status === 'Failed' || status === 'FinishedWithErrors') {
-      throw new Error("PowerApps Checker analysis results indicate a failure or error during the analysis process.");
+      const msg = "PowerApps Checker analysis results indicate a failure or error during the analysis process.";
+      if (failOnAnalysisError) {
+        throw new Error(msg);
+      } else {
+        logger.warn(msg);
+      }
     }
+
     if (level != undefined && threshold != undefined) {
       errorCheck(pacResult, level, parseInt(threshold));
     }
@@ -115,10 +122,30 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
   }
 }
 
+function isolateStatus(pacResults: string[]): string | undefined {
+  for (let i = pacResults.length - 1; i >= 0; i--) {
+    const hit = pacResults[i].match(/^\s*Status\s*:\s*(\S+)/i);
+    if (hit && hit.length == 2) {
+      return hit[1];
+    }
+  }
+}
+
 function errorCheck(pacResults: string[], errorLevel: string, errorThreshold: number): void {
+  let issuesLine = -1;
+  for (let i = pacResults.length - 1; i >= 0; i--) {
+    if (pacResults[i].match(/^\s*Critical\s+High/)) {
+      issuesLine = i;
+      break;
+    }
+  }
+  if (issuesLine <0) {
+    throw Error("Cannot find issues summary line in results!");
+  }
+
   const errors: Record<string, number> = {};
-  const PAErrorLevels = pacResults[pacResults.length - 5].trim().split(/\s+/);
-  const PAErrorValues = pacResults[pacResults.length - 3].trim().split(/\s+/);
+  const PAErrorLevels = pacResults[issuesLine].trim().split(/\s+/);
+  const PAErrorValues = pacResults[issuesLine + 2].trim().split(/\s+/);
 
   for (let i = 0; i < PAErrorLevels.length && i < PAErrorValues.length; i++) {
     errors[PAErrorLevels[i]] = parseInt(PAErrorValues[i]);
