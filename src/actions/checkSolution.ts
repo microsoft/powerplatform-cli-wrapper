@@ -55,7 +55,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     else {
       validator.pushInput(pacArgs, "--path", parameters.solutionPath, (value) => path.resolve(runnerParameters.workingDir, value));
     }
-    validator.pushInput(pacArgs, "--ruleSet", parameters.ruleSet);
+    validator.pushInput(pacArgs, "--ruleSet", parameters.ruleSet, defaultRulesMapper);
     ruleLevelOverrideFile = await createRuleOverrideFile(validator.getInput(parameters.ruleLevelOverride));
     if (ruleLevelOverrideFile) {
       pacArgs.push( "--ruleLevelOverride", ruleLevelOverrideFile);
@@ -170,4 +170,14 @@ async function createRuleOverrideFile(ruleOverrideJson: string | undefined): Pro
     return overrideFile;
   }
   return undefined;
+}
+
+function defaultRulesMapper(rule: string): string {
+  switch (rule) {
+    case "AppSource Certification": return "083a2ef5-7e0e-4754-9d88-9455142dc08b";
+    case "Solution Checker": return "0ad12346-e108-40b8-a956-9a8f95ea18c9";
+
+    default:
+      return rule;
+  }
 }
