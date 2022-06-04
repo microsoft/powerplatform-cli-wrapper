@@ -173,9 +173,9 @@ async function createRuleOverrideFile(ruleOverrideJson: string | undefined): Pro
 }
 
 function defaultRulesMapper(rule: string): string {
-  switch (rule) {
-    case "AppSource Certification": return "083a2ef5-7e0e-4754-9d88-9455142dc08b";
-    case "Solution Checker": return "0ad12346-e108-40b8-a956-9a8f95ea18c9";
+  switch (rule.toLowerCase()) {
+    case "appsource certification": return "083a2ef5-7e0e-4754-9d88-9455142dc08b";
+    case "solution checker": return "0ad12346-e108-40b8-a956-9a8f95ea18c9";
 
     default:
       return rule;
