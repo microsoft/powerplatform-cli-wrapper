@@ -8,7 +8,7 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 export interface AssignUserParameters {
   credentials: AuthCredentials;
   environment: HostParameterEntry;
-  objectId: HostParameterEntry;
+  user: HostParameterEntry;
   role: HostParameterEntry;
 }
 
@@ -24,7 +24,7 @@ export async function assignUser(parameters: AssignUserParameters, runnerParamet
     logger.log("The Authentication Result: " + authenticateResult);
 
     validator.pushInput(pacArgs, "--environment", parameters.environment);
-    validator.pushInput(pacArgs, "--object-id", parameters.objectId);
+    validator.pushInput(pacArgs, "--user", parameters.user);
     validator.pushInput(pacArgs, "--role", parameters.role);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
