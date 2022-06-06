@@ -51,7 +51,7 @@ describe("action: assignUser", () => {
   const createMinMockResetEnvironmentParameters = (): AssignUserParameters => ({
     credentials: mockClientCredentials,
     environment: { name: "Environment", required: true },
-    objectId: { name: "ObjectId", required: true },
+    user: { name: "User", required: true },
     role: { name: "Role", required: true }
   });
 
@@ -59,7 +59,7 @@ describe("action: assignUser", () => {
     await runActionWithMocks(assignUserParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("admin", "assign-user", "--environment", host.environment, "--object-id", host.objectId, "--role", host.role);
+    pacStub.should.have.been.calledOnceWith("admin", "assign-user", "--environment", host.environment, "--user", host.user, "--role", host.role);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 
