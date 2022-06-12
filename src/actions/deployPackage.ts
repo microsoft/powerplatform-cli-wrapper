@@ -1,23 +1,26 @@
+import path = require("path");
+import os = require("os");
+import fs = require("fs-extra");
+
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
-import path = require("path");
-import os = require("os");
 
 export interface DeployPackageParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   packagePath: HostParameterEntry;
-  logFile?: HostParameterEntry;
   logConsole?: HostParameterEntry;
 }
 
 export async function deployPackage(parameters: DeployPackageParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
+  const artifactStore = host.getArtifactStore();
   const pac = createPacRunner(runnerParameters);
+  let logFile = "";
 
   try {
     const platform = os.platform();
@@ -30,8 +33,20 @@ export async function deployPackage(parameters: DeployPackageParameters, runnerP
     const pacArgs = ["package", "deploy"];
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--package", parameters.packagePath, (value) => path.resolve(runnerParameters.workingDir, value));
-    validator.pushInput(pacArgs, "--logFile", parameters.logFile);
+    // determine package path and log file:
+    const packagePathIn = validator.getInput(parameters.packagePath);
+    if (!packagePathIn) {
+      throw new Error('Missing value for required param: packagePath');
+    }
+
+    const outputDirectory = path.join(artifactStore.getTempFolder(), 'deploy-package');
+    const packagePath = (path.isAbsolute(packagePathIn)) ? packagePathIn : path.resolve(runnerParameters.workingDir, packagePathIn);
+    logger.log(`Deploying package: ${packagePath}`);
+    pacArgs.push("--package", packagePath);
+
+    logFile = path.resolve(outputDirectory, `${path.basename(packagePath, '.dll')}-${new Date().toISOString().replace(/:/g, '-')}.log`);
+    fs.ensureDir(path.dirname(logFile));
+    pacArgs.push("--logFile", logFile);
     validator.pushInput(pacArgs, "--logConsole", parameters.logConsole);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
@@ -41,6 +56,10 @@ export async function deployPackage(parameters: DeployPackageParameters, runnerP
     logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
   } finally {
+    if (fs.pathExistsSync(logFile)) {
+      artifactStore.upload('DeployPackageLogs', [logFile]);
+    }
+
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
   }

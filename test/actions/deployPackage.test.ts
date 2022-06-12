@@ -22,7 +22,7 @@ describe("action: deploy package", () => {
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
 
   const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
-  const testPackagePath = path.join(runnerParameters.workingDir, 'ConstosoPackage.zip');
+  const testPackagePath = path.join(runnerParameters.workingDir, 'ConstosoPackage.dll');
   const mockedHost = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const envUrl: string = mockEnvironmentUrl;
@@ -59,7 +59,6 @@ describe("action: deploy package", () => {
     credentials: mockClientCredentials,
     environmentUrl: envUrl,
     packagePath: { name: "SolutionInputFile", required: true },
-    logFile: { name: "LogFile", required: false },
     logConsole: { name: "LogConsole", required: false },
   });
 
