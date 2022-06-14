@@ -15,6 +15,7 @@ export const createDefaultMockRunnerParameters = (): RunnerParameters => ({
   runnersDir: (platform() === "win32") ? 'D:/Test/runners/' : '/Test/runners/',
   workingDir: (platform() === "win32") ? 'D:/Test/working/' : '/Test/working/',
   logger: createMockLogger(),
+  agent: "mocha"
 });
 
 export const createMockLogger = (): Logger => ({

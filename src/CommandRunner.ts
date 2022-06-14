@@ -9,8 +9,8 @@ export function createCommandRunner(
   workingDir: string,
   commandPath: string,
   logger: Logger,
-  options?: SpawnOptionsWithoutStdio,
-  agent?: string
+  agent: string,
+  options?: SpawnOptionsWithoutStdio
 ): CommandRunner {
   return async function run(...args: string[]): Promise<string[]> {
     return new Promise((resolve, reject) => {
@@ -32,12 +32,12 @@ export function createCommandRunner(
       errorLineReader.on('line', logOutputFactory(logger.error));
 
       function logOutputFactory(logFunction: (...args: string[]) => void) {
-        return (line: string) => { 
-          allOutput.push(line); 
-          logFunction(line); 
-        }        
+        return (line: string) => {
+          allOutput.push(line);
+          logFunction(line);
+        }
       }
-      
+
       cp.on("exit", (code: number) => {
         if (code === 0) {
           resolve(allOutput);

@@ -27,10 +27,10 @@ describe("CommandRunner", () => {
           "cwd",
           "command",
           stubInterface<Logger>(),
+          "myAgent",
           {
             shell: true,
-          },
-          "myAgent"
+          }
         );
         runCommand();
       },
