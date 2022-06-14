@@ -1,8 +1,8 @@
 import { createCommandRunner } from "./CommandRunner";
 import { Logger } from "./Logger";
 
-export function createGitRunner(workingDir: string, logger: Logger): GitRunner {
-  const runCommand = createCommandRunner(workingDir, "git", logger);
+export function createGitRunner(workingDir: string, logger: Logger, agent: string): GitRunner {
+  const runCommand = createCommandRunner(workingDir, "git", logger, agent);
   return {
     log: async (limit?: number) => {
       const args = ["log"];

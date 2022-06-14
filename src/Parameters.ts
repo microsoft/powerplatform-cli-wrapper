@@ -7,7 +7,7 @@ export interface LoggerParameters
 
 export interface TelemetryParameters
 {
-  agent?: string;
+  agent: string;
 }
 
 export interface RunnerParameters extends LoggerParameters, TelemetryParameters
