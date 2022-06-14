@@ -25,7 +25,7 @@ describe("action: assignUser", () => {
     pacStub = stub();
     authenticateAdminStub = stub();
     clearAuthenticationStub = stub();
-    assignUserParameters = createMinMockResetEnvironmentParameters();
+    assignUserParameters = createMinMockParameters();
   });
   afterEach(() => restore());
 
@@ -48,7 +48,7 @@ describe("action: assignUser", () => {
       await mockedActionModule.assignUser(assignUserParameters, runnerParameters, host);
   }
 
-  const createMinMockResetEnvironmentParameters = (): AssignUserParameters => ({
+  const createMinMockParameters = (): AssignUserParameters => ({
     credentials: mockClientCredentials,
     environment: { name: "Environment", required: true },
     user: { name: "User", required: true },
