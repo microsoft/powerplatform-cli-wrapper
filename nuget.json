@@ -13,17 +13,7 @@
       "authenticated": true,
       "patEnvironmentVariable": "AZ_DevOps_Read_PAT",
       "packages": [
-        {
-          "name": "Microsoft.PowerApps.CLI",
-          "version": "1.15.4",
-          "internalName": "pac"
-        },
-        {
-          "name": "Microsoft.PowerApps.CLI.Core.linux-x64",
-          "version": "1.15.4",
-          "internalName": "pac_linux",
-          "chmod": "tools/pac"
-        }
+
       ]
     },
     {
@@ -32,6 +22,17 @@
       "authenticated": true,
       "patEnvironmentVariable": "AZ_DevOps_Read_PAT",
       "packages": [
+        {
+          "name": "Microsoft.PowerApps.CLI",
+          "version": "1.16.4-daily-22061522",
+          "internalName": "pac"
+        },
+        {
+          "name": "Microsoft.PowerApps.CLI.Core.linux-x64",
+          "version": "1.16.4-daily-22061522",
+          "internalName": "pac_linux",
+          "chmod": "tools/pac"
+        }
       ]
     }
   ]

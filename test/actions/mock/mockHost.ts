@@ -41,6 +41,8 @@ export class mockHost implements IHostAbstractions {
   teamId = '00000000-0000-0000-0000-000000000001';
   user = 'test@contoso.onmicrosoft.com';
   role = 'Bot Author';
+  incidentTableName = 'incident';
+  tableComponentType = 1;
 
   public getInput(entry: HostParameterEntry): string | undefined {
     const candidateValue = this._spy ? this._spy(entry) : undefined;
@@ -79,6 +81,8 @@ export class mockHost implements IHostAbstractions {
         case 'TeamId': return this.teamId;
         case "User": return this.user;
         case "Role": return this.role;
+        case "Component": return this.incidentTableName;
+        case "ComponentType": return this.tableComponentType.toString();
         default: {
           return candidateValue || `<<input param '${entry.name}' is required but undefined>>`;
         }
