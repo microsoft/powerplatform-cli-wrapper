@@ -13,7 +13,7 @@ should();
 use(sinonChai);
 use(chaiAsPromised);
 
-describe("action: addSotluionComponent", () => {
+describe("action: addSolutionComponent", () => {
   let pacStub: Sinon.SinonStub<any[], any>;
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
