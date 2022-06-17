@@ -2,13 +2,16 @@ import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authen
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
+import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { InputValidator } from "../host/InputValidator";
 
 export interface PublishSolutionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
+  async: HostParameterEntry;
 }
 
-export async function publishSolution(parameters: PublishSolutionParameters, runnerParameters: RunnerParameters): Promise<void> {
+export async function publishSolution(parameters: PublishSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
@@ -16,7 +19,12 @@ export async function publishSolution(parameters: PublishSolutionParameters, run
     const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
     logger.log("The Authentication Result: " + authenticateResult);
 
-    const pacResult = await pac("solution", "publish");
+    const pacArgs = ["solution", "publish"];
+    const validator = new InputValidator(host);
+    validator.pushInput(pacArgs, "--async", parameters.async);
+
+    logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
+    const pacResult = await pac(...pacArgs);
     logger.log("PublishSolution Action Result: " + pacResult);
   } catch (error) {
     logger.error(`failed: ${error instanceof Error ? error.message : error}`);
