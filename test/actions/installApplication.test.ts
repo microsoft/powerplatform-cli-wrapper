@@ -2,6 +2,7 @@
 import rewiremock from "../rewiremock";
 import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
+import * as os from 'os';
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
@@ -18,7 +19,7 @@ describe("action: install applications", () => {
   let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const environmentId = "b0a04c95-570e-4bf2-8107-02a04f79a0bf";
-  const appName = "SharePointFormProcessing";
+  const applicationList = os.platform() === 'win32'? "D:\\Test\\mock\\applicationList.json": "/Test/mock/applicationList.json";
   const mockedHost = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const envUrl: string = mockEnvironmentUrl;
@@ -45,7 +46,7 @@ describe("action: install applications", () => {
       });
     const stubFnc = Sinon.stub(mockedHost, "getInput");
     stubFnc.onCall(0).returns(environmentId);
-    stubFnc.onCall(1).returns(appName);
+    stubFnc.onCall(1).returns(applicationList);
     authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
@@ -56,7 +57,6 @@ describe("action: install applications", () => {
     credentials: mockClientCredentials,
     environmentUrl: envUrl,
     environmentId: { name: 'EnvironmentId', required: true },
-    applicationName: { name: 'ApplicationName', required: false },
     applicationList: { name: 'ApplicationList', required: false },
   });
 
@@ -64,7 +64,7 @@ describe("action: install applications", () => {
     await runActionWithMocks(applicationInstallParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
-    pacStub.should.have.been.calledOnceWith("application", "install", "--environment-id", environmentId, "--application-name", appName);
+    pacStub.should.have.been.calledOnceWith("application", "install", "--environment-id", environmentId, "--application-list", applicationList);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });
