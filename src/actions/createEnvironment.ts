@@ -36,7 +36,7 @@ export async function createEnvironment(parameters: CreateEnvironmentParameters,
     validator.pushInput(pacArgs, "--name", parameters.environmentName);
     validator.pushInput(pacArgs, "--type", parameters.environmentType);
     validator.pushInput(pacArgs, "--templates", parameters.templates);
-    validator.pushInput(pacArgs, "--region", parameters.region);
+    validator.pushInput(pacArgs, "--region", parameters.region, normalizeRegion);
     validator.pushInput(pacArgs, "--currency", parameters.currency);
     validator.pushInput(pacArgs, "--language", parameters.language);
     validator.pushInput(pacArgs, "--domain", parameters.domainName);
@@ -72,4 +72,19 @@ export function getEnvironmentDetails(pacResult: string[]): EnvironmentResult {
     environmentId: envId,
     environmentUrl: envUrl
   };
+}
+
+// translate to pac CLI accepted region names:
+// PP.BT PS implementation had the BAP friendly names that pac CLI can't accept
+const regionMap: Record<string, string> = {
+  // pac CLI accepts case-insensitive region names, only transpose different names:
+  "united states": "unitedstates",
+  "united kingdom": "unitedkingdom",
+  "preview (united states)": "unitedstatesfirstrelease",
+  "south america": "southamerica",
+};
+
+function normalizeRegion(taskRegionName: string): string {
+  const cliRegionName = regionMap[taskRegionName.toLowerCase()];
+  return cliRegionName || taskRegionName;
 }
