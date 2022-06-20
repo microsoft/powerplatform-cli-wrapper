@@ -18,6 +18,7 @@ describe("action: createEnvironment", () => {
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
+  const remappedRegionUS = 'unitedstates';
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   let createEnvironmentParameters: CreateEnvironmentParameters;
 
@@ -72,7 +73,7 @@ describe("action: createEnvironment", () => {
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
     pacStub.should.have.been.calledOnceWith("admin", "create", "--name", host.environmentName, "--type", host.environmentType,
-      "--region", host.region, "--currency", host.currency, "--language", host.language, "--domain", host.domainName);
+      "--region", remappedRegionUS, "--currency", host.currency, "--language", host.language, "--domain", host.domainName);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 
@@ -82,7 +83,7 @@ describe("action: createEnvironment", () => {
     await runActionWithMocks(createEnvironmentParameters);
 
     pacStub.should.have.been.calledOnceWith("admin", "create", "--name", host.environmentName, "--type", host.environmentType,
-      "--templates", host.templates, "--region", host.region, "--currency", host.currency, "--language", host.language, "--domain", host.domainName);
+      "--templates", host.templates, "--region", remappedRegionUS, "--currency", host.currency, "--language", host.language, "--domain", host.domainName);
   });
 
   it("with required params, calls pac to create teams environemnt", async () => {
@@ -90,9 +91,20 @@ describe("action: createEnvironment", () => {
 
     await runActionWithMocks(createEnvironmentParameters);
 
-    pacStub.should.have.been.calledOnceWith("admin", "create", "--name", host.environmentName, "--type", host.environmentType, 
-      "--region", host.region, "--currency", host.currency, "--language", host.language, "--domain", host.domainName,
+    pacStub.should.have.been.calledOnceWith("admin", "create", "--name", host.environmentName, "--type", host.environmentType,
+      "--region", remappedRegionUS, "--currency", host.currency, "--language", host.language, "--domain", host.domainName,
       "--team-id", host.teamId);
   });
 
+
+  it("with region that does not require mapping", async () => {
+    createEnvironmentParameters.teamId = { name: 'TeamId', required: true };
+
+    host.region = 'Australia';
+    await runActionWithMocks(createEnvironmentParameters);
+
+    pacStub.should.have.been.calledOnceWith("admin", "create", "--name", host.environmentName, "--type", host.environmentType,
+      "--region", 'Australia', "--currency", host.currency, "--language", host.language, "--domain", host.domainName,
+      "--team-id", host.teamId);
+  });
 });
