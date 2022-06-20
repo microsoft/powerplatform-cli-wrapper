@@ -54,6 +54,7 @@ describe("action: exportSolution", () => {
     environmentUrl: environmentUrl,
     name: { name: "SolutionName", required: true },
     path: { name: "SolutionOutputFile", required: true },
+    overwrite: { name: "Overwrite", required: false },
     managed: { name: 'Managed', required: false },
     async: { name: 'AsyncOperation', required: false },
     maxAsyncWaitTimeInMin: { name: 'MaxAsyncWaitTime', required: false },
@@ -95,6 +96,7 @@ describe("action: exportSolution", () => {
         case "ExportOutlookSynchronizationSettings":
         case "ExportRelationshipRoles":
         case "ExportSales":
+        case 'Overwrite':
           return "true";
         case "MaxAsyncWaitTime":
           return "120"
@@ -103,7 +105,7 @@ describe("action: exportSolution", () => {
     });
     await runActionWithMocks(exportSolutionParameters, host);
 
-    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath,
+    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath, "--overwrite",
       "--managed", "true", "--async", "true", "--max-async-wait-time", "120", "--include",
       "autonumbering,calendar,customization,emailtracking,externalapplications,general,isvconfig,marketing,outlooksynchronization,relationshiproles,sales");
   });
@@ -119,6 +121,7 @@ describe("action: exportSolution", () => {
         case "ExportExternalApplicationSettings":
         case "ExportMarketingSettings":
         case "ExportRelationshipRoles":
+        case 'Overwrite':
           return "true";
         case "ExportCustomizationSettings":
         case "ExportGeneralSettings":
@@ -133,7 +136,7 @@ describe("action: exportSolution", () => {
     });
     await runActionWithMocks(exportSolutionParameters, host);
 
-    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath,
+    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath, "--overwrite",
       "--managed", "true", "--async", "true", "--max-async-wait-time", "120", "--include",
       "autonumbering,calendar,emailtracking,externalapplications,marketing,relationshiproles");
   });
