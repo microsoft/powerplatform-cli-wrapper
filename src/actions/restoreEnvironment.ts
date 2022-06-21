@@ -24,7 +24,7 @@ export async function restoreEnvironment(parameters: RestoreEnvironmentParameter
   const pac = createPacRunner(runnerParameters);
 
   try {
-    const authenticateResult = await authenticateAdmin(pac, parameters.credentials);
+    const authenticateResult = await authenticateAdmin(pac, parameters.credentials, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
     const pacArgs = ["admin", "restore"];

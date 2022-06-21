@@ -28,9 +28,9 @@ export interface ImportSolutionParameters {
 export async function importSolution(parameters: ImportSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
-  
+
   try {
-    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
     const pacArgs = ["solution", "import"];

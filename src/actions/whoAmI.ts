@@ -20,7 +20,7 @@ export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: Run
   const pac = createPacRunner(runnerParameters);
 
   try {
-    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
     const pacResult = await pac("org", "who");

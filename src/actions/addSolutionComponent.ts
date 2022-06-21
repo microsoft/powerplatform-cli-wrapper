@@ -22,7 +22,7 @@ export async function addSolutionComponent(parameters: AddSolutionComponentParam
   const inputValidator = new InputValidator(host);
 
   try {
-    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
     inputValidator.pushInput(pacArgs, "--solutionUniqueName", parameters.solutionName);

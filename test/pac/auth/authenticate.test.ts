@@ -4,6 +4,8 @@ import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { authenticateAdmin, authenticateEnvironment } from "../../../src/pac/auth/authenticate";
 import { CommandRunner } from "../../../src/CommandRunner";
+import testLogger, {} from "../../testLogger";
+
 should();
 use(sinonChai);
 use(chaiAsPromised);
@@ -33,7 +35,7 @@ describe("pac", () => {
       });
 
       it("uses SPN authentication when provided client credentials", () => {
-        authenticateAdmin(pac, spnCreds);
+        authenticateAdmin(pac, spnCreds, testLogger);
 
         process.env.should.have.property("PAC_CLI_SPN_SECRET", "CLIENT_SECRET");
 
@@ -54,7 +56,7 @@ describe("pac", () => {
       });
 
       it("uses basic authentication when provided username / password", () => {
-        authenticateAdmin(pac, userCreds);
+        authenticateAdmin(pac, userCreds, testLogger);
 
         pac.should.have.been.calledOnceWith(
           "auth",
@@ -83,7 +85,7 @@ describe("pac", () => {
       });
 
       it("uses SPN authentication when provided client credentials", () => {
-        authenticateEnvironment(pac, spnCreds, envUrl);
+        authenticateEnvironment(pac, spnCreds, envUrl, testLogger);
 
         process.env.should.have.property("PAC_CLI_SPN_SECRET", "CLIENT_SECRET");
 
@@ -104,7 +106,7 @@ describe("pac", () => {
       });
 
       it("uses basic authentication when provided username / password", () => {
-        authenticateEnvironment(pac, userCreds, envUrl);
+        authenticateEnvironment(pac, userCreds, envUrl, testLogger);
 
         pac.should.have.been.calledOnceWith(
           "auth",

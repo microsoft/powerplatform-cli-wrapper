@@ -20,7 +20,7 @@ export async function assignUser(parameters: AssignUserParameters, runnerParamet
   const validator = new InputValidator(host);
 
   try {
-    const authenticateResult = await authenticateAdmin(pac, parameters.credentials);
+    const authenticateResult = await authenticateAdmin(pac, parameters.credentials, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
     validator.pushInput(pacArgs, "--environment", parameters.environment);

@@ -27,7 +27,7 @@ export async function deployPackage(parameters: DeployPackageParameters, runnerP
     if (platform !== 'win32') {
       throw new Error(`deploy package is only supported on Windows agents/runners (attempted run on ${platform})`);
     }
-    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
     const pacArgs = ["package", "deploy"];
