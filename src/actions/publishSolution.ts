@@ -8,7 +8,8 @@ import { InputValidator } from "../host/InputValidator";
 export interface PublishSolutionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
-  async: HostParameterEntry;
+  // TODO AB#2761762 remove optional once past 1.15.x QFE process
+  async?: HostParameterEntry;
 }
 
 export async function publishSolution(parameters: PublishSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
@@ -21,7 +22,11 @@ export async function publishSolution(parameters: PublishSolutionParameters, run
 
     const pacArgs = ["solution", "publish"];
     const validator = new InputValidator(host);
-    validator.pushInput(pacArgs, "--async", parameters.async);
+    // AB#2761762 bring back once 1.15.x QFE is removed
+    // validator.pushInput(pacArgs, "--async", parameters.async);
+    if (parameters.async && validator.getInput(parameters.async) == 'true') {
+      pacArgs.push("--async");
+    }
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
