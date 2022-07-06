@@ -1,6 +1,6 @@
 import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
-import { should, use } from "chai";
+import { expect, should, use } from "chai";
 import { restore, stub } from "sinon";
 import { authenticateAdmin, authenticateEnvironment } from "../../../src/pac/auth/authenticate";
 import { CommandRunner } from "../../../src/CommandRunner";
@@ -27,10 +27,15 @@ describe("pac", () => {
       beforeEach(() => {
         pac = stub();
       });
-      afterEach(() => restore());
+      afterEach(() => {
+        delete process.env.PAC_CLI_SPN_SECRET;
+        restore();
+      });
 
       it("uses SPN authentication when provided client credentials", () => {
         authenticateAdmin(pac, spnCreds);
+
+        expect(process.env.PAC_CLI_SPN_SECRET).to.exist;
 
         pac.should.have.been.calledOnceWith(
           "auth",
@@ -76,6 +81,8 @@ describe("pac", () => {
 
       it("uses SPN authentication when provided client credentials", () => {
         authenticateEnvironment(pac, spnCreds, envUrl);
+
+        expect(process.env.PAC_CLI_SPN_SECRET).to.exist;
 
         pac.should.have.been.calledOnceWith(
           "auth",
