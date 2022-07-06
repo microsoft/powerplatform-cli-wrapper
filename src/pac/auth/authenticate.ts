@@ -26,6 +26,7 @@ function isUsernamePassword(credentials: AuthCredentials): credentials is Userna
 }
 
 function addClientCredentials(parameters: ClientCredentials) {
+  process.env.PAC_CLI_SPN_SECRET = parameters.clientSecret;
   return ["--tenant", parameters.tenantId, "--applicationId", parameters.appId, "--clientSecret", parameters.clientSecret];
 }
 
