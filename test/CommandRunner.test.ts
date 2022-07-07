@@ -12,6 +12,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 describe("CommandRunner", () => {
+  afterEach(() => { delete process.env.NODE_SCOPED_TEST_ENV_VAR; });
   it("passes additional options and env variables to spawn", async () => {
     const spawnStub = stub();
     const processStub = stubInterface<ChildProcessWithoutNullStreams>();
@@ -22,6 +23,8 @@ describe("CommandRunner", () => {
 
     await rewiremock.around(
       async () => {
+        process.env.NODE_SCOPED_TEST_ENV_VAR = 'foo';
+
         const { createCommandRunner } = await import("../src/CommandRunner");
         const runCommand = createCommandRunner(
           "cwd",
@@ -48,6 +51,7 @@ describe("CommandRunner", () => {
     const env = options.env;
     env.should.have.property('PATH');
     env.should.have.property('PP_TOOLS_AUTOMATION_AGENT', 'myAgent');
+    env.should.have.property('NODE_SCOPED_TEST_ENV_VAR', 'foo');
     // assert we have a full copy of process.env:
     Object.keys(env).length.should.be.above(10);
   });

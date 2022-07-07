@@ -27,10 +27,15 @@ describe("pac", () => {
       beforeEach(() => {
         pac = stub();
       });
-      afterEach(() => restore());
+      afterEach(() => {
+        delete process.env.PAC_CLI_SPN_SECRET;
+        restore();
+      });
 
       it("uses SPN authentication when provided client credentials", () => {
         authenticateAdmin(pac, spnCreds);
+
+        process.env.should.have.property("PAC_CLI_SPN_SECRET", "CLIENT_SECRET");
 
         pac.should.have.been.calledOnceWith(
           "auth",
@@ -72,10 +77,15 @@ describe("pac", () => {
       beforeEach(() => {
         pac = stub();
       });
-      afterEach(() => restore());
+      afterEach(() => {
+        delete process.env.PAC_CLI_SPN_SECRET;
+        restore();
+      });
 
       it("uses SPN authentication when provided client credentials", () => {
         authenticateEnvironment(pac, spnCreds, envUrl);
+
+        process.env.should.have.property("PAC_CLI_SPN_SECRET", "CLIENT_SECRET");
 
         pac.should.have.been.calledOnceWith(
           "auth",
