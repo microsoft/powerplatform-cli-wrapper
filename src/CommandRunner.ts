@@ -1,4 +1,4 @@
-import { spawn, SpawnOptionsWithoutStdio } from "child_process";
+import { ChildProcessWithoutNullStreams, spawn, SpawnOptionsWithoutStdio } from "child_process";
 import { env } from "process";
 import * as readline from "readline";
 import { EOL } from "os";
@@ -20,7 +20,8 @@ export function createCommandRunner(
 
       const cp = spawn(commandPath, args, {
         cwd: workingDir,
-        env: Object.assign({ PATH: env.PATH,
+        env: Object.assign({
+          PATH: env.PATH,
           "PP_TOOLS_AUTOMATION_AGENT": agent
         }, process.env),
         ...options,
@@ -38,6 +39,15 @@ export function createCommandRunner(
         }
       }
 
+      // https://nodejs.org/docs/latest-v10.x/api/child_process.html#child_process_event_error
+      // The 'exit' event may or may not fire after an error has occurred.
+      cp.on("error", (error: Error) => {
+        logger.error(`error: ${error}`);
+        reject(new RunnerError(1, allOutput.join(EOL)));
+        closeAllReaders(outputLineReader, errorLineReader);
+        destroyOutputStreams(cp);
+      });
+
       cp.on("exit", (code: number) => {
         if (code === 0) {
           resolve(allOutput);
@@ -48,18 +58,26 @@ export function createCommandRunner(
 
         /* Close out handles to the output streams so that we don't wait on
             grandchild processes like pacTelemetryUpload */
-        outputLineReader.close();
-        errorLineReader.close();
-        cp.stdout.destroy();
-        cp.stderr.destroy();
+        closeAllReaders(outputLineReader, errorLineReader);
+        destroyOutputStreams(cp);
       });
     });
   };
 
+  function closeAllReaders(outputLineReader?: readline.Interface | undefined, errorLineReader?: readline.Interface | undefined): void {
+      outputLineReader?.close();
+      errorLineReader?.close();
+  }
+
+  function destroyOutputStreams(cp?: ChildProcessWithoutNullStreams | undefined): void {
+    if(!cp) {return;}
+      cp.stdout?.destroy();
+      cp.stderr?.destroy();
+  }
+
   function logInitialization(...args: string[]): void {
     logger.debug(
-      `command: ${commandPath}, first arg of ${args.length}: ${
-        args.length ? args[0] : "<none>"
+      `command: ${commandPath}, first arg of ${args.length}: ${args.length ? args[0] : "<none>"
       }`
     );
   }
