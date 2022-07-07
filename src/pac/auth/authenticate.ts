@@ -10,6 +10,7 @@ export function authenticateEnvironment(pac: CommandRunner, credentials: AuthCre
 }
 
 export function clearAuthentication(pac: CommandRunner): Promise<string[]> {
+  delete process.env.PAC_CLI_SPN_SECRET; // Will be cleaned up anyway by closing of the node process
   return pac("auth", "clear");
 }
 
