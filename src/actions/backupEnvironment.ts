@@ -18,7 +18,7 @@ export async function backupEnvironment(parameters: BackupEnvironmentParameters,
   const pac = createPacRunner(runnerParameters);
 
   try {
-    const authenticateResult = await authenticateAdmin(pac, parameters.credentials);
+    const authenticateResult = await authenticateAdmin(pac, parameters.credentials, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
     // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.

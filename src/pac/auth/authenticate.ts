@@ -1,11 +1,14 @@
 import { CommandRunner } from "../../CommandRunner";
+import { Logger } from "../../Logger";
 import { ClientCredentials, AuthCredentials, UsernamePassword } from "./authParameters";
 
-export function authenticateAdmin(pac: CommandRunner, credentials: AuthCredentials): Promise<string[]> {
+export function authenticateAdmin(pac: CommandRunner, credentials: AuthCredentials, logger: Logger): Promise<string[]> {
+  logger.log(`authN to admin API: authType=${isUsernamePassword(credentials) ? 'UserPass' : 'SPN'}; cloudInstance: ${credentials.cloudInstance || '<not set>'}`);
   return pac("auth", "create", "--kind", "ADMIN", ...addCredentials(credentials), ...addCloudInstance(credentials));
 }
 
-export function authenticateEnvironment(pac: CommandRunner, credentials: AuthCredentials, environmentUrl: string): Promise<string[]> {
+export function authenticateEnvironment(pac: CommandRunner, credentials: AuthCredentials, environmentUrl: string, logger: Logger): Promise<string[]> {
+  logger.log(`authN to env: authType=${isUsernamePassword(credentials) ? 'UserPass' : 'SPN'}; cloudInstance: ${credentials.cloudInstance || '<not set>'}; envUrl: ${environmentUrl}`);
   return pac("auth", "create", ...addUrl(environmentUrl), ...addCredentials(credentials), ...addCloudInstance(credentials));
 }
 

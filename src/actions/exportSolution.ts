@@ -36,7 +36,7 @@ export async function exportSolution(parameters: ExportSolutionParameters, runne
   const pac = createPacRunner(runnerParameters);
 
   try {
-    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl);
+    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
     const pacArgs = ["solution", "export"];

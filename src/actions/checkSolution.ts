@@ -44,7 +44,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
 
   let ruleLevelOverrideFile: string | undefined;
   try {
-    const authenticateResult = await authenticateAdmin(pac, parameters.credentials);
+    const authenticateResult = await authenticateAdmin(pac, parameters.credentials, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
     const pacArgs = ["solution", "check"]
