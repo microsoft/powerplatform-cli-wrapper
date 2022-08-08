@@ -45,8 +45,7 @@ describe("action: install applications", () => {
           });
       });
     const stubFnc = Sinon.stub(mockedHost, "getInput");
-    stubFnc.onCall(0).returns(environmentId);
-    stubFnc.onCall(1).returns(applicationList);
+    stubFnc.onCall(0).returns(applicationList);
     authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
@@ -56,7 +55,6 @@ describe("action: install applications", () => {
   const createApplicationInstallParameters = (): InstallApplicationParameters => ({
     credentials: mockClientCredentials,
     environmentUrl: envUrl,
-    environmentId: { name: 'EnvironmentId', required: true },
     applicationList: { name: 'ApplicationList', required: false },
   });
 
