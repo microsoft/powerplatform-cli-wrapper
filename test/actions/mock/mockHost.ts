@@ -23,7 +23,7 @@ export class mockHost implements IHostAbstractions {
   environmentName = 'Mock-Environment';
   environmentType = 'Sandbox';
   currency = 'USD';
-  language = 'English';
+  language = '1033';
   region = 'United States';
   domainName = 'Contoso';
   templates = 'Customer Service, Sample App';
