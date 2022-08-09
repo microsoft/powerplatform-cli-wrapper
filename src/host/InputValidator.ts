@@ -41,6 +41,7 @@ export class InputValidator {
 // PP.BT PS implementation had the BAP friendly names that pac CLI can't accept
 const regionMap: Record<string, string> = {
   // pac CLI accepts case-insensitive region names, only transpose different names:
+  // region key entries must be lower case
   "united states": "unitedstates",
   "united kingdom": "unitedkingdom",
   "preview (united states)": "unitedstatesfirstrelease",
@@ -56,7 +57,8 @@ export function normalizeRegion(taskRegionName: string): string {
 const languageMap: Record<string, string> = {
   // pac CLI accepts case-insensitive region names, only transpose different names:
   // pac CLI accepts languages by either the BAP names, e.g. 'English (United States)' or by langCode, here: 1033
-  "English": "1033",
+  // language key entries must be lower case
+  "english": "1033",
 };
 
 export function normalizeLanguage(taskLanguageName: string): string {
