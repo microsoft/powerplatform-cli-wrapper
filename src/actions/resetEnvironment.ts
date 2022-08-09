@@ -1,6 +1,6 @@
 
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
-import { InputValidator } from "../host/InputValidator";
+import { InputValidator, normalizeLanguage } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
@@ -37,7 +37,7 @@ export async function resetEnvironment(parameters: ResetEnvironmentParameters, r
     validator.pushInput(pacArgs, "--environment", parameters.environment);
     validator.pushInput(pacArgs, "--url", parameters.environmentUrl);
     validator.pushInput(pacArgs, "--environment-id", parameters.environmentId);
-    validator.pushInput(pacArgs, "--language", parameters.language);
+    validator.pushInput(pacArgs, "--language", parameters.language, normalizeLanguage);
     validator.pushInput(pacArgs, "--currency", parameters.currency);
     validator.pushInput(pacArgs, "--purpose", parameters.purpose);
     validator.pushInput(pacArgs, "--templates", parameters.templates);
