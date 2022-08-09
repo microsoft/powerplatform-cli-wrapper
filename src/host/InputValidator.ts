@@ -36,3 +36,30 @@ export class InputValidator {
     }
   }
 }
+
+// translate to pac CLI accepted region names:
+// PP.BT PS implementation had the BAP friendly names that pac CLI can't accept
+const regionMap: Record<string, string> = {
+  // pac CLI accepts case-insensitive region names, only transpose different names:
+  "united states": "unitedstates",
+  "united kingdom": "unitedkingdom",
+  "preview (united states)": "unitedstatesfirstrelease",
+  "south america": "southamerica",
+};
+
+export function normalizeRegion(taskRegionName: string): string {
+  const cliRegionName = regionMap[taskRegionName.toLowerCase()];
+  return cliRegionName || taskRegionName;
+}
+// translate to pac CLI accepted language names:
+// PP.BT PS implementation had the BAP friendly names that pac CLI can't accept
+const languageMap: Record<string, string> = {
+  // pac CLI accepts case-insensitive region names, only transpose different names:
+  // pac CLI accepts languages by either the BAP names, e.g. 'English (United States)' or by langCode, here: 1033
+  "English": "1033",
+};
+
+export function normalizeLanguage(taskLanguageName: string): string {
+  const cliLanguageName = languageMap[taskLanguageName.toLowerCase()];
+  return cliLanguageName || taskLanguageName;
+}

@@ -1,5 +1,5 @@
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
-import { InputValidator } from "../host/InputValidator";
+import { InputValidator, normalizeLanguage, normalizeRegion } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
@@ -38,7 +38,7 @@ export async function createEnvironment(parameters: CreateEnvironmentParameters,
     validator.pushInput(pacArgs, "--templates", parameters.templates);
     validator.pushInput(pacArgs, "--region", parameters.region, normalizeRegion);
     validator.pushInput(pacArgs, "--currency", parameters.currency);
-    validator.pushInput(pacArgs, "--language", parameters.language);
+    validator.pushInput(pacArgs, "--language", parameters.language, normalizeLanguage);
     validator.pushInput(pacArgs, "--domain", parameters.domainName);
     validator.pushInput(pacArgs, "--team-id", parameters.teamId);
 
@@ -72,19 +72,4 @@ export function getEnvironmentDetails(pacResult: string[]): EnvironmentResult {
     environmentId: envId,
     environmentUrl: envUrl
   };
-}
-
-// translate to pac CLI accepted region names:
-// PP.BT PS implementation had the BAP friendly names that pac CLI can't accept
-const regionMap: Record<string, string> = {
-  // pac CLI accepts case-insensitive region names, only transpose different names:
-  "united states": "unitedstates",
-  "united kingdom": "unitedkingdom",
-  "preview (united states)": "unitedstatesfirstrelease",
-  "south america": "southamerica",
-};
-
-function normalizeRegion(taskRegionName: string): string {
-  const cliRegionName = regionMap[taskRegionName.toLowerCase()];
-  return cliRegionName || taskRegionName;
 }
