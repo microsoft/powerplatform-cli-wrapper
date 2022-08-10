@@ -20,7 +20,7 @@ export async function installApplication(parameters: InstallApplicationParameter
     const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
-    const pacArgs = ["application", "install"];
+    const pacArgs = ["application", "install", "-env", parameters.environmentUrl];
     const validator = new InputValidator(host);
     validator.pushInput(pacArgs, "--application-list", parameters.applicationList, (value) => path.resolve(runnerParameters.workingDir, value));
 
