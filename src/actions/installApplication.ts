@@ -14,6 +14,11 @@ export interface InstallApplicationParameters {
 }
 
 export async function installApplication(parameters: InstallApplicationParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+  function resolveFolder(folder: string | boolean | undefined): string | undefined {
+    if (!folder || typeof folder !== "string") return undefined;
+    return path.resolve(runnerParameters.workingDir, folder);
+  }
+
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
@@ -24,7 +29,7 @@ export async function installApplication(parameters: InstallApplicationParameter
     const pacArgs = ["application", "install"];
     const validator = new InputValidator(host);
     validator.pushInput(pacArgs, "--environment-id", parameters.environmentId);
-    validator.pushInput(pacArgs, "--application-list", parameters.applicationList, (value) => path.resolve(runnerParameters.workingDir, value));
+    validator.pushInput(pacArgs, "--application-list", parameters.applicationList, resolveFolder);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

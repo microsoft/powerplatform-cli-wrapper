@@ -34,6 +34,11 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
   const validator = new InputValidator(host);
   const artifactStore = host.getArtifactStore();
 
+  function resolveFolder(folder: string | boolean | undefined): string | undefined {
+    if (!folder || typeof folder !== "string") return undefined;
+    return path.resolve(runnerParameters.workingDir, folder);
+  }
+
   let level: string | undefined;
   let threshold: string | undefined;
   if (parameters.errorThreshold != undefined) {
@@ -53,7 +58,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
       validator.pushInput(pacArgs, "--solutionUrl", parameters.solutionUrl);
     }
     else {
-      validator.pushInput(pacArgs, "--path", parameters.solutionPath, (value) => path.resolve(runnerParameters.workingDir, value));
+      validator.pushInput(pacArgs, "--path", parameters.solutionPath, resolveFolder);
     }
     validator.pushInput(pacArgs, "--ruleSet", parameters.ruleSet, defaultRulesMapper);
     ruleLevelOverrideFile = await createRuleOverrideFile(validator.getInput(parameters.ruleLevelOverride));
@@ -172,7 +177,10 @@ async function createRuleOverrideFile(ruleOverrideJson: string | undefined): Pro
   return undefined;
 }
 
-function defaultRulesMapper(rule: string): string {
+function defaultRulesMapper(rule: string | boolean | undefined): string | undefined {
+    if (!rule || typeof rule !== 'string')
+    return undefined;
+
   switch (rule.toLowerCase()) {
     case "appsource certification": return "083a2ef5-7e0e-4754-9d88-9455142dc08b";
     case "solution checker": return "0ad12346-e108-40b8-a956-9a8f95ea18c9";
