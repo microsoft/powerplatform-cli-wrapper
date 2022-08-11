@@ -7,8 +7,13 @@ import path = require("path");
 import { SolutionPackUnpackParameters } from "./actionParameters/solutionPackUnpackParameters";
 
 export function setSolutionPackagingCommonArgs(parameters: SolutionPackUnpackParameters, runnerParameters: RunnerParameters, validator: InputValidator, pacArgs: string[] ): void {
-    validator.pushInput(pacArgs, "--zipFile", parameters.solutionZipFile, (value) => path.resolve(runnerParameters.workingDir, value));
-    validator.pushInput(pacArgs, "--folder", parameters.sourceFolder, (value) => path.resolve(runnerParameters.workingDir, value));
+  function resolveFolder(folder: string | boolean | undefined): string | undefined {
+    if (!folder || typeof folder !== "string") return undefined;
+    return path.resolve(runnerParameters.workingDir, folder);
+  }
+
+    validator.pushInput(pacArgs, "--zipFile", parameters.solutionZipFile, resolveFolder);
+    validator.pushInput(pacArgs, "--folder", parameters.sourceFolder, resolveFolder);
     validator.pushInput(pacArgs, "--packageType", parameters.solutionType);
     validator.pushInput(pacArgs, "--localize", parameters.localize);
     validator.pushInput(pacArgs, "--log", parameters.logFile);

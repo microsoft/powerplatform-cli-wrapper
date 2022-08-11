@@ -32,6 +32,11 @@ export interface ExportSolutionParameters {
 }
 
 export async function exportSolution(parameters: ExportSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+  function resolveFolder(folder: string | boolean | undefined): string | undefined {
+    if (!folder || typeof folder !== "string") return undefined;
+    return path.resolve(runnerParameters.workingDir, folder);
+  }
+
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
@@ -43,7 +48,7 @@ export async function exportSolution(parameters: ExportSolutionParameters, runne
     const validator = new InputValidator(host);
 
     validator.pushInput(pacArgs, "--name", parameters.name);
-    validator.pushInput(pacArgs, "--path", parameters.path, (value) => path.resolve(runnerParameters.workingDir, value));
+    validator.pushInput(pacArgs, "--path", parameters.path, resolveFolder);
   // BUG: AB#2761762 to remove this conditional later
     if (parameters.overwrite && validator.getInput(parameters.overwrite) == 'true') {
       pacArgs.push("--overwrite");

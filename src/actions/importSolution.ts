@@ -26,6 +26,11 @@ export interface ImportSolutionParameters {
 }
 
 export async function importSolution(parameters: ImportSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+  function resolveFolder(folder: string | boolean | undefined): string | undefined {
+    if (!folder || typeof folder !== "string") return undefined;
+    return path.resolve(runnerParameters.workingDir, folder);
+  }
+
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
@@ -36,7 +41,7 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
     const pacArgs = ["solution", "import"];
     const validator = new InputValidator(host);
 
-    validator.pushInput(pacArgs, "--path", parameters.path, (value) => path.resolve(runnerParameters.workingDir, value));
+    validator.pushInput(pacArgs, "--path", parameters.path, resolveFolder);
     validator.pushInput(pacArgs, "--async", parameters.async);
     validator.pushInput(pacArgs, "--import-as-holding", parameters.importAsHolding);
     validator.pushInput(pacArgs, "--force-overwrite", parameters.forceOverwrite);

@@ -18,7 +18,7 @@ export class InputValidator {
     return val;
   }
 
-  public pushInput(pacArgs: string[], property: string, paramEntry?: HostParameterEntry, callback?: (val: string) => string): void {
+  public pushInput(pacArgs: string[], property: string, paramEntry?: HostParameterEntry, callback?: (val: string | boolean | undefined) => string | undefined): void {
     // TODO: change action-specific ...Parameters contracts to always require the parameter definition
     // today, we double-encode if a task/action parameter is optional in the ...Parameters interface definition, but shouldn't!
     if (!paramEntry) {
@@ -30,9 +30,10 @@ export class InputValidator {
     }
     else if (val) {
       if (callback) {
-        val = callback(val);
+        val = callback(val || paramEntry.defaultValue);
       }
-      pacArgs.push(property, val);
+      if (val)
+        pacArgs.push(property, val);
     }
   }
 }
@@ -48,7 +49,10 @@ const regionMap: Record<string, string> = {
   "south america": "southamerica",
 };
 
-export function normalizeRegion(taskRegionName: string): string {
+export function normalizeRegion(taskRegionName: string | boolean | undefined): string | undefined {
+  if (!taskRegionName || typeof taskRegionName !== 'string')
+    return undefined;
+
   const cliRegionName = regionMap[taskRegionName.toLowerCase()];
   return cliRegionName || taskRegionName;
 }
@@ -61,7 +65,10 @@ const languageMap: Record<string, string> = {
   "english": "1033",
 };
 
-export function normalizeLanguage(taskLanguageName: string): string {
+export function normalizeLanguage(taskLanguageName: string | boolean | undefined): string | undefined {
+  if (!taskLanguageName || typeof taskLanguageName !== 'string')
+    return undefined;
+
   const cliLanguageName = languageMap[taskLanguageName.toLowerCase()];
   return cliLanguageName || taskLanguageName;
 }
