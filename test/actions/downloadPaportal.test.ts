@@ -20,7 +20,6 @@ describe("action: download paportal", () => {
   const path = "C:\\portals";
   const websiteId = "f88b70cc-580b-4f1a-87c3-41debefeb902";
   const overwrite = "true"
-  const includeEntities = "adx_webpage, adx_webfile"
   const excludeEntities = "adx_sitesetting"
   const mockedHost = new mockHost();
 
@@ -51,8 +50,7 @@ describe("action: download paportal", () => {
     stubFnc.onCall(0).returns(path);
     stubFnc.onCall(1).returns(websiteId);
     stubFnc.onCall(2).returns(overwrite);
-    stubFnc.onCall(3).returns(includeEntities);
-    stubFnc.onCall(4).returns(excludeEntities);
+    stubFnc.onCall(3).returns(excludeEntities);
 
 
     authenticateEnvironmentStub.returns("Authentication successfully created.");
@@ -67,7 +65,6 @@ describe("action: download paportal", () => {
     path: { name: "DownloadPath", required: true },
     websiteId: { name: "WebsiteId", required: true },
     overwrite: { name: "Overwrite", required: false },
-    includeEntities: { name: "IncludeEntities", required: false },
     excludeEntities: { name: "ExcludeEntities", required: false },
   });
 
@@ -83,7 +80,7 @@ describe("action: download paportal", () => {
     await runActionWithMocks(downloadPaportalParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
-    pacStub.should.have.been.calledOnceWith("paportal", "download", "--path", path, "--websiteId", websiteId, "--overwrite", overwrite, "--includeEntities", includeEntities, "--excludeEntities", excludeEntities);
+    pacStub.should.have.been.calledOnceWith("paportal", "download", "--path", path, "--websiteId", websiteId, "--overwrite", overwrite,  "--excludeEntities", excludeEntities);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

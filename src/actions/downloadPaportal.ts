@@ -11,7 +11,6 @@ export interface DownloadPaportalParameters {
   path: HostParameterEntry;
   websiteId: HostParameterEntry;
   overwrite?: HostParameterEntry;
-  includeEntities?: HostParameterEntry;
   excludeEntities?: HostParameterEntry;
 }
 
@@ -29,7 +28,6 @@ export async function downloadPaportal(parameters: DownloadPaportalParameters, r
     validator.pushInput(pacArgs, "--path", parameters.path);
     validator.pushInput(pacArgs, "--websiteId", parameters.websiteId);
     validator.pushInput(pacArgs, "--overwrite", parameters.overwrite);
-    validator.pushInput(pacArgs, "--includeEntities", parameters.includeEntities);
     validator.pushInput(pacArgs, "--excludeEntities", parameters.excludeEntities);
     
 
