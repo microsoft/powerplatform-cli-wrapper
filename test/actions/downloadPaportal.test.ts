@@ -19,6 +19,8 @@ describe("action: download paportal", () => {
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const path = "C:\\portals";
   const websiteId = "f88b70cc-580b-4f1a-87c3-41debefeb902";
+  const overwrite = "true"
+  const excludeEntities = "adx_sitesetting"
   const mockedHost = new mockHost();
 
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
@@ -47,6 +49,9 @@ describe("action: download paportal", () => {
     const stubFnc = Sinon.stub(mockedHost, "getInput");
     stubFnc.onCall(0).returns(path);
     stubFnc.onCall(1).returns(websiteId);
+    stubFnc.onCall(2).returns(overwrite);
+    stubFnc.onCall(3).returns(excludeEntities);
+
 
     authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
@@ -59,6 +64,8 @@ describe("action: download paportal", () => {
     environmentUrl: envUrl,
     path: { name: "DownloadPath", required: true },
     websiteId: { name: "WebsiteId", required: true },
+    overwrite: { name: "Overwrite", required: false },
+    excludeEntities: { name: "ExcludeEntities", required: false },
   });
 
   it("with required params, calls pac runner with correct args", async () => {
@@ -66,6 +73,14 @@ describe("action: download paportal", () => {
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
     pacStub.should.have.been.calledOnceWith("paportal", "download", "--path", path, "--websiteId", websiteId);
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
+  });
+
+  it("with optional params, calls pac runner with include/exclude/overwrite args", async () => {
+    await runActionWithMocks(downloadPaportalParameters);
+
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
+    pacStub.should.have.been.calledOnceWith("paportal", "download", "--path", path, "--websiteId", websiteId, "--overwrite", overwrite,  "--excludeEntities", excludeEntities);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });
