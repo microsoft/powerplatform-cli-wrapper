@@ -10,8 +10,8 @@ export interface DownloadPaportalParameters {
   environmentUrl: string;
   path: HostParameterEntry;
   websiteId: HostParameterEntry;
-  overwrite?: HostParameterEntry;
-  excludeEntities?: HostParameterEntry;
+  overwrite: HostParameterEntry;
+  excludeEntities: HostParameterEntry;
 }
 
 export async function downloadPaportal(parameters: DownloadPaportalParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {

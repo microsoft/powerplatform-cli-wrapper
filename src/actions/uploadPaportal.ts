@@ -9,7 +9,7 @@ export interface UploadPaportalParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   path: HostParameterEntry;
-  deploymentProfile?: HostParameterEntry;
+  deploymentProfile: HostParameterEntry;
 }
 
 export async function uploadPaportal(parameters: UploadPaportalParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
