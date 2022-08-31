@@ -25,3 +25,5 @@ export * from "./onlineVersionSolution";
 export * from "./installApplication";
 export * from "./assignUser";
 export * from "./addSolutionComponent";
+export * from "./dataExport";
+export * from "./dataImport";
