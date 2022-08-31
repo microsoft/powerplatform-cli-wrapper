@@ -41,6 +41,9 @@ export class mockHost implements IHostAbstractions {
   teamId = '00000000-0000-0000-0000-000000000001';
   user = 'test@contoso.onmicrosoft.com';
   role = 'Bot Author';
+  schemaFile = './ContosoSchema.xml';
+  dataFile = './ContosoData.zip';
+  dataDirectory = './ContosoData';
   incidentTableName = 'incident';
   tableComponentType = 1;
 
@@ -81,6 +84,9 @@ export class mockHost implements IHostAbstractions {
         case 'TeamId': return this.teamId;
         case "User": return this.user;
         case "Role": return this.role;
+        case "SchemaFile": return this.schemaFile;
+        case "DataFile": return this.dataFile;
+        case "DataDirectory": return this.dataDirectory;
         case "Component": return this.incidentTableName;
         case "ComponentType": return this.tableComponentType.toString();
         default: {
