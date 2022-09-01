@@ -18,7 +18,6 @@ describe("action: install applications", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
-  const environmentId = "b0a04c95-570e-4bf2-8107-02a04f79a0bf";
   const applicationList = os.platform() === 'win32'? "D:\\Test\\mock\\applicationList.json": "/Test/mock/applicationList.json";
   const mockedHost = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
@@ -45,8 +44,7 @@ describe("action: install applications", () => {
           });
       });
     const stubFnc = Sinon.stub(mockedHost, "getInput");
-    stubFnc.onCall(0).returns(environmentId);
-    stubFnc.onCall(1).returns(applicationList);
+    stubFnc.onCall(0).returns(applicationList);
     authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
@@ -56,15 +54,14 @@ describe("action: install applications", () => {
   const createApplicationInstallParameters = (): InstallApplicationParameters => ({
     credentials: mockClientCredentials,
     environmentUrl: envUrl,
-    environmentId: { name: 'EnvironmentId', required: true },
-    applicationList: { name: 'ApplicationList', required: false },
+    applicationListFile: { name: 'ApplicationList', required: false },
   });
 
   it("with required params, calls pac runner with correct args", async () => {
     await runActionWithMocks(applicationInstallParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
-    pacStub.should.have.been.calledOnceWith("application", "install", "--environment-id", environmentId, "--application-list", applicationList);
+    pacStub.should.have.been.calledOnceWith("application", "install", "--application-list", applicationList);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });

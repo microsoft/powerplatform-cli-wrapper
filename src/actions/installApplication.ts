@@ -9,8 +9,7 @@ import path = require("path");
 export interface InstallApplicationParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
-  environmentId: HostParameterEntry;
-  applicationList: HostParameterEntry;
+  applicationListFile: HostParameterEntry;
 }
 
 export async function installApplication(parameters: InstallApplicationParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
@@ -28,8 +27,7 @@ export async function installApplication(parameters: InstallApplicationParameter
 
     const pacArgs = ["application", "install"];
     const validator = new InputValidator(host);
-    validator.pushInput(pacArgs, "--environment-id", parameters.environmentId);
-    validator.pushInput(pacArgs, "--application-list", parameters.applicationList, resolveFolder);
+    validator.pushInput(pacArgs, "--application-list", parameters.applicationListFile, resolveFolder);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
