@@ -1,3 +1,4 @@
+import os = require("os");
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
@@ -15,6 +16,10 @@ export interface DataExportParameters {
 }
 
 export async function dataExport(parameters: DataExportParameters, runnerParameters: RunnerParameters, host: IHostAbstractions) {
+  const platform = os.platform();
+  if (platform !== 'win32') {
+    throw new Error(`'data export' is only supported on Windows agents/runners (attempted run on ${platform})`);
+  }
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
