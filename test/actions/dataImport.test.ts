@@ -1,3 +1,4 @@
+import os = require("os");
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import rewiremock from "../rewiremock";
 import * as sinonChai from "sinon-chai";
@@ -56,6 +57,10 @@ describe("action: dataImport", () => {
   });
 
   it("with minimal inputs, calls pac runner with correct arguments", async () => {
+    if (os.platform() !== 'win32') {
+      console.log(">> Skipping dataExport test, only supported on Windows");
+      return;
+    }
     await runActionWithMocks(dataImportParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
