@@ -7,7 +7,7 @@ import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { DataExportParameters } from "../../src/actions";
-import { createDefaultMockRunnerParameters, createMockClientCredentials } from "./mock/mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { mockHost } from "./mock/mockHost";
 import Sinon = require("sinon");
 should();
@@ -16,15 +16,16 @@ use(chaiAsPromised);
 
 describe("action: dataExport", () => {
   let pacStub: Sinon.SinonStub<any[], any>;
-  let authenticateAdminStub: Sinon.SinonStub<any[], any>;
+  let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
+  const envUrl: string = mockEnvironmentUrl;
   let dataExportParameters: DataExportParameters;
 
   beforeEach(() => {
     pacStub = stub();
-    authenticateAdminStub = stub();
+    authenticateEnvironmentStub = stub();
     clearAuthenticationStub = stub();
     dataExportParameters = createMinMockParameters();
   });
@@ -38,12 +39,12 @@ describe("action: dataExport", () => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
         mock(() => import("../../src/pac/auth/authenticate")).with(
           {
-            authenticateAdmin: authenticateAdminStub,
+            authenticateEnvironment: authenticateEnvironmentStub,
             clearAuthentication: clearAuthenticationStub
           });
       });
 
-      authenticateAdminStub.returns("Authentication successfully created.");
+      authenticateEnvironmentStub.returns("Authentication successfully created.");
       clearAuthenticationStub.returns("Authentication profiles and token cache removed");
       pacStub.returns(["Exporting data..."]);
       await mockedActionModule.dataExport(dataExportParameters, runnerParameters, host);
@@ -55,7 +56,7 @@ describe("action: dataExport", () => {
     dataFile: { name: "DataFile", required: true },
     overwrite: { name: "Overwrite", required: false },
     verbose: { name: "Verbose", required: false },
-    environment: { name: "Environment", required: false }
+    environmentUrl: envUrl
   });
 
   it("with minimal inputs, calls pac runner with correct arguments", async () => {
@@ -65,7 +66,7 @@ describe("action: dataExport", () => {
     }
     await runActionWithMocks(dataExportParameters);
 
-    authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
     pacStub.should.have.been.calledOnceWith("data", "export", "--schemaFile", host.schemaFile, "--dataFile", host.dataFile);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });

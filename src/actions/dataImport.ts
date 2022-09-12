@@ -1,7 +1,7 @@
 import os = require("os");
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
-import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
+import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
@@ -10,7 +10,7 @@ export interface DataImportParameters {
   credentials: AuthCredentials;
   dataDirectory: HostParameterEntry;
   verbose: HostParameterEntry;
-  environment: HostParameterEntry;
+  environmentUrl: string;
 }
 
 export async function dataImport(parameters: DataImportParameters, runnerParameters: RunnerParameters, host: IHostAbstractions) {
@@ -25,12 +25,11 @@ export async function dataImport(parameters: DataImportParameters, runnerParamet
   const validator = new InputValidator(host);
 
   try {
-    const authenticateResult = await authenticateAdmin(pac, parameters.credentials, logger);
+    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
     validator.pushInput(pacArgs, "--dataDirectory", parameters.dataDirectory);
     validator.pushInput(pacArgs, "--verbose", parameters.verbose);
-    validator.pushInput(pacArgs, "--environment", parameters.environment);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
