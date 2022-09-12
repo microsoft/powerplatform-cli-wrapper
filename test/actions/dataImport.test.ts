@@ -52,7 +52,7 @@ describe("action: dataImport", () => {
 
   const createMinMockParameters = (): DataImportParameters => ({
     credentials: mockClientCredentials,
-    dataDirectory: { name: "DataDirectory", required: true },
+    dataFile: { name: "DataFile", required: true },
     verbose: { name: "Verbose", required: false },
     environmentUrl: envUrl
   });
@@ -65,7 +65,7 @@ describe("action: dataImport", () => {
     await runActionWithMocks(dataImportParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("data", "import", "--dataDirectory", host.dataDirectory);
+    pacStub.should.have.been.calledOnceWith("data", "import", "--data", host.dataFile);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 

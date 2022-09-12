@@ -8,7 +8,7 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface DataImportParameters {
   credentials: AuthCredentials;
-  dataDirectory: HostParameterEntry;
+  dataFile: HostParameterEntry;
   verbose: HostParameterEntry;
   environmentUrl: string;
 }
@@ -28,7 +28,7 @@ export async function dataImport(parameters: DataImportParameters, runnerParamet
     const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
-    validator.pushInput(pacArgs, "--dataDirectory", parameters.dataDirectory);
+    validator.pushInput(pacArgs, "--data", parameters.dataFile);
     validator.pushInput(pacArgs, "--verbose", parameters.verbose);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
