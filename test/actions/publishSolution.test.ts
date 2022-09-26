@@ -50,7 +50,8 @@ describe("action: publish solution", () => {
     const publishSolutionParameters: PublishSolutionParameters = {
       credentials: mockClientCredentials,
       environmentUrl: environmentUrl,
-      async: { name: 'AsyncOperation', required: false }
+      async: { name: 'AsyncOperation', required: false },
+      maxAsyncWaitTimeInMin: { name: 'MaxAsyncWaitTime', required: false },
     }
 
     const host = new mockHost();
