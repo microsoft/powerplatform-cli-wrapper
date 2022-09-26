@@ -105,7 +105,7 @@ describe("action: exportSolution", () => {
     });
     await runActionWithMocks(exportSolutionParameters, host);
 
-    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath, "--overwrite",
+    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath, "--overwrite", "true",
       "--managed", "true", "--async", "true", "--max-async-wait-time", "120", "--include",
       "autonumbering,calendar,customization,emailtracking,externalapplications,general,isvconfig,marketing,outlooksynchronization,relationshiproles,sales");
   });
@@ -136,7 +136,7 @@ describe("action: exportSolution", () => {
     });
     await runActionWithMocks(exportSolutionParameters, host);
 
-    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath, "--overwrite",
+    pacStub.should.have.been.calledOnceWith("solution", "export", "--name", host.solutionName, "--path", host.absoluteSolutionPath, "--overwrite", "true",
       "--managed", "true", "--async", "true", "--max-async-wait-time", "120", "--include",
       "autonumbering,calendar,emailtracking,externalapplications,marketing,relationshiproles");
   });

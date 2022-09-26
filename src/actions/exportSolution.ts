@@ -25,10 +25,7 @@ export interface ExportSolutionParameters {
   outlookSynchronizationSettings: HostParameterEntry;
   relationshipRoles: HostParameterEntry;
   sales: HostParameterEntry;
-  // TODO: for now optional to avoid a breaking change when consuming this cli-wrapper with 1.16.x pac CLI:
-  // Only the QFE-ed pac CLI 1.15.8+ have the --overwrite parameter; the June refresh (1.17.x ) will also have that
-  // BUG: AB#2761762 to remove later
-  overwrite?: HostParameterEntry;
+  overwrite: HostParameterEntry;
 }
 
 export async function exportSolution(parameters: ExportSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
@@ -49,10 +46,7 @@ export async function exportSolution(parameters: ExportSolutionParameters, runne
 
     validator.pushInput(pacArgs, "--name", parameters.name);
     validator.pushInput(pacArgs, "--path", parameters.path, resolveFolder);
-  // BUG: AB#2761762 to remove this conditional later
-    if (parameters.overwrite && validator.getInput(parameters.overwrite) == 'true') {
-      pacArgs.push("--overwrite");
-    }
+    validator.pushInput(pacArgs, "--overwrite", parameters.overwrite);
     validator.pushInput(pacArgs, "--managed", parameters.managed);
     validator.pushInput(pacArgs, "--async", parameters.async);
     validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
