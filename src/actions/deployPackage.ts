@@ -13,6 +13,7 @@ export interface DeployPackageParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   packagePath: HostParameterEntry;
+  settings: HostParameterEntry;
   logConsole?: HostParameterEntry;
 }
 
@@ -48,6 +49,8 @@ export async function deployPackage(parameters: DeployPackageParameters, runnerP
     fs.ensureDir(path.dirname(logFile));
     pacArgs.push("--logFile", logFile);
     validator.pushInput(pacArgs, "--logConsole", parameters.logConsole);
+
+    validator.pushInput(pacArgs, "--settings", parameters.settings);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

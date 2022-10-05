@@ -59,6 +59,7 @@ describe("action: deploy package", () => {
     credentials: mockClientCredentials,
     environmentUrl: envUrl,
     packagePath: { name: "SolutionInputFile", required: true },
+    settings: { name: "Settings", required: false },
     logConsole: { name: "LogConsole", required: false },
   });
 
