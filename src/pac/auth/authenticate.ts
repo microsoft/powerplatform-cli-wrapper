@@ -31,11 +31,21 @@ function isUsernamePassword(credentials: AuthCredentials): credentials is Userna
 
 function addClientCredentials(parameters: ClientCredentials) {
   process.env.PAC_CLI_SPN_SECRET = parameters.clientSecret;
-  return ["--tenant", parameters.tenantId, "--applicationId", parameters.appId, "--clientSecret", parameters.clientSecret];
+
+  const clientSecret = parameters.encodeSecret ? `data:text/plain;base64,${Buffer.from(parameters.clientSecret, 'binary').toString('base64')}` : parameters.clientSecret;
+
+  return [
+    "--tenant", parameters.tenantId,
+    "--applicationId", parameters.appId,
+    "--clientSecret", clientSecret];
 }
 
 function addUsernamePassword(parameters: UsernamePassword) {
-  return ["--username", parameters.username, "--password", parameters.password];
+  const password = parameters.encodePassword ? `data:text/plain;base64,${Buffer.from(parameters.password, 'binary').toString('base64')}` : parameters.password;
+
+  return [
+    "--username", parameters.username,
+    "--password", password];
 }
 
 function addCloudInstance(parameters: AuthCredentials) {
