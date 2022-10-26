@@ -18,9 +18,22 @@ describe("pac", () => {
       tenantId: "TENANT_ID",
       cloudInstance: ""   // should be resolved to its default: Public
     };
+    const spnCredsEncoded = {
+      appId: "APP_ID",
+      clientSecret: "CLIENT_SECRET",
+      encodeSecret: true,
+      tenantId: "TENANT_ID",
+      cloudInstance: ""   // should be resolved to its default: Public
+    };
     const userCreds = {
       username: "USERNAME",
       password: "PASSWORD",
+      cloudInstance: "UsGov",
+    };
+    const userCredsEncoded = {
+      username: "USERNAME",
+      password: "PASSWORD",
+      encodePassword: true,
       cloudInstance: "UsGov",
     };
 
@@ -55,6 +68,27 @@ describe("pac", () => {
         );
       });
 
+      it("uses SPN authentication when provided encoded client credentials", () => {
+        authenticateAdmin(pac, spnCredsEncoded, testLogger);
+
+        process.env.should.have.property("PAC_CLI_SPN_SECRET", "CLIENT_SECRET");
+
+        pac.should.have.been.calledOnceWith(
+          "auth",
+          "create",
+          "--kind",
+          "ADMIN",
+          "--tenant",
+          spnCreds.tenantId,
+          "--applicationId",
+          spnCreds.appId,
+          "--clientSecret",
+          "data:text/plain;base64,Q0xJRU5UX1NFQ1JFVA==", // Base64 CLIENT_SECRET
+          "--cloud",
+          "Public"
+        );
+      });
+
       it("uses basic authentication when provided username / password", () => {
         authenticateAdmin(pac, userCreds, testLogger);
 
@@ -71,6 +105,24 @@ describe("pac", () => {
           userCreds.cloudInstance
         );
       });
+
+      it("uses basic authentication when provided encoded username / password", () => {
+        authenticateAdmin(pac, userCredsEncoded, testLogger);
+
+        pac.should.have.been.calledOnceWith(
+          "auth",
+          "create",
+          "--kind",
+          "ADMIN",
+          "--username",
+          userCreds.username,
+          "--password",
+          "data:text/plain;base64,UEFTU1dPUkQ=", // Base64 PASSWORD
+          "--cloud",
+          userCreds.cloudInstance
+        );
+      });
+
     });
 
     describe("kind#Dataverse", () => {
