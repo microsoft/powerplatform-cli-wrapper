@@ -52,7 +52,9 @@ describe("action: assignUser", () => {
     credentials: mockClientCredentials,
     environment: { name: "Environment", required: true },
     user: { name: "User", required: true },
-    role: { name: "Role", required: true }
+    role: { name: "Role", required: true },
+    applicationUser: { name: "ApplicationUser", required: false },
+    businessUnit: { name: "BusinessUnit", required: false }
   });
 
   it("with minimal inputs, calls pac runner with correct arguments", async () => {
