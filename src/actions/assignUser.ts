@@ -10,6 +10,8 @@ export interface AssignUserParameters {
   environment: HostParameterEntry;
   user: HostParameterEntry;
   role: HostParameterEntry;
+  applicationUser: HostParameterEntry;
+  businessUnit: HostParameterEntry;
 }
 
 export async function assignUser(parameters: AssignUserParameters, runnerParameters: RunnerParameters, host: IHostAbstractions) {
@@ -26,6 +28,8 @@ export async function assignUser(parameters: AssignUserParameters, runnerParamet
     validator.pushInput(pacArgs, "--environment", parameters.environment);
     validator.pushInput(pacArgs, "--user", parameters.user);
     validator.pushInput(pacArgs, "--role", parameters.role);
+    validator.pushInput(pacArgs, "--application-user", parameters.role);
+    validator.pushInput(pacArgs, "--business-unit", parameters.role);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
