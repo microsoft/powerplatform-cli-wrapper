@@ -10,8 +10,8 @@ export interface AssignUserParameters {
   environment: HostParameterEntry;
   user: HostParameterEntry;
   role: HostParameterEntry;
-  applicationUser: HostParameterEntry;
-  businessUnit: HostParameterEntry;
+  applicationUser?: HostParameterEntry;
+  businessUnit?: HostParameterEntry;
 }
 
 export async function assignUser(parameters: AssignUserParameters, runnerParameters: RunnerParameters, host: IHostAbstractions) {
