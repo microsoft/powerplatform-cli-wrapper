@@ -28,8 +28,8 @@ export async function assignUser(parameters: AssignUserParameters, runnerParamet
     validator.pushInput(pacArgs, "--environment", parameters.environment);
     validator.pushInput(pacArgs, "--user", parameters.user);
     validator.pushInput(pacArgs, "--role", parameters.role);
-    validator.pushInput(pacArgs, "--application-user", parameters.role);
-    validator.pushInput(pacArgs, "--business-unit", parameters.role);
+    validator.pushInput(pacArgs, "--application-user", parameters.applicationUser);
+    validator.pushInput(pacArgs, "--business-unit", parameters.businessUnit);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
