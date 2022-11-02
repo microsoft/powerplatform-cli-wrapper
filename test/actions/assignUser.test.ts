@@ -33,7 +33,7 @@ describe("action: assignUser", () => {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
 
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/assignUser"),
-      (mock : any) => {
+      (mock: any) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
         mock(() => import("../../src/pac/auth/authenticate")).with(
           {
@@ -42,10 +42,10 @@ describe("action: assignUser", () => {
           });
       });
 
-      authenticateAdminStub.returns("Authentication successfully created.");
-      clearAuthenticationStub.returns("Authentication profiles and token cache removed");
-      pacStub.returns(["Adding user to environment..."]);
-      await mockedActionModule.assignUser(assignUserParameters, runnerParameters, host);
+    authenticateAdminStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns(["Adding user to environment..."]);
+    await mockedActionModule.assignUser(assignUserParameters, runnerParameters, host);
   }
 
   const createMinMockParameters = (): AssignUserParameters => ({
@@ -57,11 +57,28 @@ describe("action: assignUser", () => {
     businessUnit: { name: "BusinessUnit", required: false }
   });
 
+  it("should pass only noun and verb to pac when no parameters are passed", async () => {
+    await runActionWithMocks({ credentials: mockClientCredentials } as AssignUserParameters);
+    pacStub.should.have.been.calledOnceWith("admin", "assign-user");
+  });
+
   it("with minimal inputs, calls pac runner with correct arguments", async () => {
     await runActionWithMocks(assignUserParameters);
 
     authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
     pacStub.should.have.been.calledOnceWith("admin", "assign-user", "--environment", host.environment, "--user", host.user, "--role", host.role);
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
+  });
+
+  it("with application user inputs, calls pac runner with correct arguments", async () => {
+    await runActionWithMocks({
+      ...createMinMockParameters(),
+      applicationUser: { name: "ApplicationUser", required: false, defaultValue: host.applicationUser },
+      businessUnit: { name: "BusinessUnit", required: false, defaultValue: host.businessUnit }
+    });
+
+    authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
+    pacStub.should.have.been.calledOnceWith("admin", "assign-user", "--environment", host.environment, "--user", host.user, "--role", host.role, "--application-user", host.applicationUser, "--business-unit", host.businessUnit);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 

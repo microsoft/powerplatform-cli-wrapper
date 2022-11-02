@@ -46,6 +46,8 @@ export class mockHost implements IHostAbstractions {
   dataDirectory = './ContosoData';
   incidentTableName = 'incident';
   tableComponentType = 1;
+  applicationUser = 'true';
+  businessUnit = 'BUS00000-0000-0000-0000-000000000003';
 
   public getInput(entry: HostParameterEntry): string | undefined {
     const candidateValue = this._spy ? this._spy(entry) : undefined;
@@ -89,6 +91,8 @@ export class mockHost implements IHostAbstractions {
         case "DataDirectory": return this.dataDirectory;
         case "Component": return this.incidentTableName;
         case "ComponentType": return this.tableComponentType.toString();
+        case "ApplicationUser": return this.applicationUser;
+        case "BusinessUnit": return this.businessUnit;
         default: {
           return candidateValue || `<<input param '${entry.name}' is required but undefined>>`;
         }
