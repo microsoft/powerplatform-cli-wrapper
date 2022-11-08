@@ -48,6 +48,9 @@ export class mockHost implements IHostAbstractions {
   tableComponentType = 1;
   applicationUser = 'true';
   businessUnit = 'BUS00000-0000-0000-0000-000000000003';
+  teamType = "1";
+  membershipType = "2";
+  azureAadGroup = 'AZUREGROU-P000-0000-0000-000000000002';
 
   public getInput(entry: HostParameterEntry): string | undefined {
     const candidateValue = this._spy ? this._spy(entry) : undefined;
@@ -93,6 +96,10 @@ export class mockHost implements IHostAbstractions {
         case "ComponentType": return this.tableComponentType.toString();
         case "ApplicationUser": return this.applicationUser;
         case "BusinessUnit": return this.businessUnit;
+        case "TeamType": return this.teamType.toString();
+        case "MembershipType": return this.membershipType.toString();
+        case "AzureAadGroup": return this.azureAadGroup;
+        case "GroupName": return this.name;
         default: {
           return candidateValue || `<<input param '${entry.name}' is required but undefined>>`;
         }
