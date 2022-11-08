@@ -13,7 +13,7 @@ export interface AssignGroupParameters {
   role: HostParameterEntry;
   teamType: HostParameterEntry;
   membershipType: HostParameterEntry;
-  businessUnit: HostParameterEntry;
+  businessUnit?: HostParameterEntry;
 }
 
 export async function assignGroup(parameters: AssignGroupParameters, runnerParameters: RunnerParameters, host: IHostAbstractions) {
