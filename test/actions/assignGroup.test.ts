@@ -42,18 +42,18 @@ describe("action: assignGroup", () => {
             clearAuthentication: clearAuthenticationStub
           });
       });
-      authenticateAdminStub.returns("Authentication successfully created.");
-      clearAuthenticationStub.returns("Authentication profiles and token cache removed");
-      pacStub.returns(["Adding user to environment..."]);
-      await mockedActionModule.assignGroup(assignGroupParameters, runnerParameters, host);
-    }
+    authenticateAdminStub.returns("Authentication successfully created.");
+    clearAuthenticationStub.returns("Authentication profiles and token cache removed");
+    pacStub.returns(["Adding user to environment..."]);
+    await mockedActionModule.assignGroup(assignGroupParameters, runnerParameters, host);
+  }
 
   const createMinMockParameters = (): AssignGroupParameters => ({
     credentials: mockClientCredentials,
     environment: { name: "Environment", required: true },
-    name: { name: "Name", required: true },
     azureAadGroup: { name: "AzureAadGroup", required: true },
     groupName: { name: "GroupName", required: true },
+    role: { name: "Role", required: true },
     teamType: { name: "TeamType", required: true },
     membershipType: { name: "MembershipType", required: true },
     businessUnit: { name: "BusinessUnit", required: false }
@@ -62,6 +62,32 @@ describe("action: assignGroup", () => {
   it("Should pass only noun and verb to pac when no parameters are passed", async () => {
     await runActionWithMocks({ credentials: mockClientCredentials } as AssignGroupParameters);
     pacStub.should.have.been.calledOnceWithExactly("admin", "assign-group");
+  });
+
+  it("Should pass when no business unit value is passed", async () => {
+    await runActionWithMocks(assignGroupParameters);
+    pacStub.should.have.been.calledOnceWithExactly("admin", "assign-group",
+      "--environment", host.environment,
+      "--group", host.azureAadGroup,
+      "--group-name", host.name,
+      "--role", host.role,
+      "--team-type", host.teamType,
+      "--membership-type", host.membershipType);
+  });
+
+  it("Should pass all parameters to pac when all parameters are passed", async () => {
+    // test does not pick up value for businessUnit when provided in assignGroupParameters as required: false
+    const forceBusinessUnitAsRequired = { ...assignGroupParameters, businessUnit: { name: "BusinessUnit", required: true } } as AssignGroupParameters;
+
+    await runActionWithMocks(forceBusinessUnitAsRequired);
+    pacStub.should.have.been.calledOnceWithExactly("admin", "assign-group",
+      "--environment", host.environment,
+      "--group", host.azureAadGroup,
+      "--group-name", host.name,
+      "--role", host.role,
+      "--team-type", host.teamType,
+      "--membership-type", host.membershipType,
+      "--business-unit", host.businessUnit);
   });
 
 });

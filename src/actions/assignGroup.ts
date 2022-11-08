@@ -8,9 +8,9 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 export interface AssignGroupParameters {
   credentials: AuthCredentials;
   environment: HostParameterEntry;
-  name: HostParameterEntry;
   azureAadGroup: HostParameterEntry;
   groupName: HostParameterEntry;
+  role: HostParameterEntry;
   teamType: HostParameterEntry;
   membershipType: HostParameterEntry;
   businessUnit: HostParameterEntry;
@@ -28,9 +28,9 @@ export async function assignGroup(parameters: AssignGroupParameters, runnerParam
     logger.log("The Authentication Result: " + authenticateResult);
 
     validator.pushInput(pacArgs, "--environment", parameters.environment);
-    validator.pushInput(pacArgs, "--name", parameters.name);
-    validator.pushInput(pacArgs, "--azure-aad-group", parameters.azureAadGroup);
+    validator.pushInput(pacArgs, "--group", parameters.azureAadGroup);
     validator.pushInput(pacArgs, "--group-name", parameters.groupName);
+    validator.pushInput(pacArgs, "--role", parameters.role);
     validator.pushInput(pacArgs, "--team-type", parameters.teamType);
     validator.pushInput(pacArgs, "--membership-type", parameters.membershipType);
     validator.pushInput(pacArgs, "--business-unit", parameters.businessUnit);
