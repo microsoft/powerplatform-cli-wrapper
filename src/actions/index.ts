@@ -27,3 +27,4 @@ export * from "./assignUser";
 export * from "./addSolutionComponent";
 export * from "./dataExport";
 export * from "./dataImport";
+export * from "./assignGroup";
