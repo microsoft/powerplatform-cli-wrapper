@@ -64,30 +64,24 @@ describe("action: assignGroup", () => {
     pacStub.should.have.been.calledOnceWithExactly("admin", "assign-group");
   });
 
+  const requiredArgs = ["admin", "assign-group",
+  "--environment", host.environment,
+  "--group", host.azureAadGroup,
+  "--group-name", host.name,
+  "--role", host.role,
+  "--team-type", host.teamType,
+  "--membership-type", host.membershipType];
+
   it("Should pass when no business unit value is passed", async () => {
     await runActionWithMocks(assignGroupParameters);
-    pacStub.should.have.been.calledOnceWithExactly("admin", "assign-group",
-      "--environment", host.environment,
-      "--group", host.azureAadGroup,
-      "--group-name", host.name,
-      "--role", host.role,
-      "--team-type", host.teamType,
-      "--membership-type", host.membershipType);
+    pacStub.should.have.been.calledOnceWithExactly(...requiredArgs);
   });
 
   it("Should pass all parameters to pac when all parameters are passed", async () => {
     // test does not pick up value for businessUnit when provided in assignGroupParameters as required: false
     const forceBusinessUnitAsRequired = { ...assignGroupParameters, businessUnit: { name: "BusinessUnit", required: true } } as AssignGroupParameters;
-
+    const optionalArg = ["--business-unit", host.businessUnit];
     await runActionWithMocks(forceBusinessUnitAsRequired);
-    pacStub.should.have.been.calledOnceWithExactly("admin", "assign-group",
-      "--environment", host.environment,
-      "--group", host.azureAadGroup,
-      "--group-name", host.name,
-      "--role", host.role,
-      "--team-type", host.teamType,
-      "--membership-type", host.membershipType,
-      "--business-unit", host.businessUnit);
+    pacStub.should.have.been.calledOnceWithExactly(...requiredArgs.concat(optionalArg));
   });
-
 });
