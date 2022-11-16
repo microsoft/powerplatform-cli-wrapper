@@ -16,19 +16,21 @@ describe("pac", () => {
       appId: "APP_ID",
       clientSecret: "CLIENT_SECRET",
       tenantId: "TENANT_ID",
-      cloudInstance: ""   // should be resolved to its default: Public
+      cloudInstance: "",   // should be resolved to its default: Public
+      scheme: ""
     };
     const spnCredsEncoded = {
       appId: "APP_ID",
       clientSecret: "CLIENT_SECRET",
       encodeSecret: true,
       tenantId: "TENANT_ID",
-      cloudInstance: ""   // should be resolved to its default: Public
+      cloudInstance: "",   // should be resolved to its default: Public,
+      scheme: ""
     };
     const userCreds = {
       username: "USERNAME",
       password: "PASSWORD",
-      cloudInstance: "UsGov",
+      cloudInstance: "UsGov"
     };
     const userCredsEncoded = {
       username: "USERNAME",
