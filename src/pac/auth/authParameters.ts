@@ -5,6 +5,7 @@ export interface ClientCredentials
   encodeSecret?: boolean;
   tenantId: string;
   cloudInstance: string;
+  scheme: string;
 }
 
 export interface UsernamePassword

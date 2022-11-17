@@ -6,7 +6,8 @@ export const createMockClientCredentials = (): ClientCredentials => ({
   appId: 'APP_ID',
   clientSecret: 'CLIENT_SECRET',
   tenantId: 'TENANT_ID',
-  cloudInstance: 'Public'
+  cloudInstance: 'Public',
+  scheme: 'None'
 });
 
 export const mockEnvironmentUrl = 'https://contoso.crm.dynamics.com/';
