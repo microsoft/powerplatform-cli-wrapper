@@ -8,7 +8,8 @@ export function authenticateAdmin(pac: CommandRunner, credentials: AuthCredentia
 }
 
 export function authenticateEnvironment(pac: CommandRunner, credentials: AuthCredentials, environmentUrl: string, logger: Logger): Promise<string[]> {
-  logger.log(`authN to env: authType=${isUsernamePassword(credentials) ? 'UserPass' : 'SPN'}; cloudInstance: ${credentials.cloudInstance || '<not set>'}; envUrl: ${environmentUrl}`);
+
+  logger.log(`authN to env. authType:${isUsernamePassword(credentials) ? 'UserPass' : 'SPN'} authScheme:${isUsernamePassword(credentials) ? '' : `${credentials.scheme}`}; cloudInstance: ${credentials.cloudInstance || '<not set>'}; envUrl: ${environmentUrl}`);
   return pac("auth", "create", ...addUrl(environmentUrl), ...addCredentials(credentials), ...addCloudInstance(credentials));
 }
 
@@ -30,8 +31,12 @@ function isUsernamePassword(credentials: AuthCredentials): credentials is Userna
 }
 
 function addClientCredentials(parameters: ClientCredentials) {
-  process.env.PAC_CLI_SPN_SECRET = parameters.clientSecret;
 
+  if (parameters.scheme == "ManagedServiceIdentity"){
+    return ["--managedIdentity"];
+  }
+
+  process.env.PAC_CLI_SPN_SECRET = parameters.clientSecret;
   const clientSecret = parameters.encodeSecret ? `data:text/plain;base64,${Buffer.from(parameters.clientSecret, 'binary').toString('base64')}` : parameters.clientSecret;
 
   return [
