@@ -51,6 +51,7 @@ export class mockHost implements IHostAbstractions {
   teamType = "1";
   membershipType = "2";
   azureAadGroup = 'AZUREGROU-P000-0000-0000-000000000002';
+  botId = '00000000-0000-0000-0000-000000000003';
 
   public getInput(entry: HostParameterEntry): string | undefined {
     const candidateValue = this._spy ? this._spy(entry) : undefined;
@@ -100,6 +101,7 @@ export class mockHost implements IHostAbstractions {
         case "MembershipType": return this.membershipType.toString();
         case "AzureAadGroup": return this.azureAadGroup;
         case "GroupName": return this.name;
+        case "BotId": return this.botId;
         default: {
           return candidateValue || `<<input param '${entry.name}' is required but undefined>>`;
         }
