@@ -23,6 +23,7 @@ export async function publishSolution(parameters: PublishSolutionParameters, run
     const pacArgs = ["solution", "publish"];
     const validator = new InputValidator(host);
     validator.pushInput(pacArgs, "--async", parameters.async);
+    validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
