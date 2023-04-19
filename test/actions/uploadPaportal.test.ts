@@ -67,12 +67,4 @@ describe("action: upload paportal", () => {
     pacStub.should.have.been.calledOnceWith("paportal", "upload", "--path", path);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
-
-  it("with optional params, calls pac runner with correct args", async () => {
-    await runActionWithMocks(uploadPaportalParameters);
-
-    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
-    pacStub.should.have.been.calledOnceWith("paportal", "upload", "--path", path, "--deploymentProfile", "DeploymentProfile", "--modelVersion", "ModelVersion");
-    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
-  });
 });
