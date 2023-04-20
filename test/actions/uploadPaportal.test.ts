@@ -57,6 +57,7 @@ describe("action: upload paportal", () => {
     environmentUrl: envUrl,
     path: { name: "uploadPath", required: true },
     deploymentProfile: { name: "DeploymentProfile", required: false },
+    modelVersion: { name: "ModelVersion", required: false }
   });
 
   it("with required params, calls pac runner with correct args", async () => {

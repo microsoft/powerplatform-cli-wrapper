@@ -10,6 +10,7 @@ export interface UploadPaportalParameters {
   environmentUrl: string;
   path: HostParameterEntry;
   deploymentProfile: HostParameterEntry;
+  modelVersion: HostParameterEntry;
 }
 
 export async function uploadPaportal(parameters: UploadPaportalParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
@@ -25,6 +26,7 @@ export async function uploadPaportal(parameters: UploadPaportalParameters, runne
 
     validator.pushInput(pacArgs, "--path", parameters.path);
     validator.pushInput(pacArgs, "--deploymentProfile", parameters.deploymentProfile);
+    validator.pushInput(pacArgs, "--modelVersion", parameters.modelVersion);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
