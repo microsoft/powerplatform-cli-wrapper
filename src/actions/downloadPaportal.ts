@@ -12,6 +12,7 @@ export interface DownloadPaportalParameters {
   websiteId: HostParameterEntry;
   overwrite: HostParameterEntry;
   excludeEntities: HostParameterEntry;
+  modelVersion: HostParameterEntry;
 }
 
 export async function downloadPaportal(parameters: DownloadPaportalParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
@@ -29,7 +30,8 @@ export async function downloadPaportal(parameters: DownloadPaportalParameters, r
     validator.pushInput(pacArgs, "--websiteId", parameters.websiteId);
     validator.pushInput(pacArgs, "--overwrite", parameters.overwrite);
     validator.pushInput(pacArgs, "--excludeEntities", parameters.excludeEntities);
-    
+    validator.pushInput(pacArgs, "--modelVersion", parameters.modelVersion);
+
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
