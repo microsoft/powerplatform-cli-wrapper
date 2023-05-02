@@ -181,7 +181,6 @@ describe("action: check solution", () => {
 
   it("verify checker with save results", async () => {
     customEndpoint = "";
-    //checkSolutionParameters.geoInstance =  { name: "GeoInstance", required: false, defaultValue: "" };
     checkSolutionParameters.saveResults = { name: "SaveResults", required: false, defaultValue: true };
 
     await runActionWithMocks(checkSolutionParameters);
