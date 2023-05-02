@@ -209,4 +209,5 @@ describe("action: check solution", () => {
     "--outputDirectory", "checker-output"
     );
   });
+
 });
