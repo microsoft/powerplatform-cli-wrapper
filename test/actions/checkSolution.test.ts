@@ -95,6 +95,7 @@ describe("action: check solution", () => {
       failOnAnalysisError: { name: "FailOnPowerAppsCheckerAnalysisError", required: false, defaultValue: true },
       geoInstance: { name: "GeoInstance", required: false, defaultValue: "unitedstates" },
       filesExcluded: { name: "FilesToExclude", required: false, defaultValue: "" },
+      saveResults: { name: "SaveResults", required: false, defaultValue: false },
     };
   });
   afterEach(() => restore());
@@ -178,6 +179,22 @@ describe("action: check solution", () => {
     );
   });
 
+  it("verify checker with save results", async () => {
+    customEndpoint = "";
+    //checkSolutionParameters.geoInstance =  { name: "GeoInstance", required: false, defaultValue: "" };
+    checkSolutionParameters.saveResults = { name: "SaveResults", required: false, defaultValue: true };
+
+    await runActionWithMocks(checkSolutionParameters);
+
+    pacStub.should.have.been.calledOnceWith("solution", "check",
+    "--path", absoluteSolutionPath,
+    "--ruleSet", "SolutionChecker",
+    "--geo", "unitedstates",
+    "--outputDirectory", "checker-output",
+    "--saveResults", "true"
+    );
+  });
+
   it("verify checker with rule override that needs to be passed as file to pac CLI", async () => {
     customEndpoint = "";
     samplejson = '{ "rule": "sample" }';
@@ -192,5 +209,4 @@ describe("action: check solution", () => {
     "--outputDirectory", "checker-output"
     );
   });
-
 });
