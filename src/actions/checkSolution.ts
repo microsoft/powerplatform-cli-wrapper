@@ -26,6 +26,7 @@ export interface CheckSolutionParameters {
   errorLevel: HostParameterEntry;
   errorThreshold: HostParameterEntry;
   failOnAnalysisError: HostParameterEntry;
+  saveResults: HostParameterEntry;
 }
 
 export async function checkSolution(parameters: CheckSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
@@ -89,6 +90,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     const outputDirectory = path.join(artifactStore.getTempFolder(), 'checker-output');
     logger.debug(`checker-output folder: ${outputDirectory}`);
     pacArgs.push("--outputDirectory", outputDirectory);
+    validator.pushInput(pacArgs, "--saveResults", parameters.saveResults);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     //pacResult is not in any contractual format. It is an array similar to the one in checkSolution.test.ts
