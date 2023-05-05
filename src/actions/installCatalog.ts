@@ -8,7 +8,7 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 export interface InstallCatalogParameters {
   credentials: AuthCredentials;
   catalogItemId: HostParameterEntry;
-  targetUrl: HostParameterEntry;
+  targetEnvironmentUrl: HostParameterEntry;
   targetVersion?: HostParameterEntry;
   settings?: HostParameterEntry;
   pollStatus?: HostParameterEntry;
@@ -27,7 +27,7 @@ export async function installCatalog(parameters: InstallCatalogParameters, runne
     const validator = new InputValidator(host);
 
     validator.pushInput(pacArgs, "--catalog-item-id", parameters.catalogItemId);
-    validator.pushInput(pacArgs, "--target-url", parameters.targetUrl);
+    validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl);
     validator.pushInput(pacArgs, "--settings", parameters.settings);
     validator.pushInput(pacArgs, "--target-version", parameters.targetVersion);
     validator.pushInput(pacArgs, "--poll-status", parameters.pollStatus);

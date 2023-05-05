@@ -40,7 +40,7 @@ describe("action: install catalog", () => {
             clearAuthentication: clearAuthenticationStub
           });
       });
-    
+
     authenticateAdminStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
@@ -50,7 +50,7 @@ describe("action: install catalog", () => {
   const createInstallCatalogParameters = (): InstallCatalogParameters => ({
     credentials: mockClientCredentials,
     catalogItemId: { name: "CatalogItemId", required: true },
-    targetUrl: { name: "TargetEnvironmentUrl", required: true },
+    targetEnvironmentUrl: { name: "TargetEnvironmentUrl", required: true },
     settings: { name: "Settings", required: false },
     targetVersion: { name: "TargetVersion", required: false },
     pollStatus: { name: "PollStatus", required: false }
