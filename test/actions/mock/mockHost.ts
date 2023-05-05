@@ -55,6 +55,7 @@ export class mockHost implements IHostAbstractions {
   catalogItemId = '00000000-0000-0000-0000-000000000004';
   trackingId = '00000000-0000-0000-0000-000000000005';
   requestType = 'install';
+  relativeCatalogSubmissionPath = './CatalogSubmission.json';
 
   public getInput(entry: HostParameterEntry): string | undefined {
     const candidateValue = this._spy ? this._spy(entry) : undefined;
@@ -108,6 +109,7 @@ export class mockHost implements IHostAbstractions {
         case "CatalogItemId": return this.catalogItemId;
         case "TrackingId": return this.trackingId;
         case "RequestType": return this.requestType;
+        case "CatalogSubmissionFile": return this.relativeCatalogSubmissionPath;
         default: {
           return candidateValue || `<<input param '${entry.name}' is required but undefined>>`;
         }
