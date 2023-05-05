@@ -30,3 +30,4 @@ export * from "./dataImport";
 export * from "./assignGroup";
 export * from "./virtualAgentsStatus";
 export * from './installCatalog';
+export * from './catalogStatus';
