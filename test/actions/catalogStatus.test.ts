@@ -7,7 +7,7 @@ import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { CatalogStatusParameters } from "src/actions/catalogStatus";
 import Sinon = require("sinon");
-import { createDefaultMockRunnerParameters, createMockClientCredentials } from "./mock/mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { mockHost } from "./mock/mockHost";
 should();
 use(sinonChai);
@@ -15,15 +15,16 @@ use(chaiAsPromised);
 
 describe("action: catalog status", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
-  let authenticateAdminStub: Sinon.SinonStub<any[],any>;
+  let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const mockedHost = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
+  const environmentUrl: string = mockEnvironmentUrl;
   let catalogStatusParameters: CatalogStatusParameters;
 
   beforeEach(() => {
     pacStub = stub();
-    authenticateAdminStub = stub();
+    authenticateEnvironmentStub = stub();
     clearAuthenticationStub = stub();
     catalogStatusParameters = createCatalogStatusParameters();
   })
@@ -36,12 +37,12 @@ describe("action: catalog status", () => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
         mock(() => import("../../src/pac/auth/authenticate")).with(
           {
-            authenticateAdmin: authenticateAdminStub,
+            authenticateEnvironment: authenticateEnvironmentStub,
             clearAuthentication: clearAuthenticationStub
           });
       });
 
-    authenticateAdminStub.returns("Authentication successfully created.");
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
     await mockedActionModule.catalogStatus(catalogStatusParameters, runnerParameters, mockedHost);
@@ -49,6 +50,7 @@ describe("action: catalog status", () => {
 
   const createCatalogStatusParameters = (): CatalogStatusParameters => ({
     credentials: mockClientCredentials,
+    environmentUrl: environmentUrl,
     trackingId: { name: "TrackingId", required: true },
     requestType: { name: "RequestType", required: true }
   });
@@ -56,7 +58,7 @@ describe("action: catalog status", () => {
   it("with required params, calls pac runner with correct args", async () => {
     await runActionWithMocks(catalogStatusParameters);
 
-    authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
     pacStub.should.have.been.calledOnceWith("catalog", "status", "--tracking-id", mockedHost.trackingId, "--type", mockedHost.requestType);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });

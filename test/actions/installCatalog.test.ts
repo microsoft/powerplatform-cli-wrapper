@@ -7,7 +7,7 @@ import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { InstallCatalogParameters } from "src/actions/installCatalog";
 import Sinon = require("sinon");
-import { createDefaultMockRunnerParameters, createMockClientCredentials } from "./mock/mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { mockHost } from "./mock/mockHost";
 should();
 use(sinonChai);
@@ -15,15 +15,16 @@ use(chaiAsPromised);
 
 describe("action: install catalog", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
-  let authenticateAdminStub: Sinon.SinonStub<any[],any>;
+  let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const mockedHost = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
+  const environmentUrl: string = mockEnvironmentUrl;
   let installCatalogParameters: InstallCatalogParameters;
 
   beforeEach(() => {
     pacStub = stub();
-    authenticateAdminStub = stub();
+    authenticateEnvironmentStub = stub();
     clearAuthenticationStub = stub();
     installCatalogParameters = createInstallCatalogParameters();
   })
@@ -36,12 +37,12 @@ describe("action: install catalog", () => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
         mock(() => import("../../src/pac/auth/authenticate")).with(
           {
-            authenticateAdmin: authenticateAdminStub,
+            authenticateEnvironment: authenticateEnvironmentStub,
             clearAuthentication: clearAuthenticationStub
           });
       });
 
-    authenticateAdminStub.returns("Authentication successfully created.");
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
     await mockedActionModule.installCatalog(installCatalogParameters, runnerParameters, mockedHost);
@@ -49,6 +50,7 @@ describe("action: install catalog", () => {
 
   const createInstallCatalogParameters = (): InstallCatalogParameters => ({
     credentials: mockClientCredentials,
+    environmentUrl: environmentUrl,
     catalogItemId: { name: "CatalogItemId", required: true },
     targetEnvironmentUrl: { name: "TargetEnvironmentUrl", required: true },
     settings: { name: "Settings", required: false },
@@ -59,7 +61,7 @@ describe("action: install catalog", () => {
   it("with required params, calls pac runner with correct args", async () => {
     await runActionWithMocks(installCatalogParameters);
 
-    authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
     pacStub.should.have.been.calledOnceWith("catalog", "install", "--catalog-item-id", mockedHost.catalogItemId, "--target-url", mockedHost.targetEnvironmentUrl);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });

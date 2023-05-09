@@ -1,12 +1,13 @@
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
-import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
+import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface SubmitCatalogParameters {
   credentials: AuthCredentials;
+  environmentUrl: string;
   path: HostParameterEntry;
   solutionZip?: HostParameterEntry;
   packageZip?: HostParameterEntry;
@@ -18,7 +19,7 @@ export async function submitCatalog(parameters: SubmitCatalogParameters, runnerP
   const pac = createPacRunner(runnerParameters);
 
   try {
-    const authenticateResult = await authenticateAdmin(pac, parameters.credentials, logger);
+    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
     const pacArgs = ["catalog", "submit"];

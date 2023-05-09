@@ -1,12 +1,13 @@
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
-import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
+import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface CatalogStatusParameters {
   credentials: AuthCredentials;
+  environmentUrl: string;
   trackingId: HostParameterEntry;
   requestType: HostParameterEntry;
 }
@@ -16,10 +17,9 @@ export async function catalogStatus(parameters: CatalogStatusParameters, runnerP
   const pac = createPacRunner(runnerParameters);
 
   try {
-    const authenticateResult = await authenticateAdmin(pac, parameters.credentials, logger);
+    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
-    // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
     const pacArgs = ["catalog", "status"];
     const validator = new InputValidator(host);
 
