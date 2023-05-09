@@ -7,7 +7,7 @@ import { restore, stub } from "sinon";
 import { ClientCredentials, RunnerParameters } from "../../src";
 import { InstallCatalogParameters } from "src/actions/installCatalog";
 import Sinon = require("sinon");
-import { createDefaultMockRunnerParameters, createMockClientCredentials } from "./mock/mockData";
+import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 import { mockHost } from "./mock/mockHost";
 should();
 use(sinonChai);
@@ -19,6 +19,7 @@ describe("action: install catalog", () => {
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const mockedHost = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
+  const environmentUrl: string = mockEnvironmentUrl;
   let installCatalogParameters: InstallCatalogParameters;
 
   beforeEach(() => {
@@ -49,6 +50,7 @@ describe("action: install catalog", () => {
 
   const createInstallCatalogParameters = (): InstallCatalogParameters => ({
     credentials: mockClientCredentials,
+    environmentUrl: environmentUrl,
     catalogItemId: { name: "CatalogItemId", required: true },
     targetEnvironmentUrl: { name: "TargetEnvironmentUrl", required: true },
     settings: { name: "Settings", required: false },

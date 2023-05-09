@@ -1,12 +1,13 @@
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
-import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
+import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
 export interface InstallCatalogParameters {
   credentials: AuthCredentials;
+  environmentUrl: string;
   catalogItemId: HostParameterEntry;
   targetEnvironmentUrl: HostParameterEntry;
   targetVersion?: HostParameterEntry;
@@ -19,10 +20,9 @@ export async function installCatalog(parameters: InstallCatalogParameters, runne
   const pac = createPacRunner(runnerParameters);
 
   try {
-    const authenticateResult = await authenticateAdmin(pac, parameters.credentials, logger);
+    const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
-    // Made environment url mandatory and removed environment id as there are planned changes in PAC CLI on the parameter.
     const pacArgs = ["catalog", "install"];
     const validator = new InputValidator(host);
 
