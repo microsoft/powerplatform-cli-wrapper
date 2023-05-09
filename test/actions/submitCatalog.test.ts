@@ -15,7 +15,7 @@ use(chaiAsPromised);
 
 describe("action: Submit catalog", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
-  let authenticateAdminStub: Sinon.SinonStub<any[],any>;
+  let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const mockedHost = new mockHost();
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
@@ -24,7 +24,7 @@ describe("action: Submit catalog", () => {
 
   beforeEach(() => {
     pacStub = stub();
-    authenticateAdminStub = stub();
+    authenticateEnvironmentStub = stub();
     clearAuthenticationStub = stub();
     submitCatalogParameters = createSubmitCatalogParameters();
   })
@@ -37,12 +37,12 @@ describe("action: Submit catalog", () => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
         mock(() => import("../../src/pac/auth/authenticate")).with(
           {
-            authenticateAdmin: authenticateAdminStub,
+            authenticateEnvironment: authenticateEnvironmentStub,
             clearAuthentication: clearAuthenticationStub
           });
       });
 
-    authenticateAdminStub.returns("Authentication successfully created.");
+    authenticateEnvironmentStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
     pacStub.returns("");
     await mockedActionModule.submitCatalog(submitCatalogParameters, runnerParameters, mockedHost);
@@ -60,7 +60,7 @@ describe("action: Submit catalog", () => {
   it("with required params, calls pac runner with correct args", async () => {
     await runActionWithMocks(submitCatalogParameters);
 
-    authenticateAdminStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
     pacStub.should.have.been.calledOnceWith("catalog", "submit", "--path", mockedHost.relativeCatalogSubmissionPath);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
