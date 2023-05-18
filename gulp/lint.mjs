@@ -1,7 +1,7 @@
-const gulp = require("gulp");
-const eslint = require("gulp-eslint");
+import gulp from "gulp";
+import eslint from "gulp-eslint";
 
-module.exports = function lint() {
+export default function lint() {
   return gulp
     .src(["src/**/*.ts", "test/**/*.ts"])
     .pipe(

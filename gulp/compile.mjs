@@ -1,9 +1,9 @@
-const ts = require("gulp-typescript");
-const gulp = require("gulp");
-const sourcemaps = require("gulp-sourcemaps");
-const distDir = require("./lib/distDir");
+import ts from "gulp-typescript";
+import gulp from "gulp";
+import sourcemaps from "gulp-sourcemaps";
+import distDir from "./lib/distDir.mjs";
 
-module.exports = function compile() {
+export default function compile() {
   const tsProj = ts.createProject("tsconfig.json");
   return (
     gulp
