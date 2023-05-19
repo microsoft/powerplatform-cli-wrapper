@@ -9,7 +9,7 @@ export interface SubmitCatalogParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   path: HostParameterEntry;
-  usePackageSolutionZipFile: HostParameterEntry;
+  packageSolutionZipFile: HostParameterEntry;
   solutionZip?: HostParameterEntry;
   packageZip?: HostParameterEntry;
   pollStatus?: HostParameterEntry;
@@ -29,10 +29,10 @@ export async function submitCatalog(parameters: SubmitCatalogParameters, runnerP
     validator.pushInput(pacArgs, "--path", parameters.path);
     validator.pushInput(pacArgs, "--poll-status", parameters.pollStatus);
 
-    if (validator.getInput(parameters.usePackageSolutionZipFile) === 'SolutionZipFile') {
+    if (validator.getInput(parameters.packageSolutionZipFile) === 'SolutionZipFile') {
       validator.pushInput(pacArgs, "--solution-zip", parameters.solutionZip);
     }
-    if (validator.getInput(parameters.usePackageSolutionZipFile) === 'PackageZipFile') {
+    if (validator.getInput(parameters.packageSolutionZipFile) === 'PackageZipFile') {
       validator.pushInput(pacArgs, "--package-zip", parameters.packageZip);
     }
 
