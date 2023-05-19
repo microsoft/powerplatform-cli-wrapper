@@ -54,6 +54,9 @@ export class mockHost implements IHostAbstractions {
   botId = '00000000-0000-0000-0000-000000000003';
   catalogItemId = '00000000-0000-0000-0000-000000000004';
   trackingId = '00000000-0000-0000-0000-000000000005';
+  stageId = '00000000-0000-0000-0000-000000000006';
+  deploymentEnvironment = '00000000-0000-0000-0000-000000000007';
+  version = '1.2.3.4';
   requestType = 'install';
   relativeCatalogSubmissionPath = './CatalogSubmission.json';
 
@@ -108,6 +111,9 @@ export class mockHost implements IHostAbstractions {
         case "BotId": return this.botId;
         case "CatalogItemId": return this.catalogItemId;
         case "TrackingId": return this.trackingId;
+        case "StageId": return this.stageId;
+        case "DeploymentEnvironment": return this.deploymentEnvironment;
+        case "Version": return this.version;
         case "RequestType": return this.requestType;
         case "CatalogSubmissionFile": return this.relativeCatalogSubmissionPath;
         default: {

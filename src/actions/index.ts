@@ -32,3 +32,4 @@ export * from "./virtualAgentsStatus";
 export * from './installCatalog';
 export * from './catalogStatus';
 export * from './submitCatalog';
+export * from "./pipelineDeploy";
