@@ -52,6 +52,7 @@ describe("action: Submit catalog", () => {
     credentials: mockClientCredentials,
     environmentUrl: environmentUrl,
     path: { name: "CatalogSubmissionFile", required: true },
+    packageSolutionZipFile: { name: "PackageSolutionZipFile", required: true },
     solutionZip: { name: "SolutionZipFile", required: false },
     packageZip: { name: "PackageZipFile", required: false },
     pollStatus: { name: "PollStatus", required: false }

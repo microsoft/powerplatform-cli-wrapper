@@ -9,6 +9,7 @@ export interface SubmitCatalogParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   path: HostParameterEntry;
+  packageSolutionZipFile: HostParameterEntry;
   solutionZip?: HostParameterEntry;
   packageZip?: HostParameterEntry;
   pollStatus?: HostParameterEntry;
@@ -26,9 +27,14 @@ export async function submitCatalog(parameters: SubmitCatalogParameters, runnerP
     const validator = new InputValidator(host);
 
     validator.pushInput(pacArgs, "--path", parameters.path);
-    validator.pushInput(pacArgs, "--solution-zip", parameters.solutionZip);
-    validator.pushInput(pacArgs, "--package-zip", parameters.packageZip);
     validator.pushInput(pacArgs, "--poll-status", parameters.pollStatus);
+
+    if (validator.getInput(parameters.packageSolutionZipFile) === 'SolutionZipFile') {
+      validator.pushInput(pacArgs, "--solution-zip", parameters.solutionZip);
+    }
+    if (validator.getInput(parameters.packageSolutionZipFile) === 'PackageZipFile') {
+      validator.pushInput(pacArgs, "--package-zip", parameters.packageZip);
+    }
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
