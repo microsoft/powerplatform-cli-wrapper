@@ -19,6 +19,7 @@ use(chaiAsPromised);
 describe("action: check solution", () => {
   let pacStub: Sinon.SinonStub<any[],any>;
   let authenticateAdminStub: Sinon.SinonStub<any[], any>;
+  let authenticateEnvironmentStub: Sinon.SinonStub<any[], any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   let checkSolutionParameters: CheckSolutionParameters;
   const pacResults:string[] = [
@@ -79,6 +80,7 @@ describe("action: check solution", () => {
     pacStub = stub();
     authenticateAdminStub = stub();
     clearAuthenticationStub = stub();
+    authenticateEnvironmentStub = stub();
     checkSolutionParameters = {
       credentials: mockClientCredentials,
       environmentUrl: environmentUrl,
@@ -108,6 +110,7 @@ describe("action: check solution", () => {
         mock(() => import("../../src/pac/auth/authenticate")).with(
           {
             authenticateAdmin: authenticateAdminStub,
+            authenticateEnvironment: authenticateEnvironmentStub,
             clearAuthentication: clearAuthenticationStub
           });
       });
@@ -182,9 +185,11 @@ describe("action: check solution", () => {
   it("verify checker with save results", async () => {
     customEndpoint = "";
     checkSolutionParameters.saveResults = { name: "SaveResults", required: false, defaultValue: true };
-
+	
     await runActionWithMocks(checkSolutionParameters);
-
+	
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
+	
     pacStub.should.have.been.calledOnceWith("solution", "check",
     "--path", absoluteSolutionPath,
     "--ruleSet", "SolutionChecker",

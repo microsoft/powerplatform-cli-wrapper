@@ -5,7 +5,7 @@ import path = require("path");
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import createPacRunner from "../pac/createPacRunner";
-import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
+import { authenticateAdmin, authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import { promises, rmdirSync, rmSync, writeFile } from "fs-extra";
@@ -49,8 +49,17 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
   const failOnAnalysisError = validator.getInput(parameters.failOnAnalysisError) === 'true';
 
   let ruleLevelOverrideFile: string | undefined;
+  
   try {
-    const authenticateResult = await authenticateAdmin(pac, parameters.credentials, logger);
+    let authenticateResult: string[] | undefined;
+    
+    if(validator.getInput(parameters.saveResults) !== 'true'){
+      authenticateResult = await authenticateAdmin(pac, parameters.credentials, logger);
+    }
+    else {
+      authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
+    }
+
     logger.log("The Authentication Result: " + authenticateResult);
 
     const pacArgs = ["solution", "check"]
