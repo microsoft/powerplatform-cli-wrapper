@@ -189,7 +189,6 @@ describe("action: check solution", () => {
     await runActionWithMocks(checkSolutionParameters);
 	
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-	
     pacStub.should.have.been.calledOnceWith("solution", "check",
     "--path", absoluteSolutionPath,
     "--ruleSet", "SolutionChecker",
