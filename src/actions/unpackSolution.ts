@@ -5,13 +5,15 @@ import fs = require("fs-extra");
 import { IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import createPacRunner from "../pac/createPacRunner";
+import getPacLogPath from "../pac/getPacLogPath";
 import { RunnerParameters } from "../Parameters";
 import { SolutionPackUnpackParameters } from "./actionParameters/solutionPackUnpackParameters";
 import { setSolutionPackagingCommonArgs } from "./solutionPackagingBase";
 
 export async function unpackSolution(parameters: SolutionPackUnpackParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
-  const [pac, pacLogs] = createPacRunner(runnerParameters);
+  const pac = createPacRunner(runnerParameters);
+  const pacLogs = getPacLogPath(runnerParameters);
 
   try {
     const pacArgs = ["solution", "unpack"];

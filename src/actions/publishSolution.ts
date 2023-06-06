@@ -1,6 +1,7 @@
 import fs = require("fs-extra");
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
+import getPacLogPath from "../pac/getPacLogPath";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
@@ -15,7 +16,8 @@ export interface PublishSolutionParameters {
 
 export async function publishSolution(parameters: PublishSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
-  const [pac, pacLogs] = createPacRunner(runnerParameters);
+  const pac = createPacRunner(runnerParameters);
+  const pacLogs = getPacLogPath(runnerParameters);
 
   try {
     const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);

@@ -4,6 +4,7 @@ import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
+import getPacLogPath from "../pac/getPacLogPath";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
@@ -20,7 +21,8 @@ export async function dataImport(parameters: DataImportParameters, runnerParamet
     throw new Error(`'data export' is only supported on Windows agents/runners (attempted run on ${platform})`);
   }
   const logger = runnerParameters.logger;
-  const [pac, pacLogs] = createPacRunner(runnerParameters);
+  const pac = createPacRunner(runnerParameters);
+  const pacLogs = getPacLogPath(runnerParameters);
 
   const pacArgs = ["data", "import"];
   const validator = new InputValidator(host);

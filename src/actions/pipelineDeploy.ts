@@ -3,6 +3,7 @@ import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
+import getPacLogPath from "../pac/getPacLogPath";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
@@ -20,7 +21,8 @@ export interface PipelineDeployParameters {
 export async function pipelineDeploy(parameters: PipelineDeployParameters, runnerParameters: RunnerParameters, host: IHostAbstractions) {
 
   const logger = runnerParameters.logger;
-  const [pac, pacLogs] = createPacRunner(runnerParameters);
+  const pac = createPacRunner(runnerParameters);
+  const pacLogs = getPacLogPath(runnerParameters);
 
   const pacArgs = ["pipeline", "deploy"];
   const validator = new InputValidator(host);

@@ -5,6 +5,7 @@ import fs = require("fs-extra");
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import { IHostAbstractions } from "../host/IHostAbstractions";
 import createPacRunner from "../pac/createPacRunner";
+import getPacLogPath from "../pac/getPacLogPath";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
@@ -19,7 +20,8 @@ export interface WhoAmIResult {
 
 export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<WhoAmIResult> {
   const logger = runnerParameters.logger;
-  const [pac, pacLogs] = createPacRunner(runnerParameters);
+  const pac = createPacRunner(runnerParameters);
+  const pacLogs = getPacLogPath(runnerParameters);
 
   try {
     const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);

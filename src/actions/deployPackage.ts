@@ -6,6 +6,7 @@ import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
+import getPacLogPath from "../pac/getPacLogPath";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
@@ -20,7 +21,8 @@ export interface DeployPackageParameters {
 export async function deployPackage(parameters: DeployPackageParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
   const artifactStore = host.getArtifactStore();
-  const [pac, pacLogs] = createPacRunner(runnerParameters);
+  const pac = createPacRunner(runnerParameters);
+  const pacLogs = getPacLogPath(runnerParameters);
   let logFile = "";
 
   try {

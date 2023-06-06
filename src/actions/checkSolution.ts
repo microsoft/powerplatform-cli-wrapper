@@ -6,6 +6,7 @@ import path = require("path");
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import createPacRunner from "../pac/createPacRunner";
+import getPacLogPath from "../pac/getPacLogPath";
 import { authenticateAdmin, authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
@@ -32,7 +33,8 @@ export interface CheckSolutionParameters {
 
 export async function checkSolution(parameters: CheckSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
-  const [pac, pacLogs] = createPacRunner(runnerParameters);
+  const pac = createPacRunner(runnerParameters);
+  const pacLogs = getPacLogPath(runnerParameters);
   const validator = new InputValidator(host);
   const artifactStore = host.getArtifactStore();
 

@@ -3,6 +3,7 @@ import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
+import getPacLogPath from "../pac/getPacLogPath";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
@@ -17,7 +18,8 @@ export interface AddSolutionComponentParameters {
 
 export async function addSolutionComponent(parameters: AddSolutionComponentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions) {
   const logger = runnerParameters.logger;
-  const [pac, pacLogs] = createPacRunner(runnerParameters);
+  const pac = createPacRunner(runnerParameters);
+  const pacLogs = getPacLogPath(runnerParameters);
 
   const pacArgs = ["solution", "add-solution-component"];
   const inputValidator = new InputValidator(host);

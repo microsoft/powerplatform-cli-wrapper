@@ -3,6 +3,7 @@ import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions
 import { InputValidator } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
+import getPacLogPath from "../pac/getPacLogPath";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import { EnvironmentResult, getEnvironmentDetails } from "../actions/createEnvironment";
@@ -22,7 +23,8 @@ export interface RestoreEnvironmentParameters {
 
 export async function restoreEnvironment(parameters: RestoreEnvironmentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<EnvironmentResult> {
   const logger = runnerParameters.logger;
-  const [pac, pacLogs] = createPacRunner(runnerParameters);
+  const pac = createPacRunner(runnerParameters);
+  const pacLogs = getPacLogPath(runnerParameters);
 
   try {
     const authenticateResult = await authenticateAdmin(pac, parameters.credentials, logger);
