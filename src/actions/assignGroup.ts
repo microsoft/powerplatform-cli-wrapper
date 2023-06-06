@@ -1,3 +1,4 @@
+import fs = require("fs-extra");
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
@@ -18,7 +19,7 @@ export interface AssignGroupParameters {
 
 export async function assignGroup(parameters: AssignGroupParameters, runnerParameters: RunnerParameters, host: IHostAbstractions) {
   const logger = runnerParameters.logger;
-  const pac = createPacRunner(runnerParameters);
+  const [pac, pacLogs] = createPacRunner(runnerParameters);
 
   const pacArgs = ["admin", "assign-group"];
   const validator = new InputValidator(host);
@@ -45,5 +46,8 @@ export async function assignGroup(parameters: AssignGroupParameters, runnerParam
   } finally {
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
+    if (fs.pathExistsSync(pacLogs)) {
+      host.getArtifactStore().upload('PacLogs', [pacLogs]);
+    }
   }
 }

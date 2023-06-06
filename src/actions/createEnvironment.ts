@@ -1,3 +1,4 @@
+import fs = require("fs-extra");
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator, normalizeLanguage, normalizeRegion } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
@@ -24,7 +25,7 @@ export interface EnvironmentResult {
 
 export async function createEnvironment(parameters: CreateEnvironmentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<EnvironmentResult> {
   const logger = runnerParameters.logger;
-  const pac = createPacRunner(runnerParameters);
+  const [pac, pacLogs] = createPacRunner(runnerParameters);
 
   try {
     const authenticateResult = await authenticateAdmin(pac, parameters.credentials, logger);
@@ -55,6 +56,9 @@ export async function createEnvironment(parameters: CreateEnvironmentParameters,
   } finally {
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
+    if (fs.pathExistsSync(pacLogs)) {
+      host.getArtifactStore().upload('PacLogs', [pacLogs]);
+    }
   }
 }
 

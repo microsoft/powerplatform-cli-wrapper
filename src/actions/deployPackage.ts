@@ -20,7 +20,7 @@ export interface DeployPackageParameters {
 export async function deployPackage(parameters: DeployPackageParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
   const artifactStore = host.getArtifactStore();
-  const pac = createPacRunner(runnerParameters);
+  const [pac, pacLogs] = createPacRunner(runnerParameters);
   let logFile = "";
 
   try {
@@ -65,5 +65,8 @@ export async function deployPackage(parameters: DeployPackageParameters, runnerP
 
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
+    if (fs.pathExistsSync(pacLogs)) {
+      host.getArtifactStore().upload('PacLogs', [pacLogs]);
+    }
   }
 }

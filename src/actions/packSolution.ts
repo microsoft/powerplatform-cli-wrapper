@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import fs = require("fs-extra");
 import { IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import createPacRunner from "../pac/createPacRunner";
@@ -10,7 +11,7 @@ import { setSolutionPackagingCommonArgs } from "./solutionPackagingBase";
 
 export async function packSolution(parameters: SolutionPackUnpackParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
-  const pac = createPacRunner(runnerParameters);
+  const [pac, pacLogs] = createPacRunner(runnerParameters);
 
   try {
     const pacArgs = ["solution", "pack"];
@@ -24,5 +25,9 @@ export async function packSolution(parameters: SolutionPackUnpackParameters, run
   } catch (error) {
     logger.error(`failed: ${error instanceof Error ? error.message : error}`);
     throw error;
+  } finally {
+    if (fs.pathExistsSync(pacLogs)) {
+      host.getArtifactStore().upload('PacLogs', [pacLogs]);
+    }
   }
 }

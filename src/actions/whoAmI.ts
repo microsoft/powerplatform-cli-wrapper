@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import fs = require("fs-extra");
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
+import { IHostAbstractions } from "../host/IHostAbstractions";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
@@ -15,9 +17,9 @@ export interface WhoAmIResult {
   environmentId?: string
 }
 
-export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: RunnerParameters): Promise<WhoAmIResult> {
+export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<WhoAmIResult> {
   const logger = runnerParameters.logger;
-  const pac = createPacRunner(runnerParameters);
+  const [pac, pacLogs] = createPacRunner(runnerParameters);
 
   try {
     const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
@@ -43,5 +45,8 @@ export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: Run
   } finally {
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
+    if (fs.pathExistsSync(pacLogs)) {
+      host.getArtifactStore().upload('PacLogs', [pacLogs]);
+    }
   }
 }

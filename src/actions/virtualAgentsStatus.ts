@@ -1,3 +1,4 @@
+import fs = require("fs-extra");
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
@@ -13,7 +14,7 @@ export interface VirtualAgentStatusParameters {
 
 export async function virtualAgentsStatus(parameters: VirtualAgentStatusParameters, runnerParameters: RunnerParameters, host: IHostAbstractions) {
   const logger = runnerParameters.logger;
-  const pac = createPacRunner(runnerParameters);
+  const [pac, pacLogs] = createPacRunner(runnerParameters);
 
   const pacArgs = ["virtual-agent", "status"];
   const inputValidator = new InputValidator(host);
@@ -32,5 +33,8 @@ export async function virtualAgentsStatus(parameters: VirtualAgentStatusParamete
   } finally {
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
+    if (fs.pathExistsSync(pacLogs)) {
+      host.getArtifactStore().upload('PacLogs', [pacLogs]);
+    }
   }
 }

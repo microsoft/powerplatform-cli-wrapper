@@ -3,15 +3,17 @@ import { resolve } from "path";
 import { CommandRunner, createCommandRunner } from "../CommandRunner";
 import { RunnerParameters } from "../Parameters";
 
-export default function createPacRunner({workingDir, runnersDir, logger, agent}: RunnerParameters): CommandRunner
+export default function createPacRunner({workingDir, runnersDir, logger, agent}: RunnerParameters): [CommandRunner, string]
 {
-  return createCommandRunner(
+  const isWindows = platform() === "win32";
+  return [createCommandRunner(
     workingDir,
-    platform() === "win32"
+    isWindows
       ? resolve(runnersDir, "pac", "tools", "pac.exe")
       : resolve(runnersDir, "pac_linux", "tools", "pac"),
     logger,
     agent,
     undefined,
-  );
+  ),
+  resolve(runnersDir, (isWindows ? "pac" : "pac_linux"), "tools", "logs", "pac-log.txt")];
 }

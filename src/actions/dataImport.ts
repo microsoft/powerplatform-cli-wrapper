@@ -1,3 +1,4 @@
+import fs = require("fs-extra");
 import os = require("os");
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
@@ -19,7 +20,7 @@ export async function dataImport(parameters: DataImportParameters, runnerParamet
     throw new Error(`'data export' is only supported on Windows agents/runners (attempted run on ${platform})`);
   }
   const logger = runnerParameters.logger;
-  const pac = createPacRunner(runnerParameters);
+  const [pac, pacLogs] = createPacRunner(runnerParameters);
 
   const pacArgs = ["data", "import"];
   const validator = new InputValidator(host);
@@ -41,5 +42,8 @@ export async function dataImport(parameters: DataImportParameters, runnerParamet
   } finally {
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
+    if (fs.pathExistsSync(pacLogs)) {
+      host.getArtifactStore().upload('PacLogs', [pacLogs]);
+    }
   }
 }
