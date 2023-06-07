@@ -1,9 +1,7 @@
-import fs = require("fs-extra");
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
-import getPacLogPath from "../pac/getPacLogPath";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
@@ -20,7 +18,6 @@ export interface DownloadPaportalParameters {
 export async function downloadPaportal(parameters: DownloadPaportalParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
-  const pacLogs = getPacLogPath(runnerParameters);
 
   try {
     const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
@@ -45,8 +42,5 @@ export async function downloadPaportal(parameters: DownloadPaportalParameters, r
   } finally {
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
-    if (fs.pathExistsSync(pacLogs)) {
-      host.getArtifactStore().upload('PacLogs', [pacLogs]);
-    }
   }
 }
