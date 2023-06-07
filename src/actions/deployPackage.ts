@@ -62,13 +62,13 @@ export async function deployPackage(parameters: DeployPackageParameters, runnerP
     throw error;
   } finally {
     if (fs.pathExistsSync(logFile)) {
-      artifactStore.upload('DeployPackageLogs', [logFile]);
+      await artifactStore.upload('DeployPackageLogs', [logFile]);
     }
 
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
     if (fs.pathExistsSync(pacLogs)) {
-      host.getArtifactStore().upload('PacLogs', [pacLogs]);
+      await host.getArtifactStore().upload('PacLogs', [pacLogs]);
     }
   }
 }
