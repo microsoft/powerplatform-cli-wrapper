@@ -38,7 +38,7 @@ export async function unpackSolution(parameters: SolutionPackUnpackParameters, r
     throw error;
   } finally {
     if (fs.pathExistsSync(pacLogs)) {
-      host.getArtifactStore().upload('PacLogs', [pacLogs]);
+      await host.getArtifactStore().upload('PacLogs', [pacLogs]);
     }
   }
 }

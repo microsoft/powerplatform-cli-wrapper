@@ -49,7 +49,7 @@ export async function dataExport(parameters: DataExportParameters, runnerParamet
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
     if (fs.pathExistsSync(pacLogs)) {
-      host.getArtifactStore().upload('PacLogs', [pacLogs]);
+      await host.getArtifactStore().upload('PacLogs', [pacLogs]);
     }
   }
 }
