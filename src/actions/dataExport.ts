@@ -1,8 +1,10 @@
+import fs = require("fs-extra");
 import os = require("os");
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
+import getPacLogPath from "../pac/getPacLogPath";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
@@ -22,6 +24,7 @@ export async function dataExport(parameters: DataExportParameters, runnerParamet
   }
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
+  const pacLogs = getPacLogPath(runnerParameters);
 
   const pacArgs = ["data", "export"];
   const validator = new InputValidator(host);
@@ -45,5 +48,8 @@ export async function dataExport(parameters: DataExportParameters, runnerParamet
   } finally {
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
+    if (fs.pathExistsSync(pacLogs)) {
+      host.getArtifactStore().upload('PacLogs', [pacLogs]);
+    }
   }
 }

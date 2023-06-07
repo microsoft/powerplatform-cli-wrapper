@@ -6,6 +6,7 @@ import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
+import getPacLogPath from "../pac/getPacLogPath";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
@@ -21,6 +22,7 @@ export async function deployPackage(parameters: DeployPackageParameters, runnerP
   const logger = runnerParameters.logger;
   const artifactStore = host.getArtifactStore();
   const pac = createPacRunner(runnerParameters);
+  const pacLogs = getPacLogPath(runnerParameters);
   let logFile = "";
 
   try {
@@ -65,5 +67,8 @@ export async function deployPackage(parameters: DeployPackageParameters, runnerP
 
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
+    if (fs.pathExistsSync(pacLogs)) {
+      host.getArtifactStore().upload('PacLogs', [pacLogs]);
+    }
   }
 }

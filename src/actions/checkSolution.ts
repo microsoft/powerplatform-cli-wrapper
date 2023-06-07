@@ -1,3 +1,4 @@
+import fs = require("fs-extra");
 import glob = require("glob");
 import os = require("os");
 import path = require("path");
@@ -5,6 +6,7 @@ import path = require("path");
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import createPacRunner from "../pac/createPacRunner";
+import getPacLogPath from "../pac/getPacLogPath";
 import { authenticateAdmin, authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
@@ -32,6 +34,7 @@ export interface CheckSolutionParameters {
 export async function checkSolution(parameters: CheckSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
+  const pacLogs = getPacLogPath(runnerParameters);
   const validator = new InputValidator(host);
   const artifactStore = host.getArtifactStore();
 
@@ -49,10 +52,10 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
   const failOnAnalysisError = validator.getInput(parameters.failOnAnalysisError) === 'true';
 
   let ruleLevelOverrideFile: string | undefined;
-  
+
   try {
     let authenticateResult: string[] | undefined;
-    
+
     if(validator.getInput(parameters.saveResults) !== 'true'){
       authenticateResult = await authenticateAdmin(pac, parameters.credentials, logger);
     }
@@ -135,6 +138,9 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     }
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
+    if (fs.pathExistsSync(pacLogs)) {
+      host.getArtifactStore().upload('PacLogs', [pacLogs]);
+    }
   }
 }
 

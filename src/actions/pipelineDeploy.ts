@@ -1,7 +1,9 @@
+import fs = require("fs-extra");
 import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
+import getPacLogPath from "../pac/getPacLogPath";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
@@ -20,6 +22,7 @@ export async function pipelineDeploy(parameters: PipelineDeployParameters, runne
 
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
+  const pacLogs = getPacLogPath(runnerParameters);
 
   const pacArgs = ["pipeline", "deploy"];
   const validator = new InputValidator(host);
@@ -45,5 +48,8 @@ export async function pipelineDeploy(parameters: PipelineDeployParameters, runne
   } finally {
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("Clear Authentication Result: " + clearAuthResult);
-  }
+    if (fs.pathExistsSync(pacLogs)) {
+        host.getArtifactStore().upload('PacLogs', [pacLogs]);
+      }
+    }
 }
