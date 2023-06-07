@@ -39,7 +39,7 @@ export async function catalogStatus(parameters: CatalogStatusParameters, runnerP
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
     if (fs.pathExistsSync(pacLogs)) {
-      await host.getArtifactStore().upload('PacLogs', [pacLogs]);
+      host.getArtifactStore().upload('PacLogs', [pacLogs]);
     }
   }
 }

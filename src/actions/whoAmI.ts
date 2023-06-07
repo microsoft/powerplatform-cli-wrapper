@@ -48,7 +48,7 @@ export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: Run
     const clearAuthResult = await clearAuthentication(pac);
     logger.log("The Clear Authentication Result: " + clearAuthResult);
     if (fs.pathExistsSync(pacLogs)) {
-      await host.getArtifactStore().upload('PacLogs', [pacLogs]);
+      host.getArtifactStore().upload('PacLogs', [pacLogs]);
     }
   }
 }
