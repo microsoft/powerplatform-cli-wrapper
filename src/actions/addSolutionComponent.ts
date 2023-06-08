@@ -29,7 +29,7 @@ export async function addSolutionComponent(parameters: AddSolutionComponentParam
     inputValidator.pushInput(pacArgs, "--component", parameters.component);
     inputValidator.pushInput(pacArgs, "--componentType", parameters.componentType);
 
-    if (parameters.addRequiredComponents && inputValidator.getInput(parameters.addRequiredComponents) === 'true') {
+    if (parameters.addRequiredComponents && inputValidator.getInput(parameters.addRequiredComponents)?.toLowerCase() === 'true') {
       inputValidator.pushInput(pacArgs, "--AddRequiredComponents", parameters.addRequiredComponents);
     }
 

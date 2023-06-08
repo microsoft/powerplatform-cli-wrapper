@@ -18,7 +18,7 @@ export async function unpackSolution(parameters: SolutionPackUnpackParameters, r
 
     setSolutionPackagingCommonArgs(parameters, runnerParameters, validator, pacArgs);
 
-    if (parameters.overwriteFiles && validator.getInput(parameters.overwriteFiles) === "true") {
+    if (parameters.overwriteFiles && validator.getInput(parameters.overwriteFiles)?.toLowerCase() === "true") {
       pacArgs.push("--allowDelete");
       pacArgs.push("true");
       pacArgs.push("--allowWrite");

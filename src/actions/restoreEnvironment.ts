@@ -38,7 +38,7 @@ export async function restoreEnvironment(parameters: RestoreEnvironmentParameter
     validator.pushInput(pacArgs, "--target-id", parameters.targetEnvironmentId);
     validator.pushInput(pacArgs, "--name", parameters.targetEnvironmentName);
 
-    if (validator.getInput(parameters.restoreLatestBackup) === 'true') {
+    if (validator.getInput(parameters.restoreLatestBackup)?.toLowerCase() === 'true') {
       pacArgs.push("--selected-backup", "latest");
     } else if (parameters.backupDateTime) {
       validator.pushInput(pacArgs, "--selected-backup", parameters.backupDateTime);

@@ -46,7 +46,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     level = validator.getInput(parameters.errorLevel);
     threshold = validator.getInput(parameters.errorThreshold);
   }
-  const failOnAnalysisError = validator.getInput(parameters.failOnAnalysisError) === 'true';
+  const failOnAnalysisError = validator.getInput(parameters.failOnAnalysisError)?.toLowerCase() === 'true';
 
   let ruleLevelOverrideFile: string | undefined;
   try {
