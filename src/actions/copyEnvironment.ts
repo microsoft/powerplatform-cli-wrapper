@@ -38,7 +38,7 @@ export async function copyEnvironment(parameters: CopyEnvironmentParameters, run
     validator.pushInput(pacArgs, "--source-id", parameters.sourceEnvironmentId);
     validator.pushInput(pacArgs, "--target-id", parameters.targetEnvironmentId);
 
-    if (validator.getInput(parameters.overrideFriendlyName) === 'true') {
+    if (validator.getInput(parameters.overrideFriendlyName)?.toLowerCase() === 'true') {
       validator.pushInput(pacArgs, "--name", parameters.friendlyTargetEnvironmentName);
     }
     validator.pushInput(pacArgs, "--type", parameters.copyType);

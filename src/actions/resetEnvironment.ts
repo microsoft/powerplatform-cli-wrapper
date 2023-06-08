@@ -42,10 +42,10 @@ export async function resetEnvironment(parameters: ResetEnvironmentParameters, r
     validator.pushInput(pacArgs, "--purpose", parameters.purpose);
     validator.pushInput(pacArgs, "--templates", parameters.templates);
 
-    if (validator.getInput(parameters.overrideDomainName) === 'true') {
+    if (validator.getInput(parameters.overrideDomainName)?.toLowerCase() === 'true') {
       validator.pushInput(pacArgs, "--domain", parameters.domainName);
     }
-    if (validator.getInput(parameters.overrideFriendlyName) === 'true') {
+    if (validator.getInput(parameters.overrideFriendlyName)?.toLowerCase() === 'true') {
       validator.pushInput(pacArgs, "--name", parameters.friendlyEnvironmentName);
     }
 

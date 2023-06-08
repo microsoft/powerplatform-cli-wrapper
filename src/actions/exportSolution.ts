@@ -52,17 +52,17 @@ export async function exportSolution(parameters: ExportSolutionParameters, runne
     validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
 
     const includeArgs = [];
-    if (validator.getInput(parameters.autoNumberSettings) === 'true') { includeArgs.push("autonumbering"); }
-    if (validator.getInput(parameters.calenderSettings) === 'true') { includeArgs.push("calendar"); }
-    if (validator.getInput(parameters.customizationSettings) === 'true') { includeArgs.push("customization"); }
-    if (validator.getInput(parameters.emailTrackingSettings) === 'true') { includeArgs.push("emailtracking"); }
-    if (validator.getInput(parameters.externalApplicationSettings) === 'true') { includeArgs.push("externalapplications"); }
-    if (validator.getInput(parameters.generalSettings) === 'true') { includeArgs.push("general"); }
-    if (validator.getInput(parameters.isvConfig) === 'true') { includeArgs.push("isvconfig"); }
-    if (validator.getInput(parameters.marketingSettings) === 'true') { includeArgs.push("marketing"); }
-    if (validator.getInput(parameters.outlookSynchronizationSettings) === 'true') { includeArgs.push("outlooksynchronization"); }
-    if (validator.getInput(parameters.relationshipRoles) === 'true') { includeArgs.push("relationshiproles"); }
-    if (validator.getInput(parameters.sales) === 'true') { includeArgs.push("sales"); }
+    if (validator.getInput(parameters.autoNumberSettings)?.toLowerCase() === 'true') { includeArgs.push("autonumbering"); }
+    if (validator.getInput(parameters.calenderSettings)?.toLowerCase() === 'true') { includeArgs.push("calendar"); }
+    if (validator.getInput(parameters.customizationSettings)?.toLowerCase() === 'true') { includeArgs.push("customization"); }
+    if (validator.getInput(parameters.emailTrackingSettings)?.toLowerCase() === 'true') { includeArgs.push("emailtracking"); }
+    if (validator.getInput(parameters.externalApplicationSettings)?.toLowerCase() === 'true') { includeArgs.push("externalapplications"); }
+    if (validator.getInput(parameters.generalSettings)?.toLowerCase() === 'true') { includeArgs.push("general"); }
+    if (validator.getInput(parameters.isvConfig)?.toLowerCase() === 'true') { includeArgs.push("isvconfig"); }
+    if (validator.getInput(parameters.marketingSettings)?.toLowerCase() === 'true') { includeArgs.push("marketing"); }
+    if (validator.getInput(parameters.outlookSynchronizationSettings)?.toLowerCase() === 'true') { includeArgs.push("outlooksynchronization"); }
+    if (validator.getInput(parameters.relationshipRoles)?.toLowerCase() === 'true') { includeArgs.push("relationshiproles"); }
+    if (validator.getInput(parameters.sales)?.toLowerCase() === 'true') { includeArgs.push("sales"); }
     if (includeArgs.length > 0) { pacArgs.push("--include", includeArgs.join(',')); }
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));

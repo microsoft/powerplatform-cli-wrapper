@@ -51,7 +51,7 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
     validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
     validator.pushInput(pacArgs, "--activate-plugins", parameters.activatePlugins);
 
-    if (validator.getInput(parameters.useDeploymentSettingsFile) === "true") {
+    if (validator.getInput(parameters.useDeploymentSettingsFile)?.toLowerCase() === "true") {
       validator.pushInput(pacArgs, "--settings-file", parameters.deploymentSettingsFile);
     }
 
