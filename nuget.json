@@ -16,13 +16,21 @@
         {
           "name": "Microsoft.PowerApps.CLI",
           "version": "1.23.3",
-          "internalName": "pac"
+          "internalName": "pac",
+          "installMethod": "unzip"
         },
         {
           "name": "Microsoft.PowerApps.CLI.Core.linux-x64",
           "version": "1.23.3",
           "internalName": "pac_linux",
-          "chmod": "tools/pac"
+          "chmod": "tools/pac",
+          "installMethod": "unzip"
+        },
+        {
+          "name": "Microsoft.PowerApps.CLI.Tool",
+          "version": "1.23.3",
+          "internalName": "pac_tool",
+          "installMethod": "dotnet"
         }
       ]
     },
