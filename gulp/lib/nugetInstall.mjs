@@ -4,7 +4,6 @@ import fs from "node:fs";
 import fsextra from "fs-extra";
 import fetch from "node-fetch";
 import { resolve as _resolve, resolve } from "node:path";
-import { spawnSync } from "node:child_process";
 import { Extract } from "unzip-stream";
 import binDir from "./binDir.mjs";
 import yargs from 'yargs';
@@ -76,6 +75,7 @@ export default async function nugetInstall(feed, pkg) {
   } else if (pkg.installMethod === "dotnet") {
     info(`Installing into folder: ${targetDir}`);
     return new Promise((resolve, reject) => {
+      fsextra.ensureDirSync(targetDir);
       const localNupkg = path.join(targetDir, `${packageName}.${version}.nupkg`);
 
       res.body.pipe(fs.createWriteStream(localNupkg))
