@@ -23,6 +23,7 @@ export interface ImportSolutionParameters {
   skipDependencyCheck: HostParameterEntry;
   convertToManaged: HostParameterEntry;
   activatePlugins: HostParameterEntry;
+  skipLowerVersion: HostParameterEntry;
 }
 
 export async function importSolution(parameters: ImportSolutionParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
@@ -50,6 +51,7 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
     validator.pushInput(pacArgs, "--convert-to-managed", parameters.convertToManaged);
     validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
     validator.pushInput(pacArgs, "--activate-plugins", parameters.activatePlugins);
+    validator.pushInput(pacArgs, "--skip-lower-version", parameters.skipLowerVersion);
 
     if (validator.getInput(parameters.useDeploymentSettingsFile)?.toLowerCase() === "true") {
       validator.pushInput(pacArgs, "--settings-file", parameters.deploymentSettingsFile);

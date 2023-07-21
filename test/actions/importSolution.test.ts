@@ -63,6 +63,7 @@ describe("action: importSolution", () => {
     skipDependencyCheck: { name: 'SkipProductUpdateDependencies', required: false },
     convertToManaged: { name: 'ConvertToManaged', required: false },
     activatePlugins: { name: 'ActivatePlugins', required: false },
+    skipLowerVersion: { name: 'SkipLowerVersion', required: false },
   });
 
   it("with minimal inputs set by host, calls pac runner stub with correct arguments", async () => {
@@ -96,6 +97,8 @@ describe("action: importSolution", () => {
         case "ConvertToManaged":
         case "ActivatePlugins":
             return 'true';
+        case "SkipLowerVersion":
+            return 'false';
         case "DeploymentSettingsFile":
           return '/Test/deploymentSettings.txt';
         case "MaxAsyncWaitTime":
@@ -109,7 +112,7 @@ describe("action: importSolution", () => {
     pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath,
       "--async", "true", "--import-as-holding", "true", "--force-overwrite", "true", "--publish-changes", "true",
       "--skip-dependency-check", "true", "--convert-to-managed", "true", "--max-async-wait-time", host.maxAsyncWaitTime,
-      "--activate-plugins", "true", "--settings-file", host.deploymentSettingsFile);
+      "--activate-plugins", "true", "--skip-lower-version", "false", "--settings-file", host.deploymentSettingsFile);
   });
 
   it("with optional inputs set to default values, calls pac runner stub with correct arguments", async () => {
@@ -122,6 +125,7 @@ describe("action: importSolution", () => {
     importSolutionParameters.skipDependencyCheck = { name: 'SkipProductUpdateDependencies', required: false, defaultValue: true };
     importSolutionParameters.convertToManaged = { name: 'ConvertToManaged', required: false, defaultValue: false };
     importSolutionParameters.activatePlugins = { name: 'ActivatePlugins', required: false, defaultValue: true };
+    importSolutionParameters.skipLowerVersion = { name: 'SkipLowerVersion', required: false, defaultValue: false };
 
     const host = new mockHost((entry) =>
     !entry.required ?
@@ -131,6 +135,6 @@ describe("action: importSolution", () => {
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath,
       "--async", "true", "--import-as-holding", "false", "--force-overwrite", "true", "--publish-changes", "false",
-      "--skip-dependency-check", "true", "--convert-to-managed", "false", "--max-async-wait-time", "180", "--activate-plugins", "true");
+      "--skip-dependency-check", "true", "--convert-to-managed", "false", "--max-async-wait-time", "180", "--activate-plugins", "true", "--skip-lower-version", "false");
   });
 });
