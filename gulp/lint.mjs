@@ -1,13 +1,12 @@
 import gulp from "gulp";
-import eslint from "gulp-eslint";
+import eslint from "gulp-eslint-new";
 
 export default function lint() {
   return gulp
     .src(["src/**/*.ts", "test/**/*.ts"])
     .pipe(
       eslint({
-        formatter: "verbose",
-        configuration: ".eslintrc.js",
+        configType: "eslintrc"
       })
     )
     .pipe(eslint.format())
