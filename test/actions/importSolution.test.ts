@@ -64,6 +64,7 @@ describe("action: importSolution", () => {
     convertToManaged: { name: 'ConvertToManaged', required: false },
     activatePlugins: { name: 'ActivatePlugins', required: false },
     skipLowerVersion: { name: 'SkipLowerVersion', required: false },
+    logToConsole: false
   });
 
   it("with minimal inputs set by host, calls pac runner stub with correct arguments", async () => {
@@ -72,6 +73,16 @@ describe("action: importSolution", () => {
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath);
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
+  });
+
+  it("with minimal inputs and logging to console, calls pac runner stub with correct arguments", async () => {
+    const host = new mockHost();
+    importSolutionParameters.logToConsole = true;
+    await runActionWithMocks(importSolutionParameters, host);
+
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
+    pacStub.should.have.been.calledOnceWithExactly("solution", "import", "--path", host.absoluteSolutionPath, "--log-to-console");
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 

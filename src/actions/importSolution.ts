@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import { AuthCredentials } from "../pac/auth/authParameters";
@@ -9,7 +9,7 @@ import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import path = require("path");
 
-export interface ImportSolutionParameters {
+export interface ImportSolutionParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   path: HostParameterEntry;
@@ -56,6 +56,7 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
     if (validator.getInput(parameters.useDeploymentSettingsFile)?.toLowerCase() === "true") {
       validator.pushInput(pacArgs, "--settings-file", parameters.deploymentSettingsFile);
     }
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
