@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { IHostAbstractions, HostParameterEntry } from "./IHostAbstractions";
+import { IHostAbstractions, HostParameterEntry, CommonActionParameters } from "./IHostAbstractions";
 
 export class InputValidator {
   private _host: IHostAbstractions;
@@ -34,6 +34,15 @@ export class InputValidator {
       }
       if (val)
         pacArgs.push(property, val);
+    }
+  }
+
+  public pushCommon(pacArgs: string[], commonActionParameters: CommonActionParameters): void {
+    if (!commonActionParameters) {
+      return;
+    }
+    if (commonActionParameters.logToConsole) {
+      pacArgs.push("--log-to-console");
     }
   }
 }

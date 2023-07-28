@@ -16,3 +16,7 @@ export interface HostParameterEntry {
   readonly required: boolean;
   readonly defaultValue?: boolean | string;
 }
+
+export interface CommonActionParameters {
+  logToConsole: boolean;
+}
