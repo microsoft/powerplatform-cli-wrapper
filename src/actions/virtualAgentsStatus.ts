@@ -1,11 +1,11 @@
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface VirtualAgentStatusParameters {
+export interface VirtualAgentStatusParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   botId: HostParameterEntry;
@@ -18,6 +18,8 @@ export async function virtualAgentsStatus(parameters: VirtualAgentStatusParamete
   const pacArgs = ["virtual-agent", "status"];
   const inputValidator = new InputValidator(host);
   inputValidator.pushInput(pacArgs, "--bot-id", parameters.botId);
+  inputValidator.pushCommon(pacArgs, parameters);
+
   try {
     const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
     logger.log("The Authentication Result: " + authenticateResult);

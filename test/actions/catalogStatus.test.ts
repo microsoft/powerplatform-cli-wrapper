@@ -52,7 +52,8 @@ describe("action: catalog status", () => {
     credentials: mockClientCredentials,
     environmentUrl: environmentUrl,
     trackingId: { name: "TrackingId", required: true },
-    requestType: { name: "RequestType", required: true }
+    requestType: { name: "RequestType", required: true },
+    logToConsole: false
   });
 
   it("with required params, calls pac runner with correct args", async () => {

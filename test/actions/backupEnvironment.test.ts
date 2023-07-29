@@ -31,6 +31,7 @@ describe("action: backupEnvironment", () => {
       environmentUrl: { name: "EnvironmentUrl", required: true },
       environmentId: { name: "EnvironmentId", required: true },
       backupLabel: { name: 'BackupLabel', required: true },
+      logToConsole: false
     };
   });
   afterEach(() => restore());

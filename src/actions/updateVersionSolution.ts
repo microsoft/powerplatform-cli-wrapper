@@ -1,11 +1,11 @@
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface UpdateVersionSolutionParameters {
+export interface UpdateVersionSolutionParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   buildVersion?: HostParameterEntry;
@@ -31,6 +31,7 @@ export async function updateVersionSolution(parameters: UpdateVersionSolutionPar
     validator.pushInput(pacArgs, "--patchversion", parameters.patchVersion);
     validator.pushInput(pacArgs, "--strategy", parameters.strategy);
     validator.pushInput(pacArgs, "--filename", parameters.fileName);
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

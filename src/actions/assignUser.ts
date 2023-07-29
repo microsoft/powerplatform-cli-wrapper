@@ -1,11 +1,11 @@
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface AssignUserParameters {
+export interface AssignUserParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environment: HostParameterEntry;
   user: HostParameterEntry;
@@ -30,6 +30,7 @@ export async function assignUser(parameters: AssignUserParameters, runnerParamet
     validator.pushInput(pacArgs, "--role", parameters.role);
     validator.pushInput(pacArgs, "--application-user", parameters.applicationUser);
     validator.pushInput(pacArgs, "--business-unit", parameters.businessUnit);
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

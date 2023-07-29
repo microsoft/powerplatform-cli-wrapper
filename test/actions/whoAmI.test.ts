@@ -7,6 +7,7 @@ import { ClientCredentials, RunnerParameters } from "../../src";
 import { WhoAmIParameters, WhoAmIResult } from "../../src/actions";
 import rewiremock from "../rewiremock";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { mockHost } from "./mock/mockHost";
 import Sinon = require("sinon");
 import assert = require("assert");
 
@@ -20,6 +21,7 @@ describe("action: whoAmI", () => {
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const environmentUrl: string = mockEnvironmentUrl;
+  const host = new mockHost();
 
   beforeEach(() => {
     pacStub = stub();
@@ -53,13 +55,14 @@ describe("action: whoAmI", () => {
       "  User ID:                    mock@mock.onmicrosoft.com (0-0-0-0-0)",
       "  Environment ID:             1-2-3-4-5"
     ]);
-    return await mockedActionModule.whoAmI(whoAmIParameters, runnerParameters);
+    return await mockedActionModule.whoAmI(whoAmIParameters, runnerParameters, host);
   }
 
   it("calls pac runner with correct arguments", async () => {
     const whoAmIParameters: WhoAmIParameters = {
       credentials: mockClientCredentials,
-      environmentUrl: environmentUrl
+      environmentUrl: environmentUrl,
+      logToConsole: false
     };
 
     const result = await runActionWithMocks(whoAmIParameters);

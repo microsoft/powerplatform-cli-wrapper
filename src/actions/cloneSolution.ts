@@ -1,11 +1,11 @@
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface CloneSolutionParameters {
+export interface CloneSolutionParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   name: HostParameterEntry;
@@ -29,6 +29,7 @@ export async function cloneSolution(parameters: CloneSolutionParameters, runnerP
     validator.pushInput(pacArgs, "--outputDirectory", parameters.outputDirectory);
     validator.pushInput(pacArgs, "--async", parameters.async);
     validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

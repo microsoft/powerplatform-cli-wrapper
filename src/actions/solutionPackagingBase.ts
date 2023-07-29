@@ -25,4 +25,5 @@ export function setSolutionPackagingCommonArgs(parameters: SolutionPackUnpackPar
     validator.pushInput(pacArgs, "--useUnmanagedFileForMissingManaged", parameters.useUnmanagedFileForManaged);
     validator.pushInput(pacArgs, "--disablePluginRemap", parameters.disablePluginRemap);
     validator.pushInput(pacArgs, "--processCanvasApps", parameters.processCanvasApps);
+    validator.pushCommon(pacArgs, parameters);
 }

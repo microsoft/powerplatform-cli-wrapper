@@ -1,4 +1,4 @@
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
@@ -6,7 +6,7 @@ import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import { EnvironmentResult, getEnvironmentDetails } from "../actions/createEnvironment";
 
-export interface RestoreEnvironmentParameters {
+export interface RestoreEnvironmentParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   sourceEnvironment?: HostParameterEntry;
   targetEnvironment?: HostParameterEntry;
@@ -37,6 +37,7 @@ export async function restoreEnvironment(parameters: RestoreEnvironmentParameter
     validator.pushInput(pacArgs, "--source-id", parameters.sourceEnvironmentId);
     validator.pushInput(pacArgs, "--target-id", parameters.targetEnvironmentId);
     validator.pushInput(pacArgs, "--name", parameters.targetEnvironmentName);
+    validator.pushCommon(pacArgs, parameters);
 
     if (validator.getInput(parameters.restoreLatestBackup)?.toLowerCase() === 'true') {
       pacArgs.push("--selected-backup", "latest");

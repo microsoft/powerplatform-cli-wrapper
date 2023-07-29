@@ -2,7 +2,7 @@ import glob = require("glob");
 import os = require("os");
 import path = require("path");
 
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import createPacRunner from "../pac/createPacRunner";
 import { authenticateAdmin, authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
@@ -10,7 +10,7 @@ import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import { promises, rmdirSync, rmSync, writeFile } from "fs-extra";
 
-export interface CheckSolutionParameters {
+export interface CheckSolutionParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   fileLocation: HostParameterEntry;
@@ -49,10 +49,10 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
   const failOnAnalysisError = validator.getInput(parameters.failOnAnalysisError)?.toLowerCase() === 'true';
 
   let ruleLevelOverrideFile: string | undefined;
-  
+
   try {
     let authenticateResult: string[] | undefined;
-    
+
     if(validator.getInput(parameters.saveResults) !== 'true'){
       authenticateResult = await authenticateAdmin(pac, parameters.credentials, logger);
     }
@@ -100,6 +100,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     logger.debug(`checker-output folder: ${outputDirectory}`);
     pacArgs.push("--outputDirectory", outputDirectory);
     validator.pushInput(pacArgs, "--saveResults", parameters.saveResults);
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     //pacResult is not in any contractual format. It is an array similar to the one in checkSolution.test.ts

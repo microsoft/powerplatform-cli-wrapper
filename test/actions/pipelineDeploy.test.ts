@@ -58,7 +58,8 @@ describe("action: pipelineDeploy", () => {
     currentVersion: { name: "Version", required: true },
     newVersion: { name: "Version", required: true },
     waitForCompletion: { name: "WaitForCompletion", required: false },
-    environmentUrl: envUrl
+    environmentUrl: envUrl,
+    logToConsole: false
   });
 
   it("with minimal inputs, calls pac runner with correct arguments", async () => {

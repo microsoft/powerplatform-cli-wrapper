@@ -1,11 +1,11 @@
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator, normalizeLanguage, normalizeRegion } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface CreateEnvironmentParameters {
+export interface CreateEnvironmentParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentName: HostParameterEntry;
   environmentType: HostParameterEntry;
@@ -41,6 +41,7 @@ export async function createEnvironment(parameters: CreateEnvironmentParameters,
     validator.pushInput(pacArgs, "--language", parameters.language, normalizeLanguage);
     validator.pushInput(pacArgs, "--domain", parameters.domainName);
     validator.pushInput(pacArgs, "--team-id", parameters.teamId);
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

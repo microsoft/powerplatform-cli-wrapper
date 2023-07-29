@@ -2,14 +2,14 @@ import path = require("path");
 import os = require("os");
 import fs = require("fs-extra");
 
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface DeployPackageParameters {
+export interface DeployPackageParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   packagePath: HostParameterEntry;
@@ -51,6 +51,7 @@ export async function deployPackage(parameters: DeployPackageParameters, runnerP
     validator.pushInput(pacArgs, "--logConsole", parameters.logConsole);
 
     validator.pushInput(pacArgs, "--settings", parameters.settings);
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

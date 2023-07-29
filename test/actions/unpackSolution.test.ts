@@ -50,6 +50,7 @@ describe("action: unpack solution", () => {
       solutionZipFile: { name: 'SolutionInputFile', required: true },
       sourceFolder: { name: 'SolutionTargetFolder', required: true },
       solutionType: { name: 'SolutionType', required: false, defaultValue: "Unmanaged" },
+      logToConsole: false
     };
 
     await runActionWithMocks(unpackSolutionParameters);
@@ -74,6 +75,7 @@ describe("action: unpack solution", () => {
       useUnmanagedFileForManaged: { name: 'UseUnmanagedFileForManaged', required: false, defaultValue: "false" },
       disablePluginRemap: { name: 'DisablePluginRemap', required: false, defaultValue: "false" },
       processCanvasApps: { name: 'ProcessCanvasApps', required: false, defaultValue: "false" },
+      logToConsole: false
     };
 
     await runActionWithMocks(unpackSolutionParameters);

@@ -1,11 +1,11 @@
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface DeleteSolutionParameters {
+export interface DeleteSolutionParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   name: HostParameterEntry;
@@ -23,6 +23,7 @@ export async function deleteSolution(parameters: DeleteSolutionParameters, runne
     const validator = new InputValidator(host);
 
     validator.pushInput(pacArgs, "--solution-name", parameters.name);
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

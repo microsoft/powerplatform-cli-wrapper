@@ -1,11 +1,11 @@
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface InstallCatalogParameters {
+export interface InstallCatalogParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   catalogItemId: HostParameterEntry;
@@ -31,6 +31,7 @@ export async function installCatalog(parameters: InstallCatalogParameters, runne
     validator.pushInput(pacArgs, "--settings", parameters.settings);
     validator.pushInput(pacArgs, "--target-version", parameters.targetVersion);
     validator.pushInput(pacArgs, "--poll-status", parameters.pollStatus);
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

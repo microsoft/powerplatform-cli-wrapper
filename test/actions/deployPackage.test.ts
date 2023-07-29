@@ -61,6 +61,7 @@ describe("action: deploy package", () => {
     packagePath: { name: "SolutionInputFile", required: true },
     settings: { name: "Settings", required: false },
     logConsole: { name: "LogConsole", required: false },
+    logToConsole: false
   });
 
   it("with required params, calls pac runner with correct args", async () => {

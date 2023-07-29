@@ -1,12 +1,12 @@
 import os = require("os");
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface DataExportParameters {
+export interface DataExportParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   schemaFile: HostParameterEntry;
   dataFile: HostParameterEntry;
@@ -34,6 +34,7 @@ export async function dataExport(parameters: DataExportParameters, runnerParamet
     validator.pushInput(pacArgs, "--dataFile", parameters.dataFile);
     validator.pushInput(pacArgs, "--overwrite", parameters.overwrite);
     validator.pushInput(pacArgs, "--verbose", parameters.verbose);
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);
