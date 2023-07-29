@@ -1,12 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import { IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
+import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface WhoAmIParameters {
+export interface WhoAmIParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
 }
@@ -15,7 +17,7 @@ export interface WhoAmIResult {
   environmentId?: string
 }
 
-export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: RunnerParameters): Promise<WhoAmIResult> {
+export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<WhoAmIResult> {
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 
@@ -23,7 +25,11 @@ export async function whoAmI(parameters: WhoAmIParameters, runnerParameters: Run
     const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
-    const pacResult = await pac("org", "who");
+    const pacArgs = ["org", "who"];
+    const inputValidator = new InputValidator(host);
+    inputValidator.pushCommon(pacArgs, parameters);
+
+    const pacResult = await pac(...pacArgs);
     logger.log("WhoAmI Action Result: " + pacResult);
     const envIdLabel = "Environment ID:";
 

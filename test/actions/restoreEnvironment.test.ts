@@ -35,6 +35,7 @@ describe("action: restoreEnvironment", () => {
       targetEnvironmentId: { name: "TargetEnvironmentId", required: false },
       restoreLatestBackup: { name: "RestoreLatestBackup", required: false },
       targetEnvironmentName: { name: "FriendlyName", required: false },
+      logToConsole: false
     };
   });
   afterEach(() => restore());

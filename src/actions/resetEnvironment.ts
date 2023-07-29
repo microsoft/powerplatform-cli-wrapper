@@ -1,5 +1,5 @@
 
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator, normalizeLanguage } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
@@ -7,7 +7,7 @@ import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import { EnvironmentResult, getEnvironmentDetails } from "../actions/createEnvironment";
 
-export interface ResetEnvironmentParameters {
+export interface ResetEnvironmentParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environment?: HostParameterEntry;
   environmentUrl?: HostParameterEntry;
@@ -48,6 +48,7 @@ export async function resetEnvironment(parameters: ResetEnvironmentParameters, r
     if (validator.getInput(parameters.overrideFriendlyName)?.toLowerCase() === 'true') {
       validator.pushInput(pacArgs, "--name", parameters.friendlyEnvironmentName);
     }
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

@@ -1,11 +1,11 @@
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface AssignGroupParameters {
+export interface AssignGroupParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environment: HostParameterEntry;
   azureAadGroup: HostParameterEntry;
@@ -34,6 +34,7 @@ export async function assignGroup(parameters: AssignGroupParameters, runnerParam
     validator.pushInput(pacArgs, "--team-type", parameters.teamType);
     validator.pushInput(pacArgs, "--membership-type", parameters.membershipType);
     validator.pushInput(pacArgs, "--business-unit", parameters.businessUnit);
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

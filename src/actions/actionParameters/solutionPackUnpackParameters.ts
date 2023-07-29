@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { HostParameterEntry } from "../../host/IHostAbstractions";
+import { HostParameterEntry, CommonActionParameters } from "../../host/IHostAbstractions";
 
-export interface SolutionPackUnpackParameters {
+export interface SolutionPackUnpackParameters extends CommonActionParameters {
   solutionZipFile: HostParameterEntry;
   sourceFolder: HostParameterEntry;
   solutionType: HostParameterEntry;

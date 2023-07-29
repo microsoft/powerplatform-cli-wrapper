@@ -1,4 +1,4 @@
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
@@ -6,7 +6,7 @@ import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import path = require("path");
 
-export interface InstallApplicationParameters {
+export interface InstallApplicationParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environment: HostParameterEntry;
   applicationListFile: HostParameterEntry;
@@ -29,6 +29,7 @@ export async function installApplication(parameters: InstallApplicationParameter
     const validator = new InputValidator(host);
     validator.pushInput(pacArgs, "--environment", parameters.environment);
     validator.pushInput(pacArgs, "--application-list", parameters.applicationListFile, resolveFolder);
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

@@ -56,7 +56,8 @@ describe("action: dataExport", () => {
     dataFile: { name: "DataFile", required: true },
     overwrite: { name: "Overwrite", required: false },
     verbose: { name: "Verbose", required: false },
-    environmentUrl: envUrl
+    environmentUrl: envUrl,
+    logToConsole: false
   });
 
   it("with minimal inputs, calls pac runner with correct arguments", async () => {

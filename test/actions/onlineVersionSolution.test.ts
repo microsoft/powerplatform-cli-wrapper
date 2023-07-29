@@ -58,6 +58,7 @@ describe("action: set online version solution", () => {
     environmentUrl: envUrl,
     name: { name: 'SolutionName', required: true },
     version: { name: 'Version', required: true },
+    logToConsole: false
   });
 
   it("with required params, calls pac runner with correct args", async () => {

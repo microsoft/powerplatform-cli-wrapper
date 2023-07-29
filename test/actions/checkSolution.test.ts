@@ -98,6 +98,7 @@ describe("action: check solution", () => {
       geoInstance: { name: "GeoInstance", required: false, defaultValue: "unitedstates" },
       filesExcluded: { name: "FilesToExclude", required: false, defaultValue: "" },
       saveResults: { name: "SaveResults", required: false, defaultValue: false },
+      logToConsole: false
     };
   });
   afterEach(() => restore());
@@ -185,9 +186,9 @@ describe("action: check solution", () => {
   it("verify checker with save results", async () => {
     customEndpoint = "";
     checkSolutionParameters.saveResults = { name: "SaveResults", required: false, defaultValue: true };
-	
+
     await runActionWithMocks(checkSolutionParameters);
-	
+
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "check",
     "--path", absoluteSolutionPath,

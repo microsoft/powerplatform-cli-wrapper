@@ -1,11 +1,11 @@
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface PipelineDeployParameters {
+export interface PipelineDeployParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   solutionName: HostParameterEntry;
@@ -34,6 +34,7 @@ export async function pipelineDeploy(parameters: PipelineDeployParameters, runne
     validator.pushInput(pacArgs, "--currentVersion", parameters.currentVersion);
     validator.pushInput(pacArgs, "--newVersion", parameters.newVersion);
     validator.pushInput(pacArgs, "--wait", parameters.waitForCompletion);
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

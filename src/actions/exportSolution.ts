@@ -1,4 +1,4 @@
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
@@ -6,7 +6,7 @@ import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import path = require("path");
 
-export interface ExportSolutionParameters {
+export interface ExportSolutionParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   name: HostParameterEntry;
@@ -64,6 +64,7 @@ export async function exportSolution(parameters: ExportSolutionParameters, runne
     if (validator.getInput(parameters.relationshipRoles)?.toLowerCase() === 'true') { includeArgs.push("relationshiproles"); }
     if (validator.getInput(parameters.sales)?.toLowerCase() === 'true') { includeArgs.push("sales"); }
     if (includeArgs.length > 0) { pacArgs.push("--include", includeArgs.join(',')); }
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

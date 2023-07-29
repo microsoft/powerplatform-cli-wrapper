@@ -35,7 +35,8 @@ describe("action: createEnvironment", () => {
       language: { name: 'LanguageName', required: true },
       region: { name: 'LocationName', required: true },
       templates: { name: 'AppsTemplate', required: false },
-      teamId: { name: 'TeamId', required: false }
+      teamId: { name: 'TeamId', required: false },
+      logToConsole: false
     };
   });
   afterEach(() => restore());

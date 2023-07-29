@@ -55,6 +55,7 @@ describe("action: install applications", () => {
     credentials: mockClientCredentials,
     environment: { name: "Environment", required: true },
     applicationListFile: { name: 'ApplicationList', required: false },
+    logToConsole: false
   });
 
   it("with required params, calls pac runner with correct args", async () => {

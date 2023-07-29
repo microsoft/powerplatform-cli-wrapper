@@ -1,4 +1,4 @@
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateAdmin, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
@@ -6,7 +6,7 @@ import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 import { EnvironmentResult, getEnvironmentDetails } from "../actions/createEnvironment";
 
-export interface CopyEnvironmentParameters {
+export interface CopyEnvironmentParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   sourceEnvironment?: HostParameterEntry;
   targetEnvironment?: HostParameterEntry;
@@ -42,6 +42,7 @@ export async function copyEnvironment(parameters: CopyEnvironmentParameters, run
       validator.pushInput(pacArgs, "--name", parameters.friendlyTargetEnvironmentName);
     }
     validator.pushInput(pacArgs, "--type", parameters.copyType);
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

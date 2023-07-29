@@ -1,11 +1,11 @@
-import { HostParameterEntry, IHostAbstractions } from "../host/IHostAbstractions";
+import { HostParameterEntry, IHostAbstractions, CommonActionParameters } from "../host/IHostAbstractions";
 import { InputValidator } from "../host/InputValidator";
 import { authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface SubmitCatalogParameters {
+export interface SubmitCatalogParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   path: HostParameterEntry;
@@ -35,6 +35,7 @@ export async function submitCatalog(parameters: SubmitCatalogParameters, runnerP
     if (validator.getInput(parameters.packageSolutionZipFile) === 'PackageZipFile') {
       validator.pushInput(pacArgs, "--package-zip", parameters.packageZip);
     }
+    validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));
     const pacResult = await pac(...pacArgs);

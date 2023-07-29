@@ -68,7 +68,8 @@ describe("action: exportSolution", () => {
     marketingSettings: { name: 'ExportMarketingSettings', required: false },
     outlookSynchronizationSettings: { name: 'ExportOutlookSynchronizationSettings', required: false },
     relationshipRoles: { name: 'ExportRelationshipRoles', required: false },
-    sales: { name: 'ExportSales', required: false }
+    sales: { name: 'ExportSales', required: false },
+    logToConsole: false
   });
 
   it("with minimal inputs set by host, calls pac runner stub with correct arguments", async () => {

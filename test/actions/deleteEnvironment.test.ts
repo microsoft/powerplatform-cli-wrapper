@@ -30,6 +30,7 @@ describe("action: deleteEnvironment", () => {
       environment: { name: "Environment", required: true },
       environmentUrl: { name: "EnvironmentUrl", required: true },
       environmentId: { name: "EnvironmentId", required: true },
+      logToConsole: false
     };
   });
   afterEach(() => restore());

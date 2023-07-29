@@ -64,7 +64,8 @@ describe("action: copyEnvironment", () => {
     sourceEnvironmentId: { name: "EnvironmentId", required: false },
     targetEnvironmentId: { name: "TargetEnvironmentId", required: false },
     overrideFriendlyName: { name: "OverrideFriendlyName", required: false },
-    copyType: { name: "CopyType", required: false }
+    copyType: { name: "CopyType", required: false },
+    logToConsole: false
   });
 
   it("with minimal inputs, calls pac runner with correct arguments", async () => {

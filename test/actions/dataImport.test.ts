@@ -54,7 +54,8 @@ describe("action: dataImport", () => {
     credentials: mockClientCredentials,
     dataFile: { name: "DataFile", required: true },
     verbose: { name: "Verbose", required: false },
-    environmentUrl: envUrl
+    environmentUrl: envUrl,
+    logToConsole: false
   });
 
   it("with minimal inputs, calls pac runner with correct arguments", async () => {
