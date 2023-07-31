@@ -37,7 +37,7 @@
     "@typescript-eslint/parser": "^5.62.0",
     "chai": "^4.3.7",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^8.45.0",
+    "eslint": "^8.46.0",
     "eslint-plugin-node": "^11.1.0",
     "fancy-log": "^2.0.0",
     "gulp": "^4.0.2",
