@@ -59,6 +59,7 @@ export class mockHost implements IHostAbstractions {
   version = '1.2.3.4';
   requestType = 'install';
   relativeCatalogSubmissionPath = './CatalogSubmission.json';
+  settingName = 'ContosoSetting';
 
   public getInput(entry: HostParameterEntry): string | undefined {
     const candidateValue = this._spy ? this._spy(entry) : undefined;
@@ -116,6 +117,7 @@ export class mockHost implements IHostAbstractions {
         case "Version": return this.version;
         case "RequestType": return this.requestType;
         case "CatalogSubmissionFile": return this.relativeCatalogSubmissionPath;
+        case "Name": return this.settingName;
         default: {
           return candidateValue || `<<input param '${entry.name}' is required but undefined>>`;
         }
