@@ -5,14 +5,14 @@ import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
 
-export interface UpdateSettingsOrgParameters extends CommonActionParameters {
+export interface UpdateOrgSettingsParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   name: HostParameterEntry;
   value: HostParameterEntry;
 }
 
-export async function updateSettingsOrg(parameters: UpdateSettingsOrgParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
+export async function updateOrgSettings(parameters: UpdateOrgSettingsParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<void> {
   const logger = runnerParameters.logger;
   const pac = createPacRunner(runnerParameters);
 

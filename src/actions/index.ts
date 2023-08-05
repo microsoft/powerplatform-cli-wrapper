@@ -33,4 +33,4 @@ export * from './installCatalog';
 export * from './catalogStatus';
 export * from './submitCatalog';
 export * from "./pipelineDeploy";
-export * from "./updateSettingsOrg";
+export * from "./updateOrgSettings";
