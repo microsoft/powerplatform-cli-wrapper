@@ -60,6 +60,7 @@ export class mockHost implements IHostAbstractions {
   requestType = 'install';
   relativeCatalogSubmissionPath = './CatalogSubmission.json';
   settingName = 'ContosoSetting';
+  protectionLevel = 'Standard';
 
   public getInput(entry: HostParameterEntry): string | undefined {
     const candidateValue = this._spy ? this._spy(entry) : undefined;
@@ -118,6 +119,7 @@ export class mockHost implements IHostAbstractions {
         case "RequestType": return this.requestType;
         case "CatalogSubmissionFile": return this.relativeCatalogSubmissionPath;
         case "Name": return this.settingName;
+        case "ProtectionLevel": return this.protectionLevel;
         default: {
           return candidateValue || `<<input param '${entry.name}' is required but undefined>>`;
         }
