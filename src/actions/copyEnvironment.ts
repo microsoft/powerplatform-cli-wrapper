@@ -17,6 +17,7 @@ export interface CopyEnvironmentParameters extends CommonActionParameters {
   overrideFriendlyName: HostParameterEntry;
   friendlyTargetEnvironmentName?: HostParameterEntry;
   copyType: HostParameterEntry;
+  skipAuditData?: HostParameterEntry;
 }
 
 export async function copyEnvironment(parameters: CopyEnvironmentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<EnvironmentResult> {
@@ -37,6 +38,7 @@ export async function copyEnvironment(parameters: CopyEnvironmentParameters, run
     validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl);
     validator.pushInput(pacArgs, "--source-id", parameters.sourceEnvironmentId);
     validator.pushInput(pacArgs, "--target-id", parameters.targetEnvironmentId);
+    validator.pushInput(pacArgs, "--skip-audit-data", parameters.skipAuditData);
 
     if (validator.getInput(parameters.overrideFriendlyName)?.toLowerCase() === 'true') {
       validator.pushInput(pacArgs, "--name", parameters.friendlyTargetEnvironmentName);

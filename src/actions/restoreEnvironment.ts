@@ -17,6 +17,7 @@ export interface RestoreEnvironmentParameters extends CommonActionParameters {
   restoreLatestBackup: HostParameterEntry;
   backupDateTime?: HostParameterEntry;
   targetEnvironmentName: HostParameterEntry;
+  skipAuditData?: HostParameterEntry;
 }
 
 export async function restoreEnvironment(parameters: RestoreEnvironmentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions): Promise<EnvironmentResult> {
@@ -37,6 +38,7 @@ export async function restoreEnvironment(parameters: RestoreEnvironmentParameter
     validator.pushInput(pacArgs, "--source-id", parameters.sourceEnvironmentId);
     validator.pushInput(pacArgs, "--target-id", parameters.targetEnvironmentId);
     validator.pushInput(pacArgs, "--name", parameters.targetEnvironmentName);
+    validator.pushInput(pacArgs, "--skip-audit-data", parameters.skipAuditData);
     validator.pushCommon(pacArgs, parameters);
 
     if (validator.getInput(parameters.restoreLatestBackup)?.toLowerCase() === 'true') {
