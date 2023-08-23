@@ -89,23 +89,23 @@ describe("action: importSolution", () => {
 
   it("with minimal inputs and verbose logging, calls pac runner stub with correct arguments", async () => {
     const host = new mockHost();
-    importSolutionParameters.versboseLogging = true;
+    importSolutionParameters.verboseLogging = true;
     await runActionWithMocks(importSolutionParameters, host);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWithExactly("solution", "import", "--path", host.absoluteSolutionPath, "--veboseLogging");
+    pacStub.should.have.been.calledOnceWithExactly("solution", "import", "--path", host.absoluteSolutionPath, "--verbose");
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 
 
-  it("with minimal inputs and logging to console, calls pac runner stub with correct arguments", async () => {
+  it("with minimal inputs, logging to console, and verbose logging, calls pac runner stub with correct arguments", async () => {
     const host = new mockHost();
     importSolutionParameters.logToConsole = true;
-    importSolutionParameters.versboseLogging = true;
+    importSolutionParameters.verboseLogging = true;
     await runActionWithMocks(importSolutionParameters, host);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWithExactly("solution", "import", "--path", host.absoluteSolutionPath, "--logConsole");
+    pacStub.should.have.been.calledOnceWithExactly("solution", "import", "--path", host.absoluteSolutionPath, "--logConsole", "--verbose");
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 
