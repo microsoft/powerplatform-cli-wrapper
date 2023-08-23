@@ -52,7 +52,8 @@ describe("action: publish solution", () => {
       environmentUrl: environmentUrl,
       async: { name: 'AsyncOperation', required: false },
       maxAsyncWaitTimeInMin: { name: 'MaxAsyncWaitTime', required: false },
-      logToConsole: false
+      logToConsole: false,
+      verboseLogging: false
     }
 
     const host = new mockHost();

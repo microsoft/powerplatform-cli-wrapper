@@ -53,7 +53,8 @@ describe("action: clone solution", () => {
     environmentUrl: environmentUrl,
     name: { name: 'SolutionName', required: true },
     outputDirectory: { name: 'OutputDirectory', required: false },
-    logToConsole: false
+    logToConsole: false,
+    verboseLogging: false
   });
 
   it("with required params, calls pac runner with correct args", async () => {

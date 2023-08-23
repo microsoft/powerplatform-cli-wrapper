@@ -64,7 +64,8 @@ describe("action: importSolution", () => {
     convertToManaged: { name: 'ConvertToManaged', required: false },
     activatePlugins: { name: 'ActivatePlugins', required: false },
     skipLowerVersion: { name: 'SkipLowerVersion', required: false },
-    logToConsole: false
+    logToConsole: false,
+    verboseLogging: false
   });
 
   it("with minimal inputs set by host, calls pac runner stub with correct arguments", async () => {
@@ -82,7 +83,29 @@ describe("action: importSolution", () => {
     await runActionWithMocks(importSolutionParameters, host);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
-    pacStub.should.have.been.calledOnceWithExactly("solution", "import", "--path", host.absoluteSolutionPath, "--log-to-console");
+    pacStub.should.have.been.calledOnceWithExactly("solution", "import", "--path", host.absoluteSolutionPath, "--logConsole");
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
+  });
+
+  it("with minimal inputs and verbose logging, calls pac runner stub with correct arguments", async () => {
+    const host = new mockHost();
+    importSolutionParameters.versboseLogging = true;
+    await runActionWithMocks(importSolutionParameters, host);
+
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
+    pacStub.should.have.been.calledOnceWithExactly("solution", "import", "--path", host.absoluteSolutionPath, "--veboseLogging");
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
+  });
+
+
+  it("with minimal inputs and logging to console, calls pac runner stub with correct arguments", async () => {
+    const host = new mockHost();
+    importSolutionParameters.logToConsole = true;
+    importSolutionParameters.versboseLogging = true;
+    await runActionWithMocks(importSolutionParameters, host);
+
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
+    pacStub.should.have.been.calledOnceWithExactly("solution", "import", "--path", host.absoluteSolutionPath, "--logConsole");
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 

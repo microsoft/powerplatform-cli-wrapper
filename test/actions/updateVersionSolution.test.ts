@@ -54,7 +54,8 @@ describe("action: updateVersion solution", () => {
     buildVersion: { name: 'BuildVersion', required: true },
     strategy: { name: 'Strategy', required: false },
     fileName: { name: 'FileName', required: false },
-    logToConsole: false
+    logToConsole: false,
+    verboseLogging: false
   });
 
   it("with required params, calls pac runner with correct args", async () => {

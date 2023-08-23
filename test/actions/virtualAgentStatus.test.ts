@@ -52,7 +52,8 @@ describe("action: listVirtualAgent", () => {
     credentials: mockClientCredentials,
     environmentUrl: environmentUrl,
     botId: { name: "BotId", required: true },
-    logToConsole: false
+    logToConsole: false,
+    verboseLogging: false
   });
 
   it("with minimal inputs, calls pac runner with correct arguments", async () => {

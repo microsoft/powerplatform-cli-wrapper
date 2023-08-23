@@ -68,7 +68,8 @@ describe("action: resetEnvironment", () => {
     templates: { name: "AppsTemplate", required: true },
     overrideFriendlyName: { name: "OverrideFriendlyName", required: false },
     overrideDomainName: { name: "OverrideDomainName", required: false },
-    logToConsole: false
+    logToConsole: false,
+    verboseLogging: false
   });
 
   it("with minimal inputs, calls pac runner with correct arguments", async () => {

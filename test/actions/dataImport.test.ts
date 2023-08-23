@@ -55,7 +55,8 @@ describe("action: dataImport", () => {
     dataFile: { name: "DataFile", required: true },
     verbose: { name: "Verbose", required: false },
     environmentUrl: envUrl,
-    logToConsole: false
+    logToConsole: false,
+    verboseLogging: false
   });
 
   it("with minimal inputs, calls pac runner with correct arguments", async () => {

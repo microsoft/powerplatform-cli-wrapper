@@ -55,7 +55,8 @@ describe("action: delete solution", () => {
     credentials: mockClientCredentials,
     environmentUrl: envUrl,
     name: { name: 'SolutionName', required: true },
-    logToConsole: false
+    logToConsole: false,
+    verboseLogging: false
   });
 
   it("with required params, calls pac runner with correct args", async () => {

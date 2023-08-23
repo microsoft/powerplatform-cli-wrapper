@@ -61,7 +61,8 @@ describe("action: upgrade solution", () => {
     name: { name: 'SolutionName', required: true },
     async: { name: 'AsyncOperation', required: true },
     maxAsyncWaitTimeInMin: { name: 'MaxAsyncWaitTime', required: true },
-    logToConsole: false
+    logToConsole: false,
+    verboseLogging: false
   });
 
   it("with required params, calls pac runner with correct args", async () => {

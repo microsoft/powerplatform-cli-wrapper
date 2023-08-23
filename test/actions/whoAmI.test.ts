@@ -62,7 +62,8 @@ describe("action: whoAmI", () => {
     const whoAmIParameters: WhoAmIParameters = {
       credentials: mockClientCredentials,
       environmentUrl: environmentUrl,
-      logToConsole: false
+      logToConsole: false,
+      verboseLogging: false
     };
 
     const result = await runActionWithMocks(whoAmIParameters);

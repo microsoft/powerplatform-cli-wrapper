@@ -53,7 +53,8 @@ describe("action: catalog status", () => {
     environmentUrl: environmentUrl,
     trackingId: { name: "TrackingId", required: true },
     requestType: { name: "RequestType", required: true },
-    logToConsole: false
+    logToConsole: false,
+    verboseLogging: false
   });
 
   it("with required params, calls pac runner with correct args", async () => {

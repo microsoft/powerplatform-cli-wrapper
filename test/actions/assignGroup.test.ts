@@ -57,7 +57,8 @@ describe("action: assignGroup", () => {
     teamType: { name: "TeamType", required: true },
     membershipType: { name: "MembershipType", required: true },
     businessUnit: { name: "BusinessUnit", required: false },
-    logToConsole: false
+    logToConsole: false,
+    verboseLogging: false
   });
 
   it("Should pass only noun and verb to pac when no parameters are passed", async () => {

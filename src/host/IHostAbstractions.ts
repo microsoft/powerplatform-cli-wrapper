@@ -19,4 +19,5 @@ export interface HostParameterEntry {
 
 export interface CommonActionParameters {
   logToConsole: boolean;
+  verboseLogging: boolean;
 }

@@ -56,7 +56,8 @@ describe("action: install catalog", () => {
     settings: { name: "Settings", required: false },
     targetVersion: { name: "TargetVersion", required: false },
     pollStatus: { name: "PollStatus", required: false },
-    logToConsole: false
+    logToConsole: false,
+    verboseLogging: false
   });
 
   it("with required params, calls pac runner with correct args", async () => {

@@ -53,7 +53,8 @@ describe("action: updateSettings org", () => {
     environmentUrl: envUrl,
     name: { name: 'Name', required: true },
     value: { name: 'Value', required: false },
-    logToConsole: false
+    logToConsole: false,
+    verboseLogging: false
   });
 
   it("with required params, calls pac runner with correct args", async () => {

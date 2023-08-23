@@ -42,7 +42,10 @@ export class InputValidator {
       return;
     }
     if (commonActionParameters.logToConsole) {
-      pacArgs.push("--log-to-console");
+      pacArgs.push("--logConsole");
+    }
+    if (commonActionParameters.versboseLogging) {
+      pacArgs.push("--verbose");
     }
   }
 }

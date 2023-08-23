@@ -55,7 +55,8 @@ describe("action: assignUser", () => {
     role: { name: "Role", required: true },
     applicationUser: { name: "ApplicationUser", required: false },
     businessUnit: { name: "BusinessUnit", required: false },
-    logToConsole: false
+    logToConsole: false,
+    verboseLogging: false
   });
 
   it("should pass only noun and verb to pac when no parameters are passed", async () => {

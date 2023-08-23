@@ -52,7 +52,8 @@ describe("action: setGovernanceConfig", () => {
     credentials: mockClientCredentials,
     environment: { name: "Environment", required: true },
     protectionLevel: { name: "ProtectionLevel", required: true },
-    logToConsole: false
+    logToConsole: false,
+    verboseLogging: false
   });
 
   it("should pass only noun and verb to pac when no parameters are passed", async () => {

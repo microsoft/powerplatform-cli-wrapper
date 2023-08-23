@@ -98,7 +98,8 @@ describe("action: check solution", () => {
       geoInstance: { name: "GeoInstance", required: false, defaultValue: "unitedstates" },
       filesExcluded: { name: "FilesToExclude", required: false, defaultValue: "" },
       saveResults: { name: "SaveResults", required: false, defaultValue: false },
-      logToConsole: false
+      logToConsole: false,
+      verboseLogging: false
     };
   });
   afterEach(() => restore());
