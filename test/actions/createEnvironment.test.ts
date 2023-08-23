@@ -36,7 +36,8 @@ describe("action: createEnvironment", () => {
       region: { name: 'LocationName', required: true },
       templates: { name: 'AppsTemplate', required: false },
       teamId: { name: 'TeamId', required: false },
-      logToConsole: false
+      logToConsole: false,
+      verboseLogging: false
     };
   });
   afterEach(() => restore());
