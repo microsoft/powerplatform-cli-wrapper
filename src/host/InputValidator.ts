@@ -44,7 +44,7 @@ export class InputValidator {
     if (commonActionParameters.logToConsole) {
       pacArgs.push("--logConsole");
     }
-    if (commonActionParameters.versboseLogging) {
+    if (commonActionParameters.verboseLogging) {
       pacArgs.push("--verbose");
     }
   }
