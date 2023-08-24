@@ -4,8 +4,8 @@ import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
-import { ClientCredentials, RunnerParameters } from "../../src";
-import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
+import { RunnerParameters } from "../../src";
+import { createDefaultMockRunnerParameters, mockEnvironmentUrl } from "./mock/mockData";
 import { UpdateVersionSolutionParameters } from "../../src/actions/updateVersionSolution";
 import Sinon = require("sinon");
 import { mockHost } from "./mock/mockHost";
@@ -18,7 +18,6 @@ describe("action: updateVersion solution", () => {
   let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
-  const mockClientCredentials: ClientCredentials = createMockClientCredentials();
   const envUrl: string = mockEnvironmentUrl;
   let updateVersionSolutionParameters: UpdateVersionSolutionParameters;
 
@@ -35,11 +34,6 @@ describe("action: updateVersion solution", () => {
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/updateVersionSolution"),
       (mock) => {
         mock(() => import("../../src/pac/createPacRunner")).withDefault(() => pacStub);
-        mock(() => import("../../src/pac/auth/authenticate")).with(
-          {
-            authenticateEnvironment: authenticateEnvironmentStub,
-            clearAuthentication: clearAuthenticationStub
-          });
       });
 
     authenticateEnvironmentStub.returns("Authentication successfully created.");
@@ -49,7 +43,6 @@ describe("action: updateVersion solution", () => {
   }
 
   const createUpdateVersionSolutionParameters = (): UpdateVersionSolutionParameters => ({
-    credentials: mockClientCredentials,
     environmentUrl: envUrl,
     buildVersion: { name: 'BuildVersion', required: true },
     strategy: { name: 'Strategy', required: false },
@@ -60,8 +53,6 @@ describe("action: updateVersion solution", () => {
   it("with required params, calls pac runner with correct args", async () => {
     await runActionWithMocks(updateVersionSolutionParameters);
 
-    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, envUrl);
     pacStub.should.have.been.calledOnceWith("solution", "version", "--buildversion", host.buildVersion);
-    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });
