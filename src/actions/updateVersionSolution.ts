@@ -4,7 +4,6 @@ import createPacRunner from "../pac/createPacRunner";
 import { RunnerParameters } from "../Parameters";
 
 export interface UpdateVersionSolutionParameters extends CommonActionParameters {
-  environmentUrl: string;
   buildVersion?: HostParameterEntry;
   revisionVersion?: HostParameterEntry;
   patchVersion?: HostParameterEntry;
