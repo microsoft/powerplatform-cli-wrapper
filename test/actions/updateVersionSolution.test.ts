@@ -5,7 +5,7 @@ import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
 import { RunnerParameters } from "../../src";
-import { createDefaultMockRunnerParameters, mockEnvironmentUrl } from "./mock/mockData";
+import { createDefaultMockRunnerParameters } from "./mock/mockData";
 import { UpdateVersionSolutionParameters } from "../../src/actions/updateVersionSolution";
 import Sinon = require("sinon");
 import { mockHost } from "./mock/mockHost";
@@ -18,7 +18,6 @@ describe("action: updateVersion solution", () => {
   let authenticateEnvironmentStub: Sinon.SinonStub<any[],any>;
   let clearAuthenticationStub: Sinon.SinonStub<any[], any>;
   const host = new mockHost();
-  const envUrl: string = mockEnvironmentUrl;
   let updateVersionSolutionParameters: UpdateVersionSolutionParameters;
 
   beforeEach(() => {
@@ -43,7 +42,6 @@ describe("action: updateVersion solution", () => {
   }
 
   const createUpdateVersionSolutionParameters = (): UpdateVersionSolutionParameters => ({
-    environmentUrl: envUrl,
     buildVersion: { name: 'BuildVersion', required: true },
     strategy: { name: 'Strategy', required: false },
     fileName: { name: 'FileName', required: false },
