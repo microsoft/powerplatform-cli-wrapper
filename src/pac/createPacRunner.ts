@@ -3,11 +3,11 @@ import { resolve } from "path";
 import { CommandRunner, createCommandRunner } from "../CommandRunner";
 import { RunnerParameters } from "../Parameters";
 
-export default function createPacRunner({workingDir, runnersDir, logger, agent}: RunnerParameters): CommandRunner
+export default function createPacRunner({workingDir, runnersDir, pacPath, logger, agent}: RunnerParameters): CommandRunner
 {
   return createCommandRunner(
     workingDir,
-    platform() === "win32"
+    pacPath ?? platform() === "win32"
       ? resolve(runnersDir, "pac", "tools", "pac.exe")
       : resolve(runnersDir, "pac_linux", "tools", "pac"),
     logger,
