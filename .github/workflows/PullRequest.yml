@@ -34,7 +34,7 @@ jobs:
 
       - name: Build and test
         run: |
-          npm i -g npm
+          npm i -g npm@8.19.4
           npm ci
           npm run ci
         env:
