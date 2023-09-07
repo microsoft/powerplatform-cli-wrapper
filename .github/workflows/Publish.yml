@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
           registry-url: "https://npm.pkg.github.com"
 
       - name: Setup git tag committer info for set-version
@@ -30,7 +30,7 @@ jobs:
 
       - name: Build
         run: |
-          npm i -g npm
+          npm i -g npm@8.19.4
           npm ci
           npm run set-version
           npm run dist
