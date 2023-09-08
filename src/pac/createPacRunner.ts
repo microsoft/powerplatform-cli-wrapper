@@ -7,9 +7,9 @@ export default function createPacRunner({workingDir, runnersDir, pacPath, logger
 {
   return createCommandRunner(
     workingDir,
-    pacPath ?? platform() === "win32"
+    pacPath ?? (platform() === "win32"
       ? resolve(runnersDir, "pac", "tools", "pac.exe")
-      : resolve(runnersDir, "pac_linux", "tools", "pac"),
+      : resolve(runnersDir, "pac_linux", "tools", "pac")),
     logger,
     agent,
     undefined,
