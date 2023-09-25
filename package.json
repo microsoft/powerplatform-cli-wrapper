@@ -48,7 +48,7 @@
     "mocha": "^10.2.0",
     "node-fetch": "^3.3.2",
     "ps-list": "^8.1.1",
-    "release-it": "^16.1.5",
+    "release-it": "^16.2.0",
     "rewiremock": "^3.14.5",
     "sinon": "^16.0.0",
     "sinon-chai": "^3.6.0",
