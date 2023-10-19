@@ -122,9 +122,9 @@ describe("action: importSolution", () => {
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath,
-      "--async", "true", "--import-as-holding", "true", "--force-overwrite", "true", "--publish-changes", "true",
+      "--async", "true", "--force-overwrite", "true", "--publish-changes", "true",
       "--skip-dependency-check", "true", "--convert-to-managed", "true", "--max-async-wait-time", host.maxAsyncWaitTime,
-      "--activate-plugins", "true", "--skip-lower-version", "false", "--settings-file", host.deploymentSettingsFile);
+      "--activate-plugins", "true", "--skip-lower-version", "false", "--import-as-holding", "true", "--settings-file", host.deploymentSettingsFile);
   });
 
   it("with optional inputs set to default values, calls pac runner stub with correct arguments", async () => {
@@ -146,7 +146,7 @@ describe("action: importSolution", () => {
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials, environmentUrl);
     pacStub.should.have.been.calledOnceWith("solution", "import", "--path", host.absoluteSolutionPath,
-      "--async", "true", "--import-as-holding", "false", "--force-overwrite", "true", "--publish-changes", "false",
+      "--async", "true", "--force-overwrite", "true", "--publish-changes", "false",
       "--skip-dependency-check", "true", "--convert-to-managed", "false", "--max-async-wait-time", "180", "--activate-plugins", "true", "--skip-lower-version", "false");
   });
 });

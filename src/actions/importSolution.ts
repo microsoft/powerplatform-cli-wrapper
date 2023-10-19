@@ -45,8 +45,6 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
 
     validator.pushInput(pacArgs, "--path", parameters.path, resolveFolder);
     validator.pushInput(pacArgs, "--async", parameters.async);
-    validator.pushInput(pacArgs, "--import-as-holding", parameters.importAsHolding);
-    validator.pushInput(pacArgs, "--stage-and-upgrade", parameters.stageAndUpgrade);
     validator.pushInput(pacArgs, "--force-overwrite", parameters.forceOverwrite);
     validator.pushInput(pacArgs, "--publish-changes", parameters.publishChanges);
     validator.pushInput(pacArgs, "--skip-dependency-check", parameters.skipDependencyCheck);
@@ -54,6 +52,15 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
     validator.pushInput(pacArgs, "--max-async-wait-time", parameters.maxAsyncWaitTimeInMin);
     validator.pushInput(pacArgs, "--activate-plugins", parameters.activatePlugins);
     validator.pushInput(pacArgs, "--skip-lower-version", parameters.skipLowerVersion);
+
+    // --import-as-holding and --stage-and-upgrade are mutually exclusive
+    // Only send these switch arguments to PAC if their value is true
+    if (validator.getInput(parameters.importAsHolding)?.toLowerCase() === "true") {
+      validator.pushInput(pacArgs, "--import-as-holding", parameters.importAsHolding);
+    }
+    if (validator.getInput(parameters.stageAndUpgrade)?.toLowerCase() === "true") {
+      validator.pushInput(pacArgs, "--stage-and-upgrade", parameters.stageAndUpgrade);
+    }
 
     if (validator.getInput(parameters.useDeploymentSettingsFile)?.toLowerCase() === "true") {
       validator.pushInput(pacArgs, "--settings-file", parameters.deploymentSettingsFile);
