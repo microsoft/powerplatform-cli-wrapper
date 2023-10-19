@@ -18,6 +18,7 @@ export interface ImportSolutionParameters extends CommonActionParameters {
   async: HostParameterEntry;
   maxAsyncWaitTimeInMin: HostParameterEntry;
   importAsHolding: HostParameterEntry;
+  stageAndUpgrade: HostParameterEntry;
   forceOverwrite: HostParameterEntry;
   publishChanges: HostParameterEntry;
   skipDependencyCheck: HostParameterEntry;
@@ -45,6 +46,7 @@ export async function importSolution(parameters: ImportSolutionParameters, runne
     validator.pushInput(pacArgs, "--path", parameters.path, resolveFolder);
     validator.pushInput(pacArgs, "--async", parameters.async);
     validator.pushInput(pacArgs, "--import-as-holding", parameters.importAsHolding);
+    validator.pushInput(pacArgs, "--stage-and-upgrade", parameters.stageAndUpgrade);
     validator.pushInput(pacArgs, "--force-overwrite", parameters.forceOverwrite);
     validator.pushInput(pacArgs, "--publish-changes", parameters.publishChanges);
     validator.pushInput(pacArgs, "--skip-dependency-check", parameters.skipDependencyCheck);
