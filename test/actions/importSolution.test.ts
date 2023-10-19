@@ -58,6 +58,7 @@ describe("action: importSolution", () => {
     async: { name: 'AsyncOperation', required: false },
     maxAsyncWaitTimeInMin: { name: 'MaxAsyncWaitTime', required: false },
     importAsHolding: { name: 'HoldingSolution', required: false },
+    stageAndUpgrade: { name: 'StageAndUpgrade', required: false },
     forceOverwrite: { name: 'OverwriteUnmanagedCustomizations', required: false },
     publishChanges: { name: 'PublishWorkflows', required: false },
     skipDependencyCheck: { name: 'SkipProductUpdateDependencies', required: false },
