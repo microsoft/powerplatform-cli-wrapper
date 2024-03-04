@@ -42,7 +42,7 @@
     "fancy-log": "^2.0.0",
     "gulp": "^4.0.2",
     "gulp-eslint-new": "^1.8.3",
-    "gulp-mocha": "^8.0.0",
+    "gulp-mocha": "^10.0.0",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
     "mocha": "^10.2.0",
