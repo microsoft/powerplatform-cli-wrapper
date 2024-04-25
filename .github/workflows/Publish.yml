@@ -9,6 +9,9 @@ on:
 jobs:
   build_publish:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write # npm publish
+      contents: write # git push tags
 
     steps:
       - uses: actions/checkout@v3
