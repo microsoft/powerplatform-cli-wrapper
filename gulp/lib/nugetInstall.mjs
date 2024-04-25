@@ -6,7 +6,7 @@ import { Extract } from "unzip-stream";
 import binDir from "./binDir.mjs";
 import yargs from 'yargs';
 const chmod = fsextra.chmod;
-const argv = yargs.argv;
+const argv = yargs(process.argv).argv;
 
 export default async function nugetInstall(feed, pkg) {
   const packageName = pkg.name.toLowerCase();
