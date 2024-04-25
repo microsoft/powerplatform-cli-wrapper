@@ -40,7 +40,7 @@
     "eslint": "^8.51.0",
     "eslint-plugin-node": "^11.1.0",
     "fancy-log": "^2.0.0",
-    "gulp": "^4.0.2",
+    "gulp": "^5.0.0",
     "gulp-eslint-new": "^2.0.0",
     "gulp-mocha": "^8.0.0",
     "gulp-sourcemaps": "^3.0.0",
