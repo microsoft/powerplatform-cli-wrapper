@@ -1,6 +1,6 @@
 import { CommandRunner } from "../../CommandRunner";
 import { Logger } from "../../Logger";
-import { ClientCredentials, AuthCredentials, UsernamePassword } from "./authParameters";
+import { ClientCredentials, AuthCredentials, UsernamePassword, FederatedCredentials } from "./authParameters";
 
 export function authenticateAdmin(pac: CommandRunner, credentials: AuthCredentials, logger: Logger): Promise<string[]> {
   logger.log(`authN to admin API: authType=${isUsernamePassword(credentials) ? 'UserPass' : 'SPN'}; cloudInstance: ${credentials.cloudInstance || '<not set>'}`);
@@ -23,11 +23,29 @@ function addUrl(url: string) {
 }
 
 function addCredentials(credentials: AuthCredentials) {
-  return isUsernamePassword(credentials) ? addUsernamePassword(credentials) : addClientCredentials(credentials);
+  if (isUsernamePassword(credentials)) {
+    return addUsernamePassword(credentials);
+  } else if (isFederatedCredentials(credentials)) {
+    return addFederatedCredentials(credentials);
+  } else {
+    return addClientCredentials(credentials);
+  }
 }
 
 function isUsernamePassword(credentials: AuthCredentials): credentials is UsernamePassword {
   return "username" in credentials;
+}
+
+function isFederatedCredentials(credentials: AuthCredentials): credentials is FederatedCredentials {
+  return "federationProvider" in credentials;
+}
+
+function addFederatedCredentials(parameters: FederatedCredentials) {
+  return [
+    "--applicationId", parameters.appId,
+    "--tenant", parameters.tenantId,
+    parameters.federationProvider == "AzureDevOps" ? "--azureDevOpsFederated" : "--githubFederated",
+  ];
 }
 
 function addClientCredentials(parameters: ClientCredentials) {

@@ -8,6 +8,15 @@ export interface ClientCredentials
   scheme: string;
 }
 
+export interface FederatedCredentials
+{
+  appId: string;
+  tenantId: string;
+  cloudInstance: string;
+  scheme: string;
+  federationProvider : "AzureDevOps" | "GitHub";
+}
+
 export interface UsernamePassword
 {
   username: string;
@@ -16,5 +25,5 @@ export interface UsernamePassword
   cloudInstance: string;
 }
 
-export type AuthCredentials = UsernamePassword | ClientCredentials;
+export type AuthCredentials = UsernamePassword | ClientCredentials | FederatedCredentials;
 
