@@ -56,6 +56,7 @@ export class mockHost implements IHostAbstractions {
   trackingId = '00000000-0000-0000-0000-000000000005';
   stageId = '00000000-0000-0000-0000-000000000006';
   deploymentEnvironment = '00000000-0000-0000-0000-000000000007';
+  securityGroupId = '00000000-0000-0000-0000-000000000008';
   version = '1.2.3.4';
   requestType = 'install';
   relativeCatalogSubmissionPath = './CatalogSubmission.json';
@@ -97,6 +98,7 @@ export class mockHost implements IHostAbstractions {
         case 'Purpose': return this.purpose;
         case 'BuildVersion': return this.buildVersion;
         case 'TeamId': return this.teamId;
+        case 'SecurityGroupId': return this.securityGroupId;
         case "User": return this.user;
         case "Role": return this.role;
         case "SchemaFile": return this.schemaFile;

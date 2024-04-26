@@ -15,6 +15,7 @@ export interface CreateEnvironmentParameters extends CommonActionParameters {
   templates: HostParameterEntry;
   domainName: HostParameterEntry;
   teamId: HostParameterEntry;
+  securityGroupId: HostParameterEntry;
 }
 
 export interface EnvironmentResult {
@@ -41,6 +42,7 @@ export async function createEnvironment(parameters: CreateEnvironmentParameters,
     validator.pushInput(pacArgs, "--language", parameters.language, normalizeLanguage);
     validator.pushInput(pacArgs, "--domain", parameters.domainName);
     validator.pushInput(pacArgs, "--team-id", parameters.teamId);
+    validator.pushInput(pacArgs, "--security-group-id", parameters.securityGroupId);
     validator.pushCommon(pacArgs, parameters);
 
     logger.log("Calling pac cli inputs: " + pacArgs.join(" "));

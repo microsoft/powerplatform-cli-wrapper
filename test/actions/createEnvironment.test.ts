@@ -36,6 +36,7 @@ describe("action: createEnvironment", () => {
       region: { name: 'LocationName', required: true },
       templates: { name: 'AppsTemplate', required: false },
       teamId: { name: 'TeamId', required: false },
+      securityGroupId: { name: 'SecurityGroupId', required: false },
       logToConsole: false
     };
   });
@@ -87,7 +88,7 @@ describe("action: createEnvironment", () => {
       "--templates", host.templates, "--region", remappedRegionUS, "--currency", host.currency, "--language", host.language, "--domain", host.domainName);
   });
 
-  it("with required params, calls pac to create teams environemnt", async () => {
+  it("with required params, calls pac to create teams environment", async () => {
     createEnvironmentParameters.teamId = { name: 'TeamId', required: true };
 
     await runActionWithMocks(createEnvironmentParameters);
@@ -107,5 +108,15 @@ describe("action: createEnvironment", () => {
     pacStub.should.have.been.calledOnceWith("admin", "create", "--name", host.environmentName, "--type", host.environmentType,
       "--region", 'Australia', "--currency", host.currency, "--language", host.language, "--domain", host.domainName,
       "--team-id", host.teamId);
+  });
+
+  it("with required params, calls pac to create environment with security group", async () => {
+    createEnvironmentParameters.securityGroupId = { name: 'SecurityGroupId', required: true };
+
+    await runActionWithMocks(createEnvironmentParameters);
+
+    pacStub.should.have.been.calledOnceWith("admin", "create", "--name", host.environmentName, "--type", host.environmentType,
+      "--region", host.region, "--currency", host.currency, "--language", host.language, "--domain", host.domainName,
+      "--security-group-id", host.securityGroupId);
   });
 });
