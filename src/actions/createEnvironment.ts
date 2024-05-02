@@ -37,6 +37,7 @@ export async function createEnvironment(parameters: CreateEnvironmentParameters,
 
     validator.pushInput(pacArgs, "--name", parameters.environmentName);
     validator.pushInput(pacArgs, "--type", parameters.environmentType);
+    validator.pushInput(pacArgs, "--user", parameters.user);
     validator.pushInput(pacArgs, "--templates", parameters.templates);
     validator.pushInput(pacArgs, "--region", parameters.region, normalizeRegion);
     validator.pushInput(pacArgs, "--currency", parameters.currency);
