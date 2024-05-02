@@ -9,6 +9,7 @@ export interface CreateEnvironmentParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentName: HostParameterEntry;
   environmentType: HostParameterEntry;
+  user: HostParameterEntry;
   region: HostParameterEntry;
   currency: HostParameterEntry;
   language: HostParameterEntry;
