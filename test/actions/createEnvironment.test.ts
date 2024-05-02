@@ -30,6 +30,7 @@ describe("action: createEnvironment", () => {
       credentials: mockClientCredentials,
       environmentName: { name: 'DisplayName', required: true },
       environmentType: { name: 'EnvironmentSku', required: true },
+      user: { name: 'User', required: false },
       currency: { name: 'CurrencyName', required: true },
       domainName: { name: 'DomainName', required: true },
       language: { name: 'LanguageName', required: true },
