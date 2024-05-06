@@ -53,6 +53,7 @@ describe("action: dataImport", () => {
   const createMinMockParameters = (): DataImportParameters => ({
     credentials: mockClientCredentials,
     dataFile: { name: "DataFile", required: true },
+    connectionCount: { name: "ConnectionCount", required: false },
     verbose: { name: "Verbose", required: false },
     environmentUrl: envUrl,
     logToConsole: false
