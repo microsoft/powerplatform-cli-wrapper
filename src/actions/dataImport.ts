@@ -9,6 +9,7 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 export interface DataImportParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   dataFile: HostParameterEntry;
+  connectionCount: HostParameterEntry
   verbose: HostParameterEntry;
   environmentUrl: string;
 }
@@ -29,6 +30,7 @@ export async function dataImport(parameters: DataImportParameters, runnerParamet
     logger.log("The Authentication Result: " + authenticateResult);
 
     validator.pushInput(pacArgs, "--data", parameters.dataFile);
+    validator.pushInput(pacArgs, "--connection-count", parameters.connectionCount);
     validator.pushInput(pacArgs, "--verbose", parameters.verbose);
     validator.pushCommon(pacArgs, parameters);
 
