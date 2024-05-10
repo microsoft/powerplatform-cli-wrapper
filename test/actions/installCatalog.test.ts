@@ -63,7 +63,7 @@ describe("action: install catalog", () => {
     await runActionWithMocks(installCatalogParameters);
 
     authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-    pacStub.should.have.been.calledOnceWith("catalog", "install", "--catalog-item-id", mockedHost.catalogItemId, "--target-url", mockedHost.targetEnvironmentUrl);
+    pacStub.should.have.been.calledOnceWith("catalog", "install", "--catalog-item-id", mockedHost.catalogItemId, "--target-env", mockedHost.targetEnvironmentUrl);
     clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
   });
 });
