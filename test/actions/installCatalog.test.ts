@@ -52,21 +52,20 @@ describe("action: install catalog", () => {
     credentials: mockClientCredentials,
     environmentUrl: environmentUrl,
     catalogItemId: { name: "CatalogItemId", required: true },
-    targetEnvironmentUrl: { name: "TargetEnvironmentUrl", required: true },
-    targetEnvironment: { name: "TargetEnvironment", required: true },
     settings: { name: "Settings", required: false },
     targetVersion: { name: "TargetVersion", required: false },
     pollStatus: { name: "PollStatus", required: false },
     logToConsole: false
   });
 
-  // it("with required params, calls pac runner with correct args", async () => {
-  //   await runActionWithMocks(installCatalogParameters);
+  it("with required params, calls pac runner with correct args", async () => {
+    installCatalogParameters.targetEnvironmentUrl = { name: "TargetEnvironmentUrl", required: true };
+    await runActionWithMocks(installCatalogParameters);
 
-  //   authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
-  //   pacStub.should.have.been.calledOnceWith("catalog", "install", "--catalog-item-id", mockedHost.catalogItemId, "--target-url", mockedHost.targetEnvironmentUrl);
-  //   clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
-  // });
+    authenticateEnvironmentStub.should.have.been.calledOnceWith(pacStub, mockClientCredentials);
+    pacStub.should.have.been.calledOnceWith("catalog", "install", "--catalog-item-id", mockedHost.catalogItemId, "--target-url", mockedHost.targetEnvironmentUrl);
+    clearAuthenticationStub.should.have.been.calledOnceWith(pacStub);
+  });
 
   it("with required params, calls pac runner with correct args 2", async () => {
     installCatalogParameters.targetEnvironment = { name: "TargetEnvironment", required: true };

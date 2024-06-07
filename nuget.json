@@ -5,6 +5,17 @@
       "url": "https://api.nuget.org/v3-flatcontainer/",
       "authenticated": false,
       "packages": [
+        {
+          "name": "Microsoft.PowerApps.CLI",
+          "version": "1.32.8",
+          "internalName": "pac"
+        },
+        {
+          "name": "Microsoft.PowerApps.CLI.Core.linux-x64",
+          "version": "1.32.8",
+          "internalName": "pac_linux",
+          "chmod": "tools/pac"
+        }
       ]
     },
     {
@@ -13,17 +24,6 @@
       "authenticated": true,
       "patEnvironmentVariable": "AZ_DevOps_Read_PAT",
       "packages": [
-        {
-          "name": "Microsoft.PowerApps.CLI",
-          "version": "1.32.4",
-          "internalName": "pac"
-        },
-        {
-          "name": "Microsoft.PowerApps.CLI.Core.linux-x64",
-          "version": "1.32.4",
-          "internalName": "pac_linux",
-          "chmod": "tools/pac"
-        }
       ]
     },
     {

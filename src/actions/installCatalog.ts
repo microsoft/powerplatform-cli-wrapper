@@ -10,7 +10,7 @@ export interface InstallCatalogParameters extends CommonActionParameters {
   environmentUrl: string;
   catalogItemId: HostParameterEntry;
   targetEnvironmentUrl?: HostParameterEntry;
-  targetEnvironment: HostParameterEntry;
+  targetEnvironment?: HostParameterEntry;
   targetVersion?: HostParameterEntry;
   settings?: HostParameterEntry;
   pollStatus?: HostParameterEntry;
