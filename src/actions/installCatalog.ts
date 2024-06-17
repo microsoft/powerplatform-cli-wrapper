@@ -9,7 +9,8 @@ export interface InstallCatalogParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
   catalogItemId: HostParameterEntry;
-  targetEnvironmentUrl: HostParameterEntry;
+  targetEnvironmentUrl?: HostParameterEntry;
+  targetEnvironment?: HostParameterEntry;
   targetVersion?: HostParameterEntry;
   settings?: HostParameterEntry;
   pollStatus?: HostParameterEntry;
@@ -28,6 +29,7 @@ export async function installCatalog(parameters: InstallCatalogParameters, runne
 
     validator.pushInput(pacArgs, "--catalog-item-id", parameters.catalogItemId);
     validator.pushInput(pacArgs, "--target-url", parameters.targetEnvironmentUrl);
+    validator.pushInput(pacArgs, "--target-env", parameters.targetEnvironment);
     validator.pushInput(pacArgs, "--settings", parameters.settings);
     validator.pushInput(pacArgs, "--target-version", parameters.targetVersion);
     validator.pushInput(pacArgs, "--poll-status", parameters.pollStatus);
