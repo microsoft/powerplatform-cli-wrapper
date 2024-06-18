@@ -57,8 +57,6 @@ describe("pac", () => {
         pac.should.have.been.calledOnceWith(
           "auth",
           "create",
-          "--kind",
-          "ADMIN",
           "--tenant",
           spnCreds.tenantId,
           "--applicationId",
@@ -78,8 +76,6 @@ describe("pac", () => {
         pac.should.have.been.calledOnceWith(
           "auth",
           "create",
-          "--kind",
-          "ADMIN",
           "--tenant",
           spnCreds.tenantId,
           "--applicationId",
@@ -97,8 +93,6 @@ describe("pac", () => {
         pac.should.have.been.calledOnceWith(
           "auth",
           "create",
-          "--kind",
-          "ADMIN",
           "--username",
           userCreds.username,
           "--password",
@@ -114,8 +108,6 @@ describe("pac", () => {
         pac.should.have.been.calledOnceWith(
           "auth",
           "create",
-          "--kind",
-          "ADMIN",
           "--username",
           userCreds.username,
           "--password",
@@ -146,7 +138,7 @@ describe("pac", () => {
         pac.should.have.been.calledOnceWith(
           "auth",
           "create",
-          "--url",
+          "--environment",
           envUrl,
           "--tenant",
           spnCreds.tenantId,
@@ -165,7 +157,7 @@ describe("pac", () => {
         pac.should.have.been.calledOnceWith(
           "auth",
           "create",
-          "--url",
+          "--environment",
           envUrl,
           "--username",
           userCreds.username,
