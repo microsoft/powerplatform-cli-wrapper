@@ -4,13 +4,13 @@ import { ClientCredentials, AuthCredentials, UsernamePassword, FederatedCredenti
 
 export function authenticateAdmin(pac: CommandRunner, credentials: AuthCredentials, logger: Logger): Promise<string[]> {
   logger.log(`authN to admin API: authType=${isUsernamePassword(credentials) ? 'UserPass' : 'SPN'}; cloudInstance: ${credentials.cloudInstance || '<not set>'}`);
-  return pac("auth", "create", "--kind", "ADMIN", ...addCredentials(credentials), ...addCloudInstance(credentials));
+  return pac("auth", "create", ...addCredentials(credentials), ...addCloudInstance(credentials));
 }
 
 export function authenticateEnvironment(pac: CommandRunner, credentials: AuthCredentials, environmentUrl: string, logger: Logger): Promise<string[]> {
 
   logger.log(`authN to env. authType:${isUsernamePassword(credentials) ? 'UserPass' : 'SPN'} authScheme:${isUsernamePassword(credentials) ? '' : `${credentials.scheme}`}; cloudInstance: ${credentials.cloudInstance || '<not set>'}; envUrl: ${environmentUrl}`);
-  return pac("auth", "create", ...addUrl(environmentUrl), ...addCredentials(credentials), ...addCloudInstance(credentials));
+  return pac("auth", "create", ...addEnvironment(environmentUrl), ...addCredentials(credentials), ...addCloudInstance(credentials));
 }
 
 export function clearAuthentication(pac: CommandRunner): Promise<string[]> {
@@ -18,8 +18,8 @@ export function clearAuthentication(pac: CommandRunner): Promise<string[]> {
   return pac("auth", "clear");
 }
 
-function addUrl(url: string) {
-  return ["--url", url];
+function addEnvironment(env: string) {
+  return ["--environment", env];
 }
 
 function addCredentials(credentials: AuthCredentials) {
