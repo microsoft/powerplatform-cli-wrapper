@@ -41,7 +41,7 @@
     "eslint-plugin-node": "^11.1.0",
     "fancy-log": "^2.0.0",
     "gulp": "^5.0.0",
-    "gulp-eslint-new": "^2.0.0",
+    "gulp-eslint-new": "^2.1.0",
     "gulp-mocha": "^8.0.0",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
