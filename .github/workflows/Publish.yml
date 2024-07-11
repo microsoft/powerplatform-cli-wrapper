@@ -37,8 +37,6 @@ jobs:
           npm ci
           npm run set-version
           npm run dist
-        env:
-          AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
 
       - name: Publish
         run: |

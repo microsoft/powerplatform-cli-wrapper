@@ -12,7 +12,6 @@ export default async function nugetInstall(feed, pkg) {
   const packageName = pkg.name.toLowerCase();
   const version = pkg.version.toLowerCase();
   const packagePath = `${packageName}/${version}/${packageName}.${version}.nupkg`;
-  const feedPAT = argv.feedPAT || process.env['AZ_DevOps_Read_PAT'];
 
   const nupkgUrl = new URL(packagePath, feed.url);
   const reqInit = {
@@ -22,14 +21,6 @@ export default async function nugetInstall(feed, pkg) {
     },
     redirect: "manual",
   };
-  if (feed.authenticated) {
-    if (!feedPAT) {
-      throw new Error(`nuget feed ${feed.name} requires authN but neither '--feedPAT' argument nor env var '${feed.patEnvironmentVariable}' was defined!`);
-    }
-    reqInit.headers['Authorization'] = `Basic ${Buffer.from(
-      'PAT:' + feedPAT
-    ).toString('base64')}`;
-  }
 
   info(`Downloading package: ${nupkgUrl}...`);
   let res = await fetch(nupkgUrl, reqInit);

@@ -1,6 +1,6 @@
-# Project
+# Power Platform CLI Wrapper
 
-This repo acts as the intermediate layer between different hosts (Power Platform Build Tools, GitHub Actions) and PAC CLI.
+This repo contains the intermediate layer between [Power Platform Build Tools](https://github.com/microsoft/powerplatform-build-tools), [GitHub Actions](https://github.com/microsoft/powerplatform-actions) and [PAC CLI](https://aka.ms/PowerPlatformCLI).
 
 Cli-Wrapper by itself doesn't call a specific version of PAC CLI, it lets the individual hosts decide which version of PAC CLI to be used.
 Although, it is recommended that all hosts use the latest version of PAC CLI.
@@ -33,7 +33,7 @@ Any use of third-party trademarks or logos are subject to those third-party's po
 
 Windows, macOS or Linux:
 
-- [Node.js LTS (currently v12)](https://nodejs.org/en/download/)
+- [Node.js (LTS)](https://nodejs.org/en/download/)
 - gulp CLI: ```npm install -g gulp-cli```
 - [git](https://git-scm.com/downloads)
 - [VS Code](https://code.visualstudio.com/Download) or your different favorite editor
@@ -43,12 +43,6 @@ Windows, macOS or Linux:
   - [GitLens (eamodio.gitlens)](https://github.com/eamodio/vscode-gitlens)
   - [markdownlint (davidanson.vscode-markdownlint)](https://github.com/DavidAnson/vscode-markdownlint)
   - [Mocha sidebar (maty.vscode-mocha-sidebar)](https://github.com/maty21/mocha-sidebar)
-- TEMPORARY:
-  - Create a PAT for the Azure DevOps org ```msazure``` with scope: package(read) and add it as local environment variable.
-  ```Powershell
-  [Environment]::SetEnvironmentVariable('AZ_DevOps_Read_PAT', '<yourPAT>', [EnvironmentVariableTarget]::User)
-  ```
-  - Create a PAT in GitHub to read packages, and enable SSO for the microsoft organization. Then run 'npm login --scope=@microsoft --registry=https://npm.pkg.github.com' and provide the PAT as password. This will only be needed until this repo is made public.
 
 If developing on Linux or macOS, you will also need to install `git-lfs`.  (It is prepackaged with the Git installer for Windows.)  Follow the [instructions here](https://docs.github.com/en/github/managing-large-files/installing-git-large-file-storage) for your environment.
 
@@ -60,6 +54,7 @@ Clone, restore modules, build and run:
 git clone https://github.com/microsoft/powerplatform-cli-wrapper.git
 cd powerplatform-cli-wrapper
 npm install
+npm install -g gulp-cli
 gulp ci
 ```
 

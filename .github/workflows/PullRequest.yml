@@ -37,5 +37,3 @@ jobs:
           npm i -g npm@8.19.4
           npm ci
           npm run ci
-        env:
-          AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
