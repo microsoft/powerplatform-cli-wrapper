@@ -7,7 +7,6 @@ const nugetFeeds = require("../nuget.json").feeds;
 
 
 // https://docs.microsoft.com/en-us/nuget/api/package-base-address-resource
-// https://dev.azure.com/msazure/One/_packaging?_a=feed&feed=CAP_ISVExp_Tools_Daily
 
 export default gulp.series(
   ...nugetFeeds
