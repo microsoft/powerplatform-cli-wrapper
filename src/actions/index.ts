@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
-
 export * from "./exportSolution";
 export * from "./whoAmI";
 export * from "./importSolution";
@@ -35,3 +32,4 @@ export * from './submitCatalog';
 export * from "./pipelineDeploy";
 export * from "./updateOrgSettings";
 export * from "./setGovernanceConfig";
+export * from "./runPowerFx";
