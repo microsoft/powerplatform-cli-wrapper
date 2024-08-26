@@ -1,16 +1,20 @@
 # https://github.com/release-it/release-it/blob/master/config/release-it.json
 
-hooks: {}
+hooks:
+  'after:release': 'echo ##vso[task.setvariable variable=CLI_WRAPPER_VERSION;]${version}'
 
 # https://github.com/release-it/release-it/blob/master/docs/git.md
 git:
   addUntrackedFiles: false
   commit: false
   push: true
-  requireBranch: main
+  # need to specify pushRepo, since AzDO insists on disconnected refs, breaking upstream
+  requireUpstream: false
+  pushArgs: [ '--tags' ]
+  pushRepo: https://github.com/microsoft/powerplatform-cli-wrapper
+
   requireCommits: false
-  requireCleanWorkingDir: true
-  requireUpstream: true
+  requireCleanWorkingDir: false
   tag: true
   tagArgs: [ '--force' ]
   tagAnnotation: |
