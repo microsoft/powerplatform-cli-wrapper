@@ -1,5 +1,4 @@
 import glob = require("glob");
-import fs from ("fs");
 import os = require("os");
 import path = require("path");
 
@@ -9,7 +8,9 @@ import createPacRunner from "../pac/createPacRunner";
 import { authenticateAdmin, authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
+import * as fs from "fs";
 import { promises, rmdirSync, rmSync, writeFile } from "fs-extra";
+
 
 export interface CheckSolutionParameters extends CommonActionParameters {
   credentials: AuthCredentials;
