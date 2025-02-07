@@ -1,4 +1,5 @@
 import glob = require("glob");
+import fs from ("fs");
 import os = require("os");
 import path = require("path");
 
@@ -107,8 +108,8 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     const pacResult = await pac(...pacArgs);
     logger.log("CheckSolution Action Result: " + pacResult);
 
-    const files = glob.sync('**/*', { cwd: outputDirectory, absolute: true });
-    const artifactStoreName = validator.getInput(parameters.artifactStoreName) || 'CheckSolutionLogs';
+    const files: string[] = glob.sync('**/*', { cwd: outputDirectory, absolute: true }).filter((file: string) => !fs.lstatSync(file).isDirectory());
+    const artifactStoreName = validator.getInput(parameters.artifactStoreName) || 'CodeAnalysisLogs';
     await artifactStore.upload(artifactStoreName, files);
 
     const status = isolateStatus(pacResult);
