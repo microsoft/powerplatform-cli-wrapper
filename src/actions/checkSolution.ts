@@ -109,7 +109,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     logger.log("CheckSolution Action Result: " + pacResult);
 
     const files: string[] = glob.sync('**/*', { cwd: outputDirectory, absolute: true }).filter((file: string) => !fs.lstatSync(file).isDirectory());
-    const artifactStoreName = validator.getInput(parameters.artifactStoreName) || 'CodeAnalysisLogs';
+    const artifactStoreName = validator.getInput(parameters.artifactStoreName) || 'CheckSolutionLogs';
     await artifactStore.upload(artifactStoreName, files);
 
     const status = isolateStatus(pacResult);
