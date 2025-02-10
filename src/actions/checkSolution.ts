@@ -11,7 +11,6 @@ import { AuthCredentials } from "../pac/auth/authParameters";
 import * as fs from "fs";
 import { promises, rmdirSync, rmSync, writeFile } from "fs-extra";
 
-
 export interface CheckSolutionParameters extends CommonActionParameters {
   credentials: AuthCredentials;
   environmentUrl: string;
