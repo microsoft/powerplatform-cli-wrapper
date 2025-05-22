@@ -12,6 +12,7 @@ export interface AddSolutionComponentParameters {
   componentType: HostParameterEntry;
   addRequiredComponents?: HostParameterEntry;
   environmentUrl: string;
+  async: HostParameterEntry;
 }
 
 export async function addSolutionComponent(parameters: AddSolutionComponentParameters, runnerParameters: RunnerParameters, host: IHostAbstractions) {
@@ -28,6 +29,7 @@ export async function addSolutionComponent(parameters: AddSolutionComponentParam
     inputValidator.pushInput(pacArgs, "--solutionUniqueName", parameters.solutionName);
     inputValidator.pushInput(pacArgs, "--component", parameters.component);
     inputValidator.pushInput(pacArgs, "--componentType", parameters.componentType);
+    inputValidator.pushInput(pacArgs, "--async", parameters.async);
 
     if (parameters.addRequiredComponents && inputValidator.getInput(parameters.addRequiredComponents)?.toLowerCase() === 'true') {
       inputValidator.pushInput(pacArgs, "--AddRequiredComponents", parameters.addRequiredComponents);
