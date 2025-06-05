@@ -53,7 +53,8 @@ describe("action: addSolutionComponent", () => {
     solutionName: { name: "SolutionName", required: true },
     component: { name: "Component", required: true },
     componentType: { name: "ComponentType", required: true },
-    environmentUrl: environmentUrl
+    environmentUrl: environmentUrl,
+    async: { name: 'AsyncOperation', required: false },
   });
 
   it("with minimal inputs, calls pac runner with correct arguments", async () => {
