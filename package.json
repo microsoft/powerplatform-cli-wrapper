@@ -50,7 +50,7 @@
     "ps-list": "^8.1.1",
     "release-it": "^17.3.0",
     "rewiremock": "^3.14.6",
-    "sinon": "^17.0.1",
+    "sinon": "^21.0.0",
     "sinon-chai": "^3.6.0",
     "ts-mocha": "^10.0.0",
     "ts-node": "^10.9.2",
