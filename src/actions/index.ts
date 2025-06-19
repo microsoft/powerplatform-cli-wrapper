@@ -35,3 +35,4 @@ export * from './submitCatalog';
 export * from "./pipelineDeploy";
 export * from "./updateOrgSettings";
 export * from "./setGovernanceConfig";
+export * from "./copilotPublish";
