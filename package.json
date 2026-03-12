@@ -61,5 +61,10 @@
   "dependencies": {
     "fs-extra": "^11.1.1",
     "glob": "^11.0.2"
+  },
+  "overrides": {
+    "ts-sinon": {
+      "@types/node": "$@types/node"
+    }
   }
 }
