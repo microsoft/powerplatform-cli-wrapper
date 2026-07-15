@@ -48,6 +48,28 @@ describe("PAC runtime environment", () => {
     exists.should.equal(false);
   });
 
+  it("shares concurrent cleanup calls", async () => {
+    const runtime = await createPacRuntimeEnvironment("pac-concurrent-cleanup-");
+    await Promise.all(Array.from({ length: 16 }, () => runtime.cleanup()));
+    let exists = true;
+    try {
+      await fs.stat(runtime.root);
+    } catch {
+      exists = false;
+    }
+    exists.should.equal(false);
+  });
+
+  it("rejects path-affecting prefixes", async () => {
+    let errorMessage = "";
+    try {
+      await createPacRuntimeEnvironment("..\\outside");
+    } catch (error) {
+      errorMessage = error instanceof Error ? error.message : String(error);
+    }
+    errorMessage.should.contain("PAC runtime prefix");
+  });
+
   it("cleans up when the request fails", async () => {
     let root = "";
     let errorMessage = "";

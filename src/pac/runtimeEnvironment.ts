@@ -19,6 +19,10 @@ export interface PacRuntimeEnvironment {
  * version and retain a serialized fallback when the variables are ignored.
  */
 export async function createPacRuntimeEnvironment(prefix = "pac-cli-"): Promise<PacRuntimeEnvironment> {
+  if (!/^[a-zA-Z0-9_-]+$/.test(prefix)) {
+    throw new Error("PAC runtime prefix may contain only letters, numbers, underscores, and hyphens");
+  }
+
   const root = await fs.mkdtemp(join(tmpdir(), prefix));
   const appData = join(root, "AppData", "Roaming");
   const localAppData = join(root, "AppData", "Local");
@@ -43,14 +47,13 @@ export async function createPacRuntimeEnvironment(prefix = "pac-cli-"): Promise<
     XDG_CACHE_HOME: xdgCache,
   };
 
-  let cleaned = false;
+  let cleanupPromise: Promise<void> | undefined;
   return {
     root,
     environment,
     cleanup: async () => {
-      if (cleaned) return;
-      cleaned = true;
-      await fs.rm(root, { recursive: true, force: true });
+      cleanupPromise ??= fs.rm(root, { recursive: true, force: true });
+      await cleanupPromise;
     },
   };
 }
