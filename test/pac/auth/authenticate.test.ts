@@ -2,7 +2,7 @@ import * as sinonChai from "sinon-chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { should, use } from "chai";
 import { restore, stub } from "sinon";
-import { authenticateAdmin, authenticateEnvironment } from "../../../src/pac/auth/authenticate";
+import { authenticateAdmin, authenticateEnvironment, clearAuthentication } from "../../../src/pac/auth/authenticate";
 import { CommandRunner } from "../../../src/CommandRunner";
 import testLogger, {} from "../../testLogger";
 
@@ -42,18 +42,19 @@ describe("pac", () => {
     describe("kind#admin", () => {
       let pac: CommandRunner;
       beforeEach(() => {
-        pac = stub();
+        pac = stub().resolves([]);
+        pac.setEnvironment = stub();
       });
       afterEach(() => {
-        delete process.env.PAC_CLI_SPN_SECRET;
         restore();
       });
 
       it("uses SPN authentication when provided client credentials", () => {
         authenticateAdmin(pac, spnCreds, testLogger);
 
-        process.env.should.have.property("PAC_CLI_SPN_SECRET", "CLIENT_SECRET");
-
+        const setEnvironment = pac.setEnvironment;
+        if (!setEnvironment) { throw new Error("setEnvironment was not configured"); }
+        setEnvironment.should.have.been.calledOnceWith({ PAC_CLI_SPN_SECRET: "CLIENT_SECRET" });
         pac.should.have.been.calledOnceWith(
           "auth",
           "create",
@@ -71,8 +72,9 @@ describe("pac", () => {
       it("uses SPN authentication when provided encoded client credentials", () => {
         authenticateAdmin(pac, spnCredsEncoded, testLogger);
 
-        process.env.should.have.property("PAC_CLI_SPN_SECRET", "CLIENT_SECRET");
-
+        const setEnvironment = pac.setEnvironment;
+        if (!setEnvironment) { throw new Error("setEnvironment was not configured"); }
+        setEnvironment.should.have.been.calledOnceWith({ PAC_CLI_SPN_SECRET: "CLIENT_SECRET" });
         pac.should.have.been.calledOnceWith(
           "auth",
           "create",
@@ -123,18 +125,27 @@ describe("pac", () => {
       const envUrl = "https://ppdevtools.crm.dynamics.com";
       let pac: CommandRunner;
       beforeEach(() => {
-        pac = stub();
+        pac = stub().resolves([]);
+        pac.setEnvironment = stub();
+      });
+
+      it("clears the child-scoped client secret after auth cleanup", async () => {
+        const setEnvironment = stub();
+        pac.setEnvironment = setEnvironment;
+        await clearAuthentication(pac);
+
+        setEnvironment.should.have.been.calledOnceWith({ PAC_CLI_SPN_SECRET: undefined });
       });
       afterEach(() => {
-        delete process.env.PAC_CLI_SPN_SECRET;
         restore();
       });
 
       it("uses SPN authentication when provided client credentials", () => {
         authenticateEnvironment(pac, spnCreds, envUrl, testLogger);
 
-        process.env.should.have.property("PAC_CLI_SPN_SECRET", "CLIENT_SECRET");
-
+        const setEnvironment = pac.setEnvironment;
+        if (!setEnvironment) { throw new Error("setEnvironment was not configured"); }
+        setEnvironment.should.have.been.calledOnceWith({ PAC_CLI_SPN_SECRET: "CLIENT_SECRET" });
         pac.should.have.been.calledOnceWith(
           "auth",
           "create",

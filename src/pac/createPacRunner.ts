@@ -3,7 +3,7 @@ import { resolve } from "path";
 import { CommandRunner, createCommandRunner } from "../CommandRunner";
 import { RunnerParameters } from "../Parameters";
 
-export default function createPacRunner({workingDir, runnersDir, pacPath, logger, agent}: RunnerParameters): CommandRunner
+export default function createPacRunner({workingDir, runnersDir, pacPath, logger, agent, pacEnvironment}: RunnerParameters): CommandRunner
 {
   return createCommandRunner(
     workingDir,
@@ -12,6 +12,6 @@ export default function createPacRunner({workingDir, runnersDir, pacPath, logger
       : resolve(runnersDir, "pac_linux", "tools", "pac")),
     logger,
     agent,
-    undefined,
+    pacEnvironment ? { env: pacEnvironment } : undefined,
   );
 }

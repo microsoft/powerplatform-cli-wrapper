@@ -4,18 +4,25 @@ import { ClientCredentials, AuthCredentials, UsernamePassword, FederatedCredenti
 
 export function authenticateAdmin(pac: CommandRunner, credentials: AuthCredentials, logger: Logger): Promise<string[]> {
   logger.log(`authN to admin API: authType=${isUsernamePassword(credentials) ? 'UserPass' : 'SPN'}; cloudInstance: ${credentials.cloudInstance || '<not set>'}`);
+  setClientSecretEnvironment(pac, credentials);
   return pac("auth", "create", ...addCredentials(credentials), ...addCloudInstance(credentials));
 }
 
 export function authenticateEnvironment(pac: CommandRunner, credentials: AuthCredentials, environmentUrl: string, logger: Logger): Promise<string[]> {
 
   logger.log(`authN to env. authType:${isUsernamePassword(credentials) ? 'UserPass' : 'SPN'} authScheme:${isUsernamePassword(credentials) ? '' : `${credentials.scheme}`}; cloudInstance: ${credentials.cloudInstance || '<not set>'}; envUrl: ${environmentUrl}`);
+  setClientSecretEnvironment(pac, credentials);
   return pac("auth", "create", ...addEnvironment(environmentUrl), ...addCredentials(credentials), ...addCloudInstance(credentials));
 }
 
 export function clearAuthentication(pac: CommandRunner): Promise<string[]> {
-  delete process.env.PAC_CLI_SPN_SECRET; // Will be cleaned up anyway by closing of the node process
-  return pac("auth", "clear");
+  return pac("auth", "clear").finally(() => pac.setEnvironment?.({ PAC_CLI_SPN_SECRET: undefined }));
+}
+
+function setClientSecretEnvironment(pac: CommandRunner, credentials: AuthCredentials): void {
+  if (!isUsernamePassword(credentials) && !isFederatedCredentials(credentials) && credentials.scheme !== "ManagedServiceIdentity") {
+    pac.setEnvironment?.({ PAC_CLI_SPN_SECRET: credentials.clientSecret });
+  }
 }
 
 function addEnvironment(env: string) {
@@ -54,7 +61,6 @@ function addClientCredentials(parameters: ClientCredentials) {
     return ["--managedIdentity"];
   }
 
-  process.env.PAC_CLI_SPN_SECRET = parameters.clientSecret;
   const clientSecret = parameters.encodeSecret ? `data:text/plain;base64,${Buffer.from(parameters.clientSecret, 'binary').toString('base64')}` : parameters.clientSecret;
 
   return [
