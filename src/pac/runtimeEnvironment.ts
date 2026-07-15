@@ -54,3 +54,19 @@ export async function createPacRuntimeEnvironment(prefix = "pac-cli-"): Promise<
     },
   };
 }
+
+/**
+ * Runs one request inside a disposable PAC runtime and always cleans it up.
+ * The callback must await every PAC child process before it returns.
+ */
+export async function withPacRuntimeEnvironment<T>(
+  operation: (runtime: PacRuntimeEnvironment) => Promise<T>,
+  prefix = "pac-cli-"
+): Promise<T> {
+  const runtime = await createPacRuntimeEnvironment(prefix);
+  try {
+    return await operation(runtime);
+  } finally {
+    await runtime.cleanup();
+  }
+}

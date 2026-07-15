@@ -1,7 +1,7 @@
 import * as sinonChai from "sinon-chai";
 import { should, use } from "chai";
 import { promises as fs } from "fs";
-import { createPacRuntimeEnvironment } from "../../src/pac/runtimeEnvironment";
+import { createPacRuntimeEnvironment, withPacRuntimeEnvironment } from "../../src/pac/runtimeEnvironment";
 
 should();
 use(sinonChai);
@@ -42,6 +42,28 @@ describe("PAC runtime environment", () => {
     let exists = true;
     try {
       await fs.stat(runtime.root);
+    } catch {
+      exists = false;
+    }
+    exists.should.equal(false);
+  });
+
+  it("cleans up when the request fails", async () => {
+    let root = "";
+    let errorMessage = "";
+    try {
+      await withPacRuntimeEnvironment(async runtime => {
+        root = runtime.root;
+        throw new Error("request failed");
+      });
+    } catch (error) {
+      errorMessage = error instanceof Error ? error.message : String(error);
+    }
+    errorMessage.should.equal("request failed");
+
+    let exists = true;
+    try {
+      await fs.stat(root);
     } catch {
       exists = false;
     }

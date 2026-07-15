@@ -58,6 +58,23 @@ npm install -g gulp-cli
 gulp ci
 ```
 
+### Concurrent PAC requests
+
+Hosts that run PAC concurrently should create a disposable runtime for each request and pass its environment to
+`RunnerParameters.pacEnvironment`. Use `withPacRuntimeEnvironment` so the root is removed on both success and failure:
+
+```typescript
+await withPacRuntimeEnvironment(async runtime => {
+  await actions.whoAmI(parameters, {
+    ...runnerParameters,
+    pacEnvironment: runtime.environment,
+  }, host);
+});
+```
+
+The profile-directory environment variables are runtime-validated rather than a documented PAC isolation contract. Hosts
+must keep a serialized fallback and validate the PAC version they deploy.
+
 ### How to make GitHub Actions and Build Tools compatible with latest PAC CLI?
 
 After adding any new functionality in PAC CLI, support for relevant parameters/actions needs to be considered on all three repositories.
