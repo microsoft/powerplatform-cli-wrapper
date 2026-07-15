@@ -52,7 +52,14 @@ export async function createPacRuntimeEnvironment(prefix = "pac-cli-"): Promise<
     root,
     environment,
     cleanup: async () => {
-      cleanupPromise ??= fs.rm(root, { recursive: true, force: true });
+      cleanupPromise ??= fs.rm(root, {
+        recursive: true,
+        force: true,
+        // Older PAC builds can leave telemetry-created directories behind
+        // briefly after the main process exits.
+        maxRetries: 30,
+        retryDelay: 500,
+      });
       await cleanupPromise;
     },
   };
