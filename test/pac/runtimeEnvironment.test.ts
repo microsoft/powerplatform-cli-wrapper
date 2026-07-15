@@ -1,7 +1,9 @@
 import * as sinonChai from "sinon-chai";
 import { should, use } from "chai";
 import { promises as fs } from "fs";
-import { createPacRuntimeEnvironment, withPacRuntimeEnvironment } from "../../src/pac/runtimeEnvironment";
+import { createPacRuntimeEnvironment, withPacRuntimeEnvironment, withPacRuntimeParameters } from "../../src/pac/runtimeEnvironment";
+import { RunnerParameters } from "../../src/Parameters";
+import testLogger from "../testLogger";
 
 should();
 use(sinonChai);
@@ -82,6 +84,35 @@ describe("PAC runtime environment", () => {
       errorMessage = error instanceof Error ? error.message : String(error);
     }
     errorMessage.should.equal("request failed");
+
+    let exists = true;
+    try {
+      await fs.stat(root);
+    } catch {
+      exists = false;
+    }
+    exists.should.equal(false);
+  });
+
+  it("merges a disposable runtime into runner parameters", async () => {
+    const runnerParameters: RunnerParameters = {
+      workingDir: process.cwd(),
+      runnersDir: process.cwd(),
+      logger: testLogger,
+      agent: "test",
+      pacEnvironment: { EXISTING_OVERRIDE: "retained" },
+    };
+    let root = "";
+
+    await withPacRuntimeParameters(runnerParameters, async scopedParameters => {
+      root = scopedParameters.pacEnvironment?.USERPROFILE ?? "";
+      const environment = scopedParameters.pacEnvironment;
+      if (!environment || !environment.EXISTING_OVERRIDE || !environment.USERPROFILE) {
+        throw new Error("PAC runtime environment merge was incomplete");
+      }
+      environment.EXISTING_OVERRIDE.should.equal("retained");
+      environment.USERPROFILE.should.equal(root);
+    });
 
     let exists = true;
     try {

@@ -72,6 +72,14 @@ await withPacRuntimeEnvironment(async runtime => {
 });
 ```
 
+When the operation already owns `RunnerParameters`, `withPacRuntimeParameters` performs the merge for you:
+
+```typescript
+await withPacRuntimeParameters(runnerParameters, scopedRunnerParameters =>
+  actions.whoAmI(parameters, scopedRunnerParameters, host)
+);
+```
+
 The profile-directory environment variables are runtime-validated rather than a documented PAC isolation contract. Hosts
 must keep a serialized fallback and validate the PAC version they deploy.
 

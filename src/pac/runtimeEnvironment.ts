@@ -1,6 +1,7 @@
 import { promises as fs } from "fs";
 import { tmpdir } from "os";
 import { join, parse } from "path";
+import type { RunnerParameters } from "../Parameters";
 
 export interface PacRuntimeEnvironment {
   /** Root directory used for this PAC request. */
@@ -79,4 +80,23 @@ export async function withPacRuntimeEnvironment<T>(
   } finally {
     await runtime.cleanup();
   }
+}
+
+/**
+ * Runs one wrapper action with a request-scoped PAC environment.
+ * Existing host environment overrides are retained, but the disposable
+ * runtime wins for profile and cache isolation.
+ */
+export async function withPacRuntimeParameters<T>(
+  runnerParameters: RunnerParameters,
+  operation: (runnerParameters: RunnerParameters) => Promise<T>,
+  prefix = "pac-cli-"
+): Promise<T> {
+  return withPacRuntimeEnvironment(async runtime => operation({
+    ...runnerParameters,
+    pacEnvironment: {
+      ...(runnerParameters.pacEnvironment ?? {}),
+      ...runtime.environment,
+    },
+  }), prefix);
 }
