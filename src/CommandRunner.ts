@@ -12,14 +12,14 @@ export function createCommandRunner(
   agent: string,
   options?: SpawnOptionsWithoutStdio
 ): CommandRunner {
-  const scopedEnvironment: NodeJS.ProcessEnv = {};
+  const spawnOptions = options ?? {};
+  const scopedEnvironment: NodeJS.ProcessEnv = { ...(spawnOptions.env ?? {}) };
   const run: CommandRunner = async function run(...args: string[]): Promise<string[]> {
     return new Promise((resolve, reject) => {
       logInitialization(...args);
 
       const allOutput: string[] = [];
 
-      const spawnOptions = options ?? {};
       const cp = spawn(commandPath, args, {
         cwd: workingDir,
         ...spawnOptions,

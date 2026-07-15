@@ -116,4 +116,37 @@ describe("CommandRunner", () => {
     spawnStub.getCall(0).args[2].env.should.have.property("PAC_CLI_SPN_SECRET", "scoped-secret");
     spawnStub.getCall(1).args[2].env.should.have.property("PAC_CLI_SPN_SECRET", "scoped-secret");
   });
+
+  it("keeps concurrent request runners isolated", async () => {
+    const spawnStub = stub();
+    const processStub = stubInterface<ChildProcessWithoutNullStreams>();
+    const stream = stubInterface<Readable>();
+    processStub.stdout = stream;
+    processStub.stderr = stream;
+    spawnStub.returns(processStub);
+
+    await rewiremock.around(
+      async () => {
+        const { createCommandRunner } = await import("../src/CommandRunner");
+        const environmentA = { PAC_PROFILE_ROOT: "customer-a", PAC_CLI_SPN_SECRET: "secret-a" };
+        const environmentB = { PAC_PROFILE_ROOT: "customer-b", PAC_CLI_SPN_SECRET: "secret-b" };
+        const runnerA = createCommandRunner("cwd", "command", stubInterface<Logger>(), "myAgent", { env: environmentA });
+        const runnerB = createCommandRunner("cwd", "command", stubInterface<Logger>(), "myAgent", { env: environmentB });
+        environmentA.PAC_PROFILE_ROOT = "mutated-a";
+        environmentB.PAC_PROFILE_ROOT = "mutated-b";
+        runnerA("org", "who");
+        runnerB("org", "who");
+      },
+      (mock) => {
+        mock(() => import("child_process")).with({ spawn: spawnStub });
+      }
+    );
+
+    const firstEnvironment = spawnStub.getCall(0).args[2].env;
+    const secondEnvironment = spawnStub.getCall(1).args[2].env;
+    firstEnvironment.PAC_PROFILE_ROOT.should.equal("customer-a");
+    firstEnvironment.PAC_CLI_SPN_SECRET.should.equal("secret-a");
+    secondEnvironment.PAC_PROFILE_ROOT.should.equal("customer-b");
+    secondEnvironment.PAC_CLI_SPN_SECRET.should.equal("secret-b");
+  });
 });
