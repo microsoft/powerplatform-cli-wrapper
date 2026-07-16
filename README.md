@@ -60,7 +60,19 @@ gulp ci
 
 ### Concurrent PAC requests
 
-Hosts that run PAC concurrently should create a disposable runtime for each request and pass its environment to
+For interactive users, use a stable profile key per customer, tenant, and identity. The persistent helper retains PAC's
+authentication cache across host sessions and serializes only callers sharing that key; different keys can run concurrently:
+
+```typescript
+await withPersistentPacRuntimeParameters("customer-tenant-user", runnerParameters, scopedRunnerParameters =>
+  actions.whoAmI(parameters, scopedRunnerParameters, host)
+);
+```
+
+Authenticate inside the persistent runtime only when `pac auth list` shows no stored profile. Do not run `pac auth clear`
+or delete the persistent root at the end of each operation. Explicit logout or reauthentication remains a host decision.
+
+For ephemeral CI or service-principal work, create a disposable runtime for each request and pass its environment to
 `RunnerParameters.pacEnvironment`. Use `withPacRuntimeEnvironment` so the root is removed on both success and failure:
 
 ```typescript
@@ -81,7 +93,8 @@ await withPacRuntimeParameters(runnerParameters, scopedRunnerParameters =>
 ```
 
 The profile-directory environment variables are runtime-validated rather than a documented PAC isolation contract. Hosts
-must keep a serialized fallback and validate the PAC version they deploy.
+must keep a serialized fallback and validate the PAC version they deploy. If isolation is not honored, serialize the complete
+PAC transaction globally rather than relying on the per-profile lock.
 
 ### How to make GitHub Actions and Build Tools compatible with latest PAC CLI?
 

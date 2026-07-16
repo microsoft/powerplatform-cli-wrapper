@@ -1,7 +1,8 @@
 import * as sinonChai from "sinon-chai";
 import { should, use } from "chai";
 import { promises as fs } from "fs";
-import { createPacRuntimeEnvironment, withPacRuntimeEnvironment, withPacRuntimeParameters } from "../../src/pac/runtimeEnvironment";
+import { join } from "path";
+import { createPacRuntimeEnvironment, createPersistentPacRuntimeEnvironment, withPacRuntimeEnvironment, withPacRuntimeParameters, withPersistentPacRuntimeEnvironment, withPersistentPacRuntimeParameters } from "../../src/pac/runtimeEnvironment";
 import { RunnerParameters } from "../../src/Parameters";
 import testLogger from "../testLogger";
 
@@ -25,7 +26,7 @@ describe("PAC runtime environment", () => {
       }
       first.root.should.not.equal(second.root);
       firstUserProfile.should.equal(first.root);
-      firstHome.should.equal(`${first.root}\\home`);
+      firstHome.should.equal(join(first.root, "home"));
       secondUserProfile.should.equal(second.root);
       if (process.env.HOME !== originalHome) {
         throw new Error("The parent HOME environment was mutated");
@@ -121,5 +122,94 @@ describe("PAC runtime environment", () => {
       exists = false;
     }
     exists.should.equal(false);
+  });
+
+  it("retains persistent profile state across operations", async () => {
+    const storeRoot = await fs.mkdtemp(join(process.cwd(), "pac-persistent-test-"));
+    try {
+      await withPersistentPacRuntimeEnvironment("customer-a", async runtime => {
+        await fs.writeFile(join(runtime.root, "auth-state"), "stored");
+      }, { storeRoot });
+
+      await withPersistentPacRuntimeEnvironment("customer-a", async runtime => {
+        (await fs.readFile(join(runtime.root, "auth-state"), "utf8")).should.equal("stored");
+      }, { storeRoot });
+    } finally {
+      await fs.rm(storeRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("serializes callers sharing one persistent profile", async () => {
+    const storeRoot = await fs.mkdtemp(join(process.cwd(), "pac-profile-lock-test-"));
+    const first = await createPersistentPacRuntimeEnvironment("customer-a", { storeRoot });
+    let secondAcquired = false;
+    const secondPromise = createPersistentPacRuntimeEnvironment("customer-a", {
+      storeRoot,
+      lockTimeoutMs: 2000,
+      lockRetryDelayMs: 10,
+    }).then(runtime => {
+      secondAcquired = true;
+      return runtime;
+    });
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 50));
+      secondAcquired.should.equal(false);
+      await first.release();
+      const second = await secondPromise;
+      secondAcquired.should.equal(true);
+      await second.release();
+    } finally {
+      await first.release();
+      await fs.rm(storeRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("allows different persistent profiles to run concurrently", async () => {
+    const storeRoot = await fs.mkdtemp(join(process.cwd(), "pac-profile-parallel-test-"));
+    try {
+      const [first, second] = await Promise.all([
+        createPersistentPacRuntimeEnvironment("customer-a", { storeRoot }),
+        createPersistentPacRuntimeEnvironment("customer-b", { storeRoot }),
+      ]);
+      first.root.should.not.equal(second.root);
+      await Promise.all([first.release(), second.release()]);
+    } finally {
+      await fs.rm(storeRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("rejects path-affecting persistent profile keys", async () => {
+    let errorMessage = "";
+    try {
+      await createPersistentPacRuntimeEnvironment("..\\outside");
+    } catch (error) {
+      errorMessage = error instanceof Error ? error.message : String(error);
+    }
+    errorMessage.should.contain("PAC profile key");
+  });
+
+  it("merges a persistent runtime into runner parameters", async () => {
+    const storeRoot = await fs.mkdtemp(join(process.cwd(), "pac-persistent-parameters-test-"));
+    const runnerParameters: RunnerParameters = {
+      workingDir: process.cwd(),
+      runnersDir: process.cwd(),
+      logger: testLogger,
+      agent: "test",
+      pacEnvironment: { EXISTING_OVERRIDE: "retained" },
+    };
+
+    try {
+      await withPersistentPacRuntimeParameters("customer-a", runnerParameters, async scopedParameters => {
+        const environment = scopedParameters.pacEnvironment;
+        if (!environment?.USERPROFILE || !environment.EXISTING_OVERRIDE) {
+          throw new Error("Persistent PAC runtime environment merge was incomplete");
+        }
+        environment.EXISTING_OVERRIDE.should.equal("retained");
+        environment.USERPROFILE.should.equal(join(storeRoot, "customer-a"));
+      }, { storeRoot });
+    } finally {
+      await fs.rm(storeRoot, { recursive: true, force: true });
+    }
   });
 });
