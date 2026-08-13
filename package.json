@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "fs-extra": "^11.1.1",
-    "glob": "^11.0.2"
+    "glob": "^13.0.6"
   },
   "overrides": {
     "ts-sinon": {
