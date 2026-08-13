@@ -1,4 +1,15 @@
 # Docs: https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+#
+# Note: Dependabot only understands `dependencies` / `devDependencies`. It cannot read or
+# update the npm `overrides` block, which is where most transitive fixes in this repo live
+# (e.g. `gulp-mocha > mocha`, which is what removes the vulnerable exact-pinned
+# minimatch@3.0.4 and diff@5.0.0 copies). Those are handled by
+# .github/workflows/dependency-security.yml instead.
+#
+# Reviewers are assigned via .github/CODEOWNERS - the `reviewers:` option was retired
+# by GitHub in 2025 and no longer has any effect.
+#
+# Nothing here auto-merges. Every PR needs a human to review and merge it.
 
 version: 2
 updates:
@@ -6,3 +17,25 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+    # Keep routine version churn to a single PR so security PRs stay easy to spot.
+    groups:
+      dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+      production-dependencies:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
