@@ -43,7 +43,7 @@ jobs:
       # `npm audit --json`, and Node 22+ is avoided because its native TypeScript
       # stripping conflicts with ts-node/register during `npm run ci`.
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 20
 
