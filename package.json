@@ -48,7 +48,7 @@
     "mocha": "^10.4.0",
     "node-fetch": "^3.3.2",
     "ps-list": "^8.1.1",
-    "release-it": "^17.3.0",
+    "release-it": "^21.0.1",
     "rewiremock": "^3.14.6",
     "sinon": "^17.0.1",
     "sinon-chai": "^3.6.0",
@@ -65,6 +65,15 @@
   "overrides": {
     "ts-sinon": {
       "@types/node": "$@types/node"
+    },
+    "lodash": "^4.18.0",
+    "nanoid": "^3.3.17",
+    "tmp": "^0.2.6",
+    "js-yaml": "^4.3.1",
+    "serialize-javascript": "^7.0.5",
+    "postcss": "^8.5.23",
+    "gulp-mocha": {
+      "mocha": "$mocha"
     }
   }
 }
