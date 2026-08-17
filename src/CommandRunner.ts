@@ -12,7 +12,9 @@ export function createCommandRunner(
   agent: string,
   options?: SpawnOptionsWithoutStdio
 ): CommandRunner {
-  return async function run(...args: string[]): Promise<string[]> {
+  const spawnOptions = options ?? {};
+  const scopedEnvironment: NodeJS.ProcessEnv = { ...(spawnOptions.env ?? {}) };
+  const run: CommandRunner = async function run(...args: string[]): Promise<string[]> {
     return new Promise((resolve, reject) => {
       logInitialization(...args);
 
@@ -20,11 +22,11 @@ export function createCommandRunner(
 
       const cp = spawn(commandPath, args, {
         cwd: workingDir,
+        ...spawnOptions,
         env: Object.assign({
           PATH: env.PATH,
           "PP_TOOLS_AUTOMATION_AGENT": agent
-        }, process.env),
-        ...options,
+        }, process.env, spawnOptions.env, scopedEnvironment),
       });
 
       const outputLineReader = readline.createInterface({ input: cp.stdout });
@@ -64,6 +66,18 @@ export function createCommandRunner(
     });
   };
 
+  run.setEnvironment = (environment: NodeJS.ProcessEnv) => {
+    for (const [name, value] of Object.entries(environment)) {
+      if (value === undefined) {
+        delete scopedEnvironment[name];
+      } else {
+        scopedEnvironment[name] = value;
+      }
+    }
+  };
+
+  return run;
+
   function closeAllReaders(outputLineReader?: readline.Interface | undefined, errorLineReader?: readline.Interface | undefined): void {
       outputLineReader?.close();
       errorLineReader?.close();
@@ -83,7 +97,9 @@ export function createCommandRunner(
   }
 }
 
-export type CommandRunner = (...args: string[]) => Promise<string[]>;
+export type CommandRunner = ((...args: string[]) => Promise<string[]>) & {
+  setEnvironment?: (environment: NodeJS.ProcessEnv) => void;
+};
 
 export class RunnerError extends Error {
   public constructor(public exitCode: number, message: string) {
