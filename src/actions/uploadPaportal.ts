@@ -21,7 +21,7 @@ export async function uploadPaportal(parameters: UploadPaportalParameters, runne
     const authenticateResult = await authenticateEnvironment(pac, parameters.credentials, parameters.environmentUrl, logger);
     logger.log("The Authentication Result: " + authenticateResult);
 
-    const pacArgs = ["paportal", "upload"]
+    const pacArgs = ["pages", "upload"]
     const validator = new InputValidator(host);
 
     validator.pushInput(pacArgs, "--path", parameters.path);
