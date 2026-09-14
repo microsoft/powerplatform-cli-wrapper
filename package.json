@@ -74,6 +74,7 @@
     "postcss": "^8.5.23",
     "gulp-mocha": {
       "mocha": "$mocha"
-    }
+    },
+    "decode-uri-component": "^0.5.0"
   }
 }
