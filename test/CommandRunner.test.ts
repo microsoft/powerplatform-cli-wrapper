@@ -13,7 +13,7 @@ use(chaiAsPromised);
 
 describe("CommandRunner", () => {
   afterEach(() => { delete process.env.NODE_SCOPED_TEST_ENV_VAR; });
-  it("passes additional options and env variables to spawn", async () => {
+  it("passes additional options and inherited env variables to spawn", async () => {
     const spawnStub = stub();
     const processStub = stubInterface<ChildProcessWithoutNullStreams>();
     const stream = stubInterface<Readable>();
@@ -54,5 +54,99 @@ describe("CommandRunner", () => {
     env.should.have.property('NODE_SCOPED_TEST_ENV_VAR', 'foo');
     // assert we have a full copy of process.env:
     Object.keys(env).length.should.be.above(10);
+  });
+
+  it("merges request-scoped env overrides without dropping inherited variables", async () => {
+    const spawnStub = stub();
+    const processStub = stubInterface<ChildProcessWithoutNullStreams>();
+    const stream = stubInterface<Readable>();
+    processStub.stdout = stream;
+    processStub.stderr = stream;
+    spawnStub.returns(processStub);
+
+    await rewiremock.around(
+      async () => {
+        process.env.NODE_SCOPED_TEST_ENV_VAR = 'inherited';
+
+        const { createCommandRunner } = await import("../src/CommandRunner");
+        const runCommand = createCommandRunner(
+          "cwd",
+          "command",
+          stubInterface<Logger>(),
+          "myAgent",
+          { env: { NODE_SCOPED_TEST_ENV_VAR: 'scoped', PAC_PROFILE_ROOT: 'request-root' } }
+        );
+        runCommand();
+      },
+      (mock) => {
+        mock(() => import("child_process")).with({
+          spawn: spawnStub,
+        });
+      }
+    );
+
+    const env = spawnStub.getCall(0).args[2].env;
+    env.should.have.property('NODE_SCOPED_TEST_ENV_VAR', 'scoped');
+    env.should.have.property('PAC_PROFILE_ROOT', 'request-root');
+    env.should.have.property('PATH');
+  });
+
+  it("applies runner-scoped environment to later child processes", async () => {
+    const spawnStub = stub();
+    const processStub = stubInterface<ChildProcessWithoutNullStreams>();
+    const stream = stubInterface<Readable>();
+    processStub.stdout = stream;
+    processStub.stderr = stream;
+    spawnStub.returns(processStub);
+
+    await rewiremock.around(
+      async () => {
+        const { createCommandRunner } = await import("../src/CommandRunner");
+        const runCommand = createCommandRunner("cwd", "command", stubInterface<Logger>(), "myAgent");
+        runCommand.setEnvironment?.({ PAC_CLI_SPN_SECRET: "scoped-secret" });
+        runCommand("auth", "create");
+        runCommand("solution", "list");
+      },
+      (mock) => {
+        mock(() => import("child_process")).with({ spawn: spawnStub });
+      }
+    );
+
+    spawnStub.callCount.should.equal(2);
+    spawnStub.getCall(0).args[2].env.should.have.property("PAC_CLI_SPN_SECRET", "scoped-secret");
+    spawnStub.getCall(1).args[2].env.should.have.property("PAC_CLI_SPN_SECRET", "scoped-secret");
+  });
+
+  it("keeps concurrent request runners isolated", async () => {
+    const spawnStub = stub();
+    const processStub = stubInterface<ChildProcessWithoutNullStreams>();
+    const stream = stubInterface<Readable>();
+    processStub.stdout = stream;
+    processStub.stderr = stream;
+    spawnStub.returns(processStub);
+
+    await rewiremock.around(
+      async () => {
+        const { createCommandRunner } = await import("../src/CommandRunner");
+        const environmentA = { PAC_PROFILE_ROOT: "customer-a", PAC_CLI_SPN_SECRET: "secret-a" };
+        const environmentB = { PAC_PROFILE_ROOT: "customer-b", PAC_CLI_SPN_SECRET: "secret-b" };
+        const runnerA = createCommandRunner("cwd", "command", stubInterface<Logger>(), "myAgent", { env: environmentA });
+        const runnerB = createCommandRunner("cwd", "command", stubInterface<Logger>(), "myAgent", { env: environmentB });
+        environmentA.PAC_PROFILE_ROOT = "mutated-a";
+        environmentB.PAC_PROFILE_ROOT = "mutated-b";
+        runnerA("org", "who");
+        runnerB("org", "who");
+      },
+      (mock) => {
+        mock(() => import("child_process")).with({ spawn: spawnStub });
+      }
+    );
+
+    const firstEnvironment = spawnStub.getCall(0).args[2].env;
+    const secondEnvironment = spawnStub.getCall(1).args[2].env;
+    firstEnvironment.PAC_PROFILE_ROOT.should.equal("customer-a");
+    firstEnvironment.PAC_CLI_SPN_SECRET.should.equal("secret-a");
+    secondEnvironment.PAC_PROFILE_ROOT.should.equal("customer-b");
+    secondEnvironment.PAC_CLI_SPN_SECRET.should.equal("secret-b");
   });
 });

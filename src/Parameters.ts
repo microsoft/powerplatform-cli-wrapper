@@ -14,6 +14,10 @@ export interface RunnerParameters extends LoggerParameters, TelemetryParameters
 {
   workingDir: string;
 
+  // Optional environment overrides applied only to PAC child processes.
+  // Hosts can use this to provide a request-scoped PAC profile/cache root.
+  pacEnvironment?: NodeJS.ProcessEnv;
+
   // Directory containing unzipped Windows and Linux PAC Nuget Packages.
   // Expectation is that, both versions have been renamed such that
   // linux PAC executable's path is <runnersDir>/pac_linux/tools/pac
