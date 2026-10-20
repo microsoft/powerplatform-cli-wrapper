@@ -15,6 +15,7 @@ export class mockHost implements IHostAbstractions {
   solutionName = 'Mock-Solution';
   relativeSolutionPath = './ContosoSolution.zip';
   absoluteSolutionPath = (os.platform() === "win32") ? 'D:\\Test\\working\\ContosoSolution.zip' : '/Test/working/ContosoSolution.zip';
+  solutionFolder = (os.platform() === "win32") ? 'D:\\Test\\working\\folder' : '/Test/working/folder';
   deploymentSettingsFile = '/Test/deploymentSettings.txt';
   logDataFile = 'c:\\samplelogdata'
   maxAsyncWaitTime = '120';
@@ -71,6 +72,7 @@ export class mockHost implements IHostAbstractions {
       switch (entry.name) {
         case 'SolutionInputFile':
         case 'SolutionOutputFile': return this.relativeSolutionPath;
+        case 'SolutionFolder': return this.solutionFolder;
         case 'SolutionName': return this.solutionName;
         case 'MaxAsyncWaitTime': return this.maxAsyncWaitTime;
         case 'DeploymentSettingsFile': return this.deploymentSettingsFile;
@@ -146,5 +148,5 @@ export class MockArtifactStore implements IArtifactStore {
   public upload(artifactName: string, files: string[]): Promise<void> {
     console.log(`MockArtifactStore: name = ${artifactName}, files = ${files.join(', ')}`);
     return Promise.resolve();
-   }
+  }
 }
