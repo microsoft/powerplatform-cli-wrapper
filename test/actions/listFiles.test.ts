@@ -21,6 +21,12 @@ describe("listFiles", () => {
     listFiles(path.join(root, "missing")).should.deep.equal([]);
   });
 
+  it("returns an empty list when given a file instead of a folder", () => {
+    const file = path.join(root, "file.txt");
+    fs.writeFileSync(file, "");
+    listFiles(file).should.deep.equal([]);
+  });
+
   it("returns absolute paths of nested files, without folders or dot entries", () => {
     fs.mkdirSync(path.join(root, "a", "b"), { recursive: true });
     fs.mkdirSync(path.join(root, ".hidden"));

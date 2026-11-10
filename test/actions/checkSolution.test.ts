@@ -8,7 +8,9 @@ import { ClientCredentials, RunnerParameters } from "../../src";
 import { IHostAbstractions } from "../../src/host/IHostAbstractions";
 import { CheckSolutionParameters } from "../../src/actions";
 import Sinon = require("sinon");
-import { platform } from "os";
+import * as fs from "fs";
+import * as path from "path";
+import { platform, tmpdir } from "os";
 import { IArtifactStore } from "src/host/IArtifactStore";
 import { createDefaultMockRunnerParameters, createMockClientCredentials, mockEnvironmentUrl } from "./mock/mockData";
 
@@ -77,7 +79,7 @@ describe("action: check solution", () => {
   let samplejson = "";
 
   beforeEach(() => {
-    pacStub = stub();
+    pacStub = stub().returns(pacResults);
     authenticateAdminStub = stub();
     clearAuthenticationStub = stub();
     authenticateEnvironmentStub = stub();
@@ -103,7 +105,7 @@ describe("action: check solution", () => {
   });
   afterEach(() => restore());
 
-  async function runActionWithMocks(checkSolutionParameters: CheckSolutionParameters): Promise<void> {
+  async function runActionWithMocks(checkSolutionParameters: CheckSolutionParameters, host: IHostAbstractions = mockHost): Promise<void> {
     const runnerParameters: RunnerParameters = createDefaultMockRunnerParameters();
     const mockedActionModule = await rewiremock.around(() => import("../../src/actions/checkSolution"),
       (mock) => {
@@ -117,7 +119,7 @@ describe("action: check solution", () => {
       });
 
     // const stubFnc = Sinon.stub(mockHost, "getInput").callsFake(entry => {
-    Sinon.stub(mockHost, "getInput").callsFake(entry => {
+    Sinon.stub(host, "getInput").callsFake(entry => {
       switch (entry.name) {
         case "FileLocation":
           return "localFiles";
@@ -138,8 +140,7 @@ describe("action: check solution", () => {
 
     authenticateAdminStub.returns("Authentication successfully created.");
     clearAuthenticationStub.returns("Authentication profiles and token cache removed");
-    pacStub.returns(pacResults);
-    await mockedActionModule.checkSolution(checkSolutionParameters, runnerParameters, mockHost);
+    await mockedActionModule.checkSolution(checkSolutionParameters, runnerParameters, host);
   }
 
   it("required, optional, and not required input types calls pac runner stub with correct arguments", async () => {
@@ -212,6 +213,43 @@ describe("action: check solution", () => {
     "--geo", "unitedstates",
     "--outputDirectory", "checker-output"
     );
+  });
+
+  it("uploads every file the checker writes to its output folder", async () => {
+    customEndpoint = "";
+    samplejson = "";
+    const tempFolder = fs.mkdtempSync(path.join(tmpdir(), "checker-test-"));
+    let uploaded: string[] = [];
+    const host: IHostAbstractions = {
+      ...mockHost,
+      getArtifactStore: () => ({
+        getTempFolder: () => tempFolder,
+        upload: (_artifactName: string, files: string[]) => {
+          uploaded = files;
+          return Promise.resolve();
+        }
+      }),
+    };
+    pacStub.callsFake((...args: string[]) => {
+      const outputDirectory = args[args.indexOf("--outputDirectory") + 1];
+      fs.mkdirSync(path.join(outputDirectory, "nested"), { recursive: true });
+      fs.writeFileSync(path.join(outputDirectory, "results.zip"), "");
+      fs.writeFileSync(path.join(outputDirectory, "nested", "report.sarif"), "");
+      fs.writeFileSync(path.join(outputDirectory, ".marker"), "");
+      return pacResults;
+    });
+
+    try {
+      await runActionWithMocks(checkSolutionParameters, host);
+
+      const outputDirectory = path.join(tempFolder, "checker-output");
+      uploaded.sort().should.deep.equal([
+        path.join(outputDirectory, "nested", "report.sarif"),
+        path.join(outputDirectory, "results.zip"),
+      ].sort());
+    } finally {
+      fs.rmSync(tempFolder, { recursive: true, force: true });
+    }
   });
 
 });
