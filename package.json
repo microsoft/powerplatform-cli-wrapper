@@ -59,8 +59,7 @@
     "unzip-stream": "^0.3.4"
   },
   "dependencies": {
-    "fs-extra": "^11.1.1",
-    "glob": "^11.0.2"
+    "fs-extra": "^11.1.1"
   },
   "overrides": {
     "ts-sinon": {
