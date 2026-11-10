@@ -1,4 +1,3 @@
-import glob = require("glob");
 import os = require("os");
 import path = require("path");
 
@@ -8,7 +7,7 @@ import createPacRunner from "../pac/createPacRunner";
 import { authenticateAdmin, authenticateEnvironment, clearAuthentication } from "../pac/auth/authenticate";
 import { RunnerParameters } from "../Parameters";
 import { AuthCredentials } from "../pac/auth/authParameters";
-import * as fs from "fs";
+import { listFiles } from "./listFiles";
 import { promises, rmdirSync, rmSync, writeFile } from "fs-extra";
 
 export interface CheckSolutionParameters extends CommonActionParameters {
@@ -108,7 +107,7 @@ export async function checkSolution(parameters: CheckSolutionParameters, runnerP
     const pacResult = await pac(...pacArgs);
     logger.log("CheckSolution Action Result: " + pacResult);
 
-    const files: string[] = glob.sync('**/*', { cwd: outputDirectory, absolute: true }).filter((file: string) => !fs.lstatSync(file).isDirectory());
+    const files: string[] = listFiles(outputDirectory);
     const artifactStoreName = validator.getInput(parameters.artifactStoreName) || 'CodeAnalysisLogs';
     await artifactStore.upload(artifactStoreName, files);
 
