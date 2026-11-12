@@ -23,7 +23,9 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          # release-it@21 (used by `npm run set-version`) declares
+          # engines.node "^22.21.0 || >=24.0.0" -- Node 16 cannot run it.
+          node-version: 24
           registry-url: "https://npm.pkg.github.com"
 
       - name: Setup git tag committer info for set-version
@@ -33,7 +35,6 @@ jobs:
 
       - name: Build
         run: |
-          npm i -g npm@8.19.4
           npm ci
           npm run set-version
           npm run dist
